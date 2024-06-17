@@ -1,7 +1,7 @@
 package main
 
-// "github.com/Allexsen/learning-project/internal/router"
+import router "github.com/Allexsen/Learning-Project/internal/router"
 
 func main() {
-	// InitRouter()
+	router.InitRouter()
 }

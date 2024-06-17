@@ -13,12 +13,13 @@ func GetEngine() *gin.Engine {
 }
 
 func InitRouter() {
-	r.Static("/static", "../../static/")
+	r.Static("/statics", "./static/")
 
 	r.GET("/", func(c *gin.Context) {
-		c.File("./index.html")
+		c.File("./static/index.html")
 	})
 
 	initRecordsRouter()
 
+	r.Run()
 }
