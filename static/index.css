@@ -1,12 +1,45 @@
-.new-record {
-    margin: auto;
-    width: 90%;
-    text-align: center;
+body {
+    background-color: #333;
 }
 
-.retrieve-record {
-    top: 30%;
-    margin: auto;
-    width: 90%;
-    text-align: center;
+h1 {
+    position: absolute;
+    left: 50%;
+    top: 3%;
+    transform: translate(-50%, 0%);
+    color: #f3f3f3;
+}
+
+.container-button-links {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%, 0);
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+}
+
+.button-link {
+    display: inline-block;
+    color: #fa295d;
+    padding: 3% 5%;
+    margin-right: 50px;
+    border-radius: 12px;
+    font-size: 30px;
+    white-space: nowrap;
+    text-decoration: none;
+    box-shadow: 0 0 65px #f2073e53;
+
+    background-color: #6e6d6e99;
+    backdrop-filter: blur(10px); /* Apply Gaussian blur to the background */
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    transition: all 0.2s ease;
+}
+
+.button-link:hover {
+    text-shadow: 0 0 5px #f33d67;
+    box-shadow: 0 0 35px #fa2657ae;
+
+    transition: all 0.2s;
 }

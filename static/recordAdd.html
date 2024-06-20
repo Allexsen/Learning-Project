@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Record</title>
+    <link rel="stylesheet" href="/statics/recordAdd.css">
+</head>
+<body>
+    <div class="record-add">
+        <h1>Submit a new record</h1>
+        <form action="/records/add" method="post">
+            <label for="name">Name:</label>
+            <input type="text" name="name" id="name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required>
+
+            <label for="hours">Hours worked:</label>
+            <input type="number" name="hours" id="hours" min="0" step="1" required>
+
+            <label for="minutes">Minutes worked:</label>
+            <input type="number" name="minutes" id="minutes" min="0" max="59" step="1" required>
+
+            <input type="submit" value="Log record">
+        </form>
+    </div>
+</body>
+</html>
