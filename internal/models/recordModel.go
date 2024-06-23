@@ -5,7 +5,7 @@ import (
 )
 
 type Record struct {
-	ID      string
+	ID      int64
 	UserID  string
 	Hours   int
 	Minutes int

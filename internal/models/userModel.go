@@ -1,9 +1,13 @@
 package models
 
-import "github.com/Allexsen/Learning-Project/internal/db"
+import (
+	"database/sql"
+
+	"github.com/Allexsen/Learning-Project/internal/db"
+)
 
 type User struct {
-	ID           string
+	ID           int64
 	Name         string
 	Email        string
 	TotalHours   int
@@ -26,4 +30,17 @@ func (u *User) RetrieveUser() error {
 		&u.ID, &u.Name, &u.Email, &u.TotalHours, &u.TotalMinutes, &u.LogCount)
 
 	return err
+}
+
+func (u *User) GetUserIDByEmail() error {
+	err := db.DB.QueryRow(`SELECT id FROM practiceDB.users WHERE email=?`, u.Email).Scan(&u.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			u.ID, err = u.AddUser()
+		}
+
+		return err
+	}
+
+	return nil
 }
