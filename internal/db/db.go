@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var DB *sql.DB
+
 func InitDB() {
 	DB, err := sql.Open("mysql", os.Getenv("MYSQL_AUTH_CREDS"))
 	if err != nil {
