@@ -19,6 +19,7 @@ func InitRouter() {
 		c.File("../../static/index.html")
 	})
 
+	initUserRouter()
 	initRecordsRouter()
 
 	r.Run(":8080")

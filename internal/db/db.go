@@ -10,7 +10,8 @@ import (
 var DB *sql.DB
 
 func InitDB() {
-	DB, err := sql.Open("mysql", os.Getenv("MYSQL_AUTH_CREDS"))
+	var err error
+	DB, err = sql.Open("mysql", os.Getenv("MYSQL_AUTH_CREDS"))
 	if err != nil {
 		log.Fatal("[Error]: Coul dn't open a database connection: " + err.Error())
 		panic(err)

@@ -8,6 +8,9 @@ import (
 
 func main() {
 	config.LoadConfig()
+
 	db.InitDB()
+	defer db.DB.Close()
+
 	router.InitRouter()
 }

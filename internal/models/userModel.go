@@ -1,7 +1,7 @@
 package models
 
 import (
-	"database/sql"
+	"log"
 
 	"github.com/Allexsen/Learning-Project/internal/db"
 )
@@ -17,7 +17,8 @@ type User struct {
 }
 
 func (u *User) AddUser() (int64, error) {
-	result, err := db.DB.Exec(`INSERT INTO practiceDB.users (name, email) VALUES (?, ?)`, u.Name, u.Email)
+	log.Print("Hit AddUser")
+	result, err := db.DB.Exec(`INSERT INTO practice_db.users (name, email) VALUES (?, ?)`, u.Name, u.Email)
 	if err != nil {
 		return 0, err
 	}
@@ -25,20 +26,31 @@ func (u *User) AddUser() (int64, error) {
 	return result.LastInsertId()
 }
 
-func (u *User) RetrieveUser() error {
-	err := db.DB.QueryRow(`SELECT * FROM practiceDB.users WHERE id=?`, u.ID).Scan(
+func (u *User) RetrieveUserbyID() error {
+	err := db.DB.QueryRow(`SELECT * FROM practice_db.users WHERE id=?`, u.ID).Scan(
 		&u.ID, &u.Name, &u.Email, &u.TotalHours, &u.TotalMinutes, &u.LogCount)
+	if err != nil {
+		return err
+	}
 
-	return err
+	return nil
 }
 
-func (u *User) GetUserIDByEmail() error {
-	err := db.DB.QueryRow(`SELECT id FROM practiceDB.users WHERE email=?`, u.Email).Scan(&u.ID)
+func (u *User) RetrieveUserByEmail() error {
+	err := db.DB.QueryRow(`SELECT * FROM practice_db.users WHERE email=?`, u.Email).Scan(
+		&u.ID, &u.Name, &u.Email, &u.TotalHours, &u.TotalMinutes, &u.LogCount)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			u.ID, err = u.AddUser()
-		}
+		return err
+	}
 
+	return nil
+}
+
+func (u *User) RetrieveUserIDByEmail() error {
+	log.Print("Hit RetrieveUserIDByEmail")
+
+	err := db.DB.QueryRow("SELECT id FROM practice_db.users WHERE email=?", u.Email).Scan(&u.ID)
+	if err != nil {
 		return err
 	}
 
