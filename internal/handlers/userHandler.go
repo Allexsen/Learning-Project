@@ -15,9 +15,10 @@ func UserGet() gin.HandlerFunc {
 
 		u, err := controllers.GetUserByEmail(u.Email)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
 		}
 
-		c.JSON(http.StatusNotFound, u)
+		c.JSON(http.StatusOK, u)
 	}
 }

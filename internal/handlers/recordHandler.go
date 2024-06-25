@@ -19,7 +19,8 @@ func RecordAdd() gin.HandlerFunc {
 
 		record, err := controllers.RecordAdd(name, email, hStr, minStr)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't add the record"})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "couldn't add the record"})
+			return
 		}
 
 		c.JSON(http.StatusOK, record)
