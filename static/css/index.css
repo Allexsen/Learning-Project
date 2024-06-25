@@ -10,7 +10,7 @@ h1 {
     color: #f3f3f3;
 }
 
-.container-button-links {
+.op-type-buttons {
     position: absolute;
     left: 50%;
     top: 20%;
@@ -20,26 +20,16 @@ h1 {
     gap: 50px;
 }
 
-.button-link {
-    display: inline-block;
-    color: #fa295d;
+.op-type-buttons .button {
     padding: 3% 5%;
     margin-right: 50px;
     border-radius: 12px;
     font-size: 30px;
-    white-space: nowrap;
-    text-decoration: none;
     box-shadow: 0 0 65px #f2073e53;
-
-    background-color: #6e6d6e99;
-    backdrop-filter: blur(10px); /* Apply Gaussian blur to the background */
-    -webkit-backdrop-filter: blur(10px); /* For Safari */
-    transition: all 0.2s ease;
 }
 
-.button-link:hover {
+.op-type-buttons .button:hover {
     text-shadow: 0 0 5px #f33d67;
     box-shadow: 0 0 35px #fa2657ae;
-
-    transition: all 0.2s;
+    transition: all 0.5s cubic-bezier(0.16, 0.33, 0.56, 1.0);
 }

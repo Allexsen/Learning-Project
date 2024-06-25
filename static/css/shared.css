@@ -1,0 +1,44 @@
+.button {
+    display: inline-block;
+    color: #fa295d;
+    white-space: nowrap;
+    text-decoration: none;
+    
+    background-color: #43464B;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.5s cubic-bezier(0.16, 0.33, 0.56, 1.0);
+    
+    /* to configure specific settings
+    padding: 3% 5%;
+    margin-right: 50px;
+    border-radius: 12px;
+    font-size: 30px;
+    box-shadow: 0 0 65px #f2073e53; */
+}
+
+.button:hover {
+    cursor: pointer;
+    text-shadow: 0 0 5px #f33d67;
+    box-shadow: 0 0 35px #fa2657ae;
+    transition: all 0.2s cubic-bezier(0.16, 0.33, 0.56, 1.0) reverse;
+}
+
+form .button {
+    border-width: 1px;
+    border-radius: 12px;
+    box-shadow: 0 0 5px #f2073e53;
+}
+
+form .button:hover {
+    cursor: pointer;
+    text-shadow: 0 0 1px #f33d67;
+    box-shadow: 0 0 10px #fa2657ae;
+
+    transition: all 0.2s;
+}
+
+form input {
+    border-radius: 6px;
+    text-indent: 3px;
+}
