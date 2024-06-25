@@ -13,10 +13,10 @@ func GetEngine() *gin.Engine {
 }
 
 func InitRouter() {
-	r.Static("/statics", "../../static/")
+	r.Static("/statics/", "../../static/")
 
 	r.GET("/", func(c *gin.Context) {
-		c.File("../../static/index.html")
+		c.File("../../static/html/index.html")
 	})
 
 	initUserRouter()
