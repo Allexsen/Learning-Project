@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/userProfile.css">
+</head>
+<body>
+    <div class="container">
+        <div class="search">
+            <h1>User Profile</h1>
+            <form id="searchForm" action="/user/retrieve" method="post">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" required>
+                <input type="submit" value="Search" class="button">
+            </form>
+        </div>
+        <div class="user-info">
+            <h2>User Info</h2>
+            <p id="userName">Full Name: </p>
+            <p id="userEmail">Email: </p>
+            <p id="userName">Username: </p>
+            <p id="totalTimeWorked">Total Time Worked: </p>
+            <p id="logCount">Log Count: </p>
+        </div>
+        <div class="work-log">
+            <h2>Work Log</h2>
+            <button id="addRecordButton" class="button">Add Record</button>
+            <table id="workLogTable">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Hours Worked</th>
+                        <th>Minutes Worked</th>
+                        <th>Total Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Will be populated dynamically through js script -->
+                </tbody>
+            </table>
+        </div>
+        <div id="feedback" class="feedback"></div>
+    </div>
+
+    <div id="addRecordModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add Record</h2>
+            <form id="addRecordForm">
+                <label for="hours">Hours worked:</label>
+                <input type="number" name="hours" id="hours" min="0" step="1" required>
+                <label for="minutes">Minutes worked:</label>
+                <input type="number" name="minutes" id="minutes" min="0" max="59" step="1" required>
+                <input type="submit" value="Log Record" class="button">
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/userProfile.js"></script>
+</body>
+</html>
