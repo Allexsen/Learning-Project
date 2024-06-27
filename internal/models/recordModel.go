@@ -7,10 +7,10 @@ import (
 )
 
 type Record struct {
-	ID      int64
-	UserID  int64
-	Hours   int
-	Minutes int
+	ID      int64 `db:"id" json:"id"`
+	UserID  int64 `db:"user_id" json:"user_id"`
+	Hours   int   `db:"hours" json:"hours"`
+	Minutes int   `db:"minutes" json:"minutes"`
 }
 
 func (r *Record) AddRecord() (int64, error) {

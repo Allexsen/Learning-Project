@@ -7,13 +7,13 @@ import (
 )
 
 type User struct {
-	ID           int64
-	Name         string
-	Email        string
-	TotalHours   int
-	TotalMinutes int
-	LogCount     int
-	Records      []Record
+	ID           int64    `db:"id" json:"id"`
+	Name         string   `db:"name" json:"name"`
+	Email        string   `db:"email" json:"email"`
+	TotalHours   int      `db:"total_hours" json:"total_hours"`
+	TotalMinutes int      `db:"total_minutes" json:"total_minutes"`
+	LogCount     int      `db:"log_count" json:"log_count"`
+	Records      []Record `db:"-" json:"worklog"`
 }
 
 func (u *User) AddUser() (int64, error) {

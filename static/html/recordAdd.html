@@ -10,7 +10,7 @@
 <body>
     <div class="record-add">
         <h1>Submit a new record</h1>
-        <form action="/record/add" method="post">
+        <form id="addRecordForm">
             <label for="name">Name:</label>
             <input type="text" name="name" id="name" required>
             
@@ -26,5 +26,6 @@
             <input type="submit" value="Log record" class="button">
         </form>
     </div>
+    <script src="/statics/js/recordAdd.js"></script>
 </body>
 </html>

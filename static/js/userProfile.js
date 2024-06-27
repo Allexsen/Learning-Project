@@ -5,6 +5,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const addRecordForm = document.getElementById('addRecordForm');
     const feedbackDiv = document.getElementById('feedback');
     
+    function loadUserProfile() {
+        const userData = localStorage.getItem('userData');
+        if (userData) {
+            const data = JSON.parse(userData);
+            user = data.user
+            document.getElementById('userName').textContent = `Full Name: ${user.name}`;
+            document.getElementById('userEmail').textContent = `Email: ${user.email}`;
+            document.getElementById('userUsername').textContent = `Username: ${user.username}`;
+            document.getElementById('totalTimeWorked').textContent = `Total Time Worked: ${user.total_hours}`;
+            document.getElementById('logCount').textContent = `Log Count: ${user.log_count}`;
+            updateWorkLogTable(user.worklog);
+        }
+    }
+
     searchForm.addEventListener('submit', function(event) {
         event.preventDefault();
         const email = document.getElementById('email').value;
@@ -44,12 +58,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                document.getElementById('userName').textContent = `Full Name: ${data.name}`;
-                document.getElementById('userEmail').textContent = `Email: ${data.email}`;
-                document.getElementById('userUsername').textContent = `Username: ${data.username}`;
-                document.getElementById('totalTimeWorked').textContent = `Total Time Worked: ${data.totalTime}`;
-                document.getElementById('logCount').textContent = `Log Count: ${data.logCount}`;
-                updateWorkLogTable(data.workLog);
+                const user = data.user;
+                document.getElementById('userName').textContent = `Full Name: ${user.name}`;
+                document.getElementById('userEmail').textContent = `Email: ${user.email}`;
+                document.getElementById('userUsername').textContent = `Username: ${user.username}`;
+                document.getElementById('totalTimeWorked').textContent = `Total Time Worked: ${user.total_hours}`;
+                document.getElementById('logCount').textContent = `Log Count: ${user.log_count}`;
+                updateWorkLogTable(user.worklog);
                 showFeedback('User profile retrieved successfully!', 'success');
             } else {
                 showFeedback('Failed to retrieve user profile.', 'error');
@@ -130,4 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
             feedbackDiv.style.display = 'none';
         }, 5000);
     }
+
+    loadUserProfile(); // Load user profile if data is available
 });
