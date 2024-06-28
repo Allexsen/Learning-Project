@@ -44,7 +44,7 @@ func (u *User) RetrieveUserByEmail() error {
 }
 
 func (u *User) RetrieveUserIDByEmail() error {
-	err := db.DB.QueryRow("SELECT id FROM practice_db.users WHERE email=?", u.Email).Scan(&u.ID)
+	err := db.DB.QueryRow(`SELECT id FROM practice_db.users WHERE email=?`, u.Email).Scan(&u.ID)
 	if err != nil {
 		return err
 	}
