@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
@@ -10,8 +9,6 @@ import (
 
 func RecordAdd() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Print("Hit handler")
-
 		name := c.PostForm("name")
 		email := c.PostForm("email")
 		hStr := c.PostForm("hours")

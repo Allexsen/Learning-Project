@@ -1,15 +1,12 @@
 package controllers
 
 import (
-	"log"
 	"strconv"
 
 	models "github.com/Allexsen/Learning-Project/internal/models"
 )
 
 func RecordAdd(name, email, hStr, minStr string) (models.Record, error) {
-	log.Print("Hit controller")
-
 	hours, err := strconv.Atoi(hStr)
 	if err != nil {
 		return models.Record{}, err

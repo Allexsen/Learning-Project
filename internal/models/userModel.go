@@ -1,8 +1,6 @@
 package models
 
 import (
-	"log"
-
 	"github.com/Allexsen/Learning-Project/internal/db"
 )
 
@@ -17,7 +15,6 @@ type User struct {
 }
 
 func (u *User) AddUser() (int64, error) {
-	log.Print("Hit AddUser")
 	result, err := db.DB.Exec(`INSERT INTO practice_db.users (name, email) VALUES (?, ?)`, u.Name, u.Email)
 	if err != nil {
 		return 0, err
@@ -47,8 +44,6 @@ func (u *User) RetrieveUserByEmail() error {
 }
 
 func (u *User) RetrieveUserIDByEmail() error {
-	log.Print("Hit RetrieveUserIDByEmail")
-
 	err := db.DB.QueryRow("SELECT id FROM practice_db.users WHERE email=?", u.Email).Scan(&u.ID)
 	if err != nil {
 		return err

@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"log"
-
 	"github.com/Allexsen/Learning-Project/internal/models"
 )
 
@@ -17,8 +15,6 @@ func GetUserByEmail(email string) (models.User, error) {
 }
 
 func GetUserIDByEmail(email string) (int64, error) {
-	log.Print("Hit GetUserIDByEmail")
-
 	u := models.User{Email: email}
 	err := u.RetrieveUserIDByEmail()
 	if err != nil {
