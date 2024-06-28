@@ -11,6 +11,11 @@ func GetUserByEmail(email string) (models.User, error) {
 		return models.User{}, err
 	}
 
+	u.Records, err = models.RetrieveAllRecordsByUserID(u.ID)
+	if err != nil {
+		return models.User{}, err
+	}
+
 	return u, nil
 }
 
