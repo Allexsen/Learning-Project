@@ -28,3 +28,13 @@ func GetUserIDByEmail(email string) (int64, error) {
 
 	return u.ID, nil
 }
+
+func AddNewUser(name, email string) (int64, error) {
+	u := models.User{Name: name, Email: email}
+	_, err := u.AddUser()
+	if err != nil {
+		return u.ID, err
+	}
+
+	return u.ID, nil
+}

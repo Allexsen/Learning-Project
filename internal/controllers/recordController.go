@@ -21,8 +21,7 @@ func RecordAdd(name, email, hStr, minStr string) (models.Record, error) {
 	r.UserID, err = GetUserIDByEmail(email)
 	if err != nil {
 		if r.UserID == -1 {
-			u := models.User{Name: name, Email: email}
-			r.UserID, err = u.AddUser()
+			r.UserID, err = AddNewUser(name, email)
 			if err != nil {
 				return models.Record{}, err
 			}
