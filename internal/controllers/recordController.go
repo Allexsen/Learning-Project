@@ -1,20 +1,22 @@
 package controllers
 
 import (
+	"fmt"
+	"log"
 	"strconv"
 
 	models "github.com/Allexsen/Learning-Project/internal/models"
 )
 
-func RecordAdd(name, email, hStr, minStr string) (models.Record, error) {
-	hours, err := strconv.Atoi(hStr)
+func RecordAdd(name, email, hrStr, minStr string) (models.User, error) {
+	hours, err := strconv.Atoi(hrStr)
 	if err != nil {
-		return models.Record{}, err
+		return models.User{}, err
 	}
 
 	minutes, err := strconv.Atoi(minStr)
 	if err != nil {
-		return models.Record{}, err
+		return models.User{}, err
 	}
 
 	r := models.Record{Hours: hours, Minutes: minutes}
@@ -23,17 +25,29 @@ func RecordAdd(name, email, hStr, minStr string) (models.Record, error) {
 		if r.UserID == -1 {
 			r.UserID, err = AddNewUser(name, email)
 			if err != nil {
-				return models.Record{}, err
+				return models.User{}, err
 			}
 		} else {
-			return models.Record{}, nil
+			return models.User{}, err
 		}
 	}
 
+	log.Print(r)
 	r.ID, err = r.AddRecord()
 	if err != nil {
-		return models.Record{}, err
+		log.Printf("Hit record add error: %v", err)
+		return models.User{}, err
 	}
 
-	return r, nil
+	u, err := UpdateUserWorklogInfo(r)
+	if err != nil {
+		if err2 := r.RemoveRecord(); err2 != nil {
+			log.Printf("[Error]: Failed to update the user worklog: %v, and failed to delete the corresponding record: %v", err, err2)
+			return models.User{}, fmt.Errorf("failed to update the user worklog: %v, and failed to delete the record: %v", err, err2)
+		}
+
+		return models.User{}, fmt.Errorf("couldn't add the record - failed to update the user worklog: %v", err)
+	}
+
+	return u, nil
 }

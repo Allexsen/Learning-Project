@@ -10,7 +10,6 @@ import (
 
 func UserGet() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var u models.User
 		var reqData struct {
 			Email string
 		}
@@ -20,7 +19,7 @@ func UserGet() gin.HandlerFunc {
 			return
 		}
 
-		u.Email = reqData.Email
+		u := models.User{Email: reqData.Email}
 		u, err := controllers.GetUserByEmail(u.Email)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "User not found"})

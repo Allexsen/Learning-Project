@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
@@ -9,14 +10,22 @@ import (
 
 func RecordAdd() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		name := c.PostForm("name")
-		email := c.PostForm("email")
-		hStr := c.PostForm("hours")
-		minStr := c.PostForm("minutes")
+		var reqData struct {
+			Name    string `json:"name"`
+			Email   string `json:"email"`
+			Hours   string `json:"hours"`
+			Minutes string `json:"minutes"`
+		}
 
-		record, err := controllers.RecordAdd(name, email, hStr, minStr)
+		if err := c.ShouldBindJSON(&reqData); err != nil {
+			log.Printf("Error parsing JSON: %v", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+			return
+		}
+
+		record, err := controllers.RecordAdd(reqData.Name, reqData.Email, reqData.Hours, reqData.Minutes)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "couldn't add the record"})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, err)
 			return
 		}
 

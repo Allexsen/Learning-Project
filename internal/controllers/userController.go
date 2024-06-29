@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/Allexsen/Learning-Project/internal/models"
 )
 
@@ -30,11 +32,30 @@ func GetUserIDByEmail(email string) (int64, error) {
 }
 
 func AddNewUser(name, email string) (int64, error) {
-	u := models.User{Name: name, Email: email}
-	_, err := u.AddUser()
+	u := models.User{Name: name, Email: email, LogCount: 0}
+	var err error
+	u.ID, err = u.AddUser()
 	if err != nil {
 		return u.ID, err
 	}
 
 	return u.ID, nil
+}
+
+func UpdateUserWorklogInfo(r models.Record) (models.User, error) {
+	u := models.User{ID: r.UserID}
+	if err := u.RetrieveUserbyID(); err != nil {
+		return models.User{}, fmt.Errorf("couldn't retrieve the user: %v", err)
+	}
+
+	u.TotalMinutes += r.Minutes
+	u.TotalHours += r.Hours + u.TotalMinutes/60
+	u.TotalMinutes %= 60
+	u.LogCount++
+
+	if err := u.UpdateUserWorklogInfoByID(); err != nil {
+		return models.User{}, fmt.Errorf("couldn't update the user worklog info: %v", err)
+	}
+
+	return u, nil
 }
