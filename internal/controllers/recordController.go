@@ -32,7 +32,6 @@ func RecordAdd(name, email, hrStr, minStr string) (models.User, error) {
 		}
 	}
 
-	log.Print(r)
 	r.ID, err = r.AddRecord()
 	if err != nil {
 		log.Printf("Hit record add error: %v", err)
