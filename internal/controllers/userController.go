@@ -57,5 +57,11 @@ func UpdateUserWorklogInfo(r models.Record) (models.User, error) {
 		return models.User{}, fmt.Errorf("couldn't update the user worklog info: %v", err)
 	}
 
+	var err error
+	u.Records, err = models.RetrieveAllRecordsByUserID(u.ID)
+	if err != nil {
+		return models.User{}, fmt.Errorf("couldn't retrieve the user worklog info: %v", err)
+	}
+
 	return u, nil
 }
