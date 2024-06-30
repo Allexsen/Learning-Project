@@ -4,12 +4,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const addRecordModal = document.getElementById('addRecordModal');
     const addRecordForm = document.getElementById('addRecordForm');
     const feedbackDiv = document.getElementById('feedback');
-    
+
     function loadUserProfile() {
         const userData = localStorage.getItem('userData');
         if (userData) {
-            const data = JSON.parse(userData);
-            user = data.user
+            const parsedData = JSON.parse(userData);
+            const user = parsedData.user
             document.getElementById('userName').textContent = `Full Name: ${user.name}`;
             document.getElementById('userEmail').textContent = `Email: ${user.email}`;
             document.getElementById('userUsername').textContent = `Username: ${user.username}`;
@@ -104,7 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                updateWorkLogTable(data.workLog);
+                localStorage.setItem('userData', JSON.stringify({ user: data.user }));
+                updateWorkLogTable(data.user.worklog);
                 showFeedback('Record added successfully!', 'success');
             } else {
                 showFeedback('Failed to add record.', 'error');
@@ -146,5 +147,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
 
-    loadUserProfile(); // Load user profile if data is available
+    loadUserProfile();
 });

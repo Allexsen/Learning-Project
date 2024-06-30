@@ -11,7 +11,7 @@ document.getElementById('retrieveForm').addEventListener('submit', function(even
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            localStorage.setItem('userData', JSON.stringify(data));
+            localStorage.setItem('userData', JSON.stringify(data.user));
             window.location.href = '/statics/html/userProfile.html';
         } else {
             alert('Failed to retrieve user data.');
