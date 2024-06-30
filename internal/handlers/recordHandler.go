@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -23,7 +24,12 @@ func RecordAdd() gin.HandlerFunc {
 			return
 		}
 
-		user, err := controllers.RecordAdd(reqData.Name, reqData.Email, reqData.Hours, reqData.Minutes)
+		if reqData.Hours == "0" && reqData.Minutes == "0" {
+			c.AbortWithStatusJSON(http.StatusBadRequest, fmt.Errorf("hours and minutes can not both be zero"))
+			return
+		}
+
+		u, err := controllers.RecordAdd(reqData.Name, reqData.Email, reqData.Hours, reqData.Minutes)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, err)
 			return
@@ -31,7 +37,7 @@ func RecordAdd() gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
-			"user":    user,
+			"user":    u,
 		})
 	}
 }
