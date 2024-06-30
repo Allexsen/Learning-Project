@@ -23,12 +23,15 @@ func RecordAdd() gin.HandlerFunc {
 			return
 		}
 
-		record, err := controllers.RecordAdd(reqData.Name, reqData.Email, reqData.Hours, reqData.Minutes)
+		user, err := controllers.RecordAdd(reqData.Name, reqData.Email, reqData.Hours, reqData.Minutes)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, record)
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"user":    user,
+		})
 	}
 }
