@@ -14,7 +14,7 @@ document.getElementById('addRecordForm').addEventListener('submit', function(eve
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            localStorage.setItem('userData', JSON.stringify(data.user));
+            localStorage.setItem('userData', JSON.stringify({ user: data.user }));
             window.location.href = '/statics/html/userProfile.html';
         } else {
             alert('Failed to add record.');
