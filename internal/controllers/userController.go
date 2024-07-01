@@ -42,16 +42,20 @@ func AddNewUser(name, email string) (int64, error) {
 	return u.ID, nil
 }
 
-func UpdateUserWorklogInfo(r models.Record) (models.User, error) {
+func UpdateUserWorklogInfo(r models.Record, logCountChange int) (models.User, error) {
 	u := models.User{ID: r.UserID}
 	if err := u.RetrieveUserbyID(); err != nil {
-		return models.User{}, fmt.Errorf("couldn't retrieve the user: %v", err)
+		return models.User{}, fmt.Errorf("couldn't retrieve the user by the user id: %v", err)
 	}
 
 	u.TotalMinutes += r.Minutes
+	if u.TotalMinutes < 0 {
+		u.TotalHours--
+		u.TotalMinutes = 0
+	}
 	u.TotalHours += r.Hours + u.TotalMinutes/60
 	u.TotalMinutes %= 60
-	u.LogCount++
+	u.LogCount += logCountChange
 
 	if err := u.UpdateUserWorklogInfoByID(); err != nil {
 		return models.User{}, fmt.Errorf("couldn't update the user worklog info: %v", err)

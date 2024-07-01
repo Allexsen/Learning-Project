@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	models "github.com/Allexsen/Learning-Project/internal/models"
@@ -34,18 +33,46 @@ func RecordAdd(name, email, hrStr, minStr string) (models.User, error) {
 
 	r.ID, err = r.AddRecord()
 	if err != nil {
-		log.Printf("Hit record add error: %v", err)
 		return models.User{}, err
 	}
 
-	u, err := UpdateUserWorklogInfo(r)
+	u, err := UpdateUserWorklogInfo(r, 1)
 	if err != nil {
 		if err2 := r.RemoveRecord(); err2 != nil {
-			log.Printf("[Error]: Failed to update the user worklog: %v, and failed to delete the corresponding record: %v", err, err2)
-			return models.User{}, fmt.Errorf("failed to update the user worklog: %v, and failed to delete the record: %v", err, err2)
+			return models.User{}, fmt.Errorf("failed to update the user worklog: %v, and failed to revert the record back: %v", err, err2)
 		}
 
 		return models.User{}, fmt.Errorf("couldn't add the record - failed to update the user worklog: %v", err)
+	}
+
+	return u, nil
+}
+
+func RecordRemove(ridStr string) (models.User, error) {
+	rid, err := strconv.Atoi(ridStr)
+	if err != nil {
+		return models.User{}, fmt.Errorf("invalid record id %q: couldn't convert to int", ridStr)
+	}
+
+	r := models.Record{ID: int64(rid)}
+	err = r.RetrieveRecordByID()
+	if err != nil {
+		return models.User{}, fmt.Errorf("couldn't retrieve the record by the record id: %v", err)
+	}
+
+	if err := r.RemoveRecord(); err != nil {
+		return models.User{}, err
+	}
+
+	r.Hours *= -1
+	r.Minutes *= -1
+	u, err := UpdateUserWorklogInfo(r, -1)
+	if err != nil {
+		if _, err2 := r.AddRecord(); err2 != nil {
+			return models.User{}, fmt.Errorf("failed to update the user worklog: %v, and failed to revert the record %d back: %v", err, r.ID, err2)
+		}
+
+		return models.User{}, fmt.Errorf("couldn't delete the record - failed to update the user worklog: %v", err)
 	}
 
 	return u, nil
