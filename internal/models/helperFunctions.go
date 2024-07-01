@@ -11,7 +11,7 @@ func RetrieveAllRecordsByUserID(uid int64) ([]Record, error) {
 
 	var records []Record
 	for rows.Next() {
-		var r Record
+		r := Record{UserID: uid}
 		err = rows.Scan(&r.ID, &r.Hours, &r.Minutes)
 		if err != nil {
 			return []Record{}, err
