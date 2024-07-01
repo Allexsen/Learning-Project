@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
@@ -51,16 +50,12 @@ func RecordDelete() gin.HandlerFunc {
 			return
 		}
 
-		u, err := controllers.RecordRemove(reqData.ID)
+		err := controllers.RecordRemove(reqData.ID)
 		if err != nil {
-			log.Print(err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't delete the record"})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"success": true,
-			"user":    u,
-		})
+		c.JSON(http.StatusOK, gin.H{"success": true})
 	}
 }

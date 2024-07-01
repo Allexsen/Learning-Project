@@ -48,32 +48,32 @@ func RecordAdd(name, email, hrStr, minStr string) (models.User, error) {
 	return u, nil
 }
 
-func RecordRemove(ridStr string) (models.User, error) {
+func RecordRemove(ridStr string) error {
 	rid, err := strconv.Atoi(ridStr)
 	if err != nil {
-		return models.User{}, fmt.Errorf("invalid record id %q: couldn't convert to int", ridStr)
+		return fmt.Errorf("invalid record id %q: couldn't convert to int", ridStr)
 	}
 
 	r := models.Record{ID: int64(rid)}
 	err = r.RetrieveRecordByID()
 	if err != nil {
-		return models.User{}, fmt.Errorf("couldn't retrieve the record by the record id: %v", err)
+		return fmt.Errorf("couldn't retrieve the record by the record id: %v", err)
 	}
 
 	if err := r.RemoveRecord(); err != nil {
-		return models.User{}, err
+		return err
 	}
 
 	r.Hours *= -1
 	r.Minutes *= -1
-	u, err := UpdateUserWorklogInfo(r, -1)
+	_, err = UpdateUserWorklogInfo(r, -1)
 	if err != nil {
 		if _, err2 := r.AddRecord(); err2 != nil {
-			return models.User{}, fmt.Errorf("failed to update the user worklog: %v, and failed to revert the record %d back: %v", err, r.ID, err2)
+			return fmt.Errorf("failed to update the user worklog: %v, and failed to revert the record %d back: %v", err, r.ID, err2)
 		}
 
-		return models.User{}, fmt.Errorf("couldn't delete the record - failed to update the user worklog: %v", err)
+		return fmt.Errorf("couldn't delete the record - failed to update the user worklog: %v", err)
 	}
 
-	return u, nil
+	return nil
 }
