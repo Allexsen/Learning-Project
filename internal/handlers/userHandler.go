@@ -11,7 +11,7 @@ import (
 func UserGet() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var reqData struct {
-			Email string
+			Email string `json:"email"`
 		}
 
 		if err := c.ShouldBindJSON(&reqData); err != nil {
