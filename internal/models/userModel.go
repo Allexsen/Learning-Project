@@ -58,10 +58,10 @@ func (u *User) RetrieveUserIDByEmail() error {
 
 func (u User) UpdateUserWorklogInfoByID() error {
 	q := `UPDATE practice_db.users
-		SET total_hours=?, total_minutes=?, log_count=?
+		SET log_count=?, total_hours=?, total_minutes=?
 		WHERE id=?`
 
-	res, err := db.DB.Exec(q, u.TotalHours, u.TotalMinutes, u.LogCount, u.ID)
+	res, err := db.DB.Exec(q, u.LogCount, u.TotalHours, u.TotalMinutes, u.ID)
 	if err != nil {
 		return fmt.Errorf("couldn't update the user: %v", err)
 	}
