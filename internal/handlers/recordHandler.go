@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
@@ -32,6 +33,7 @@ func RecordAdd() gin.HandlerFunc {
 			return
 		}
 
+		log.Print(u)
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
 			"user":    u,
@@ -42,14 +44,16 @@ func RecordAdd() gin.HandlerFunc {
 func RecordDelete() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var reqData struct {
-			ID string `json:"id"`
+			ID int `json:"id"`
 		}
 
 		if err := c.ShouldBindJSON(&reqData); err != nil {
+			log.Print(err)
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 			return
 		}
 
+		log.Print(reqData.ID)
 		err := controllers.RecordRemove(reqData.ID)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't delete the record"})

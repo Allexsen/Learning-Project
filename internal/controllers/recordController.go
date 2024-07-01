@@ -48,15 +48,9 @@ func RecordAdd(name, email, hrStr, minStr string) (models.User, error) {
 	return u, nil
 }
 
-func RecordRemove(ridStr string) error {
-	rid, err := strconv.Atoi(ridStr)
-	if err != nil {
-		return fmt.Errorf("invalid record id %q: couldn't convert to int", ridStr)
-	}
-
+func RecordRemove(rid int) error {
 	r := models.Record{ID: int64(rid)}
-	err = r.RetrieveRecordByID()
-	if err != nil {
+	if err := r.RetrieveRecordByID(); err != nil {
 		return fmt.Errorf("couldn't retrieve the record by the record id: %v", err)
 	}
 
@@ -66,8 +60,7 @@ func RecordRemove(ridStr string) error {
 
 	r.Hours *= -1
 	r.Minutes *= -1
-	_, err = UpdateUserWorklogInfo(r, -1)
-	if err != nil {
+	if _, err := UpdateUserWorklogInfo(r, -1); err != nil {
 		if _, err2 := r.AddRecord(); err2 != nil {
 			return fmt.Errorf("failed to update the user worklog: %v, and failed to revert the record %d back: %v", err, r.ID, err2)
 		}

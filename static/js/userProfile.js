@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const userData = localStorage.getItem('userData');
         if (userData) {
             const parsedData = JSON.parse(userData);
-            const user = parsedData.user
+            const user = parsedData.user;
             document.getElementById('userName').textContent = `Full Name: ${user.name}`;
             document.getElementById('userEmail').textContent = `Email: ${user.email}`;
             document.getElementById('userUsername').textContent = `Username: ${user.username}`;
@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const workLogTable = document.getElementById('workLogTable').getElementsByTagName('tbody')[0];
         workLogTable.innerHTML = ''; // Clear existing rows
         workLog.forEach(entry => {
+            console.log('Work log entry:', entry); // Log the entry to check its structure
             const row = workLogTable.insertRow();
             row.classList.add('table-row');
             row.insertCell(0).textContent = entry.dateTime;
@@ -88,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const deleteCell = row.insertCell(4);
             deleteCell.innerHTML = '<span class="delete-button">Delete</span>';
             deleteCell.querySelector('.delete-button').addEventListener('click', function() {
+                console.log('Deleting entry with ID:', entry.id); // Log the ID before deleting
                 deleteRecord(entry.id);
             });
         });
@@ -116,13 +118,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function deleteRecord(recordId) {
+    function deleteRecord(id) {
+        console.log('Preparing to delete record with ID:', id); // Log the record ID
+        const requestBody = JSON.stringify({ id: id });
+        console.log('Request body:', requestBody); // Log the request body
+        
         fetch('/record/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ recordId })
+            body: requestBody
         })
         .then(response => response.json())
         .then(data => {

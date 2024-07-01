@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
@@ -26,6 +27,7 @@ func UserGet() gin.HandlerFunc {
 			return
 		}
 
+		log.Print(u)
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
 			"user":    u,
