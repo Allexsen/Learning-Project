@@ -51,7 +51,7 @@ func UpdateUserWorklogInfo(r models.Record, logCountChange int) (models.User, er
 	u.TotalMinutes += r.Minutes
 	if u.TotalMinutes < 0 {
 		u.TotalHours--
-		u.TotalMinutes = 0
+		u.TotalMinutes += 60
 	}
 	u.TotalHours += r.Hours + u.TotalMinutes/60
 	u.TotalMinutes %= 60
