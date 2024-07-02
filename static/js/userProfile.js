@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('userName').textContent = `Full Name: ${user.name}`;
             document.getElementById('userEmail').textContent = `Email: ${user.email}`;
             document.getElementById('userUsername').textContent = `Username: ${user.username}`;
-            document.getElementById('totalTimeWorked').textContent = `Total Time Worked: ${user.total_hours}`;
+            document.getElementById('totalTimeWorked').textContent = `Total Time Worked: ${user.total_hours} hours, ${user.total_minutes} minutes`;
             document.getElementById('logCount').textContent = `Log Count: ${user.log_count}`;
             updateWorkLogTable(user.worklog);
         }
@@ -31,10 +31,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     addRecordForm.addEventListener('submit', function(event) {
         event.preventDefault();
-        const hours = document.getElementById('hours').value;
-        const minutes = document.getElementById('minutes').value;
-        addRecord(hours, minutes);
-        addRecordModal.style.display = 'none';
+        const userData = localStorage.getItem('userData');
+        if (userData) {
+            const parsedData = JSON.parse(userData);
+            const user = parsedData.user;
+
+            const name = user.name
+            const email = user.email
+            const hours = document.getElementById('hours').value;
+            const minutes = document.getElementById('minutes').value;
+            addRecord(name, email, hours, minutes);
+            addRecordModal.style.display = 'none';
+        }
     });
 
     document.querySelector('.close').addEventListener('click', function() {
@@ -59,12 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 const user = data.user;
-                document.getElementById('userName').textContent = `Full Name: ${user.name}`;
-                document.getElementById('userEmail').textContent = `Email: ${user.email}`;
-                document.getElementById('userUsername').textContent = `Username: ${user.username}`;
-                document.getElementById('totalTimeWorked').textContent = `Total Time Worked: ${user.total_hours}`;
-                document.getElementById('logCount').textContent = `Log Count: ${user.log_count}`;
-                updateWorkLogTable(user.worklog);
+                localStorage.setItem('userData', JSON.stringify({ user: data.user }));
+                loadUserProfile()
                 showFeedback('User profile retrieved successfully!', 'success');
             } else {
                 showFeedback('Failed to retrieve user profile.', 'error');
@@ -78,8 +82,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateWorkLogTable(workLog) {
         const workLogTable = document.getElementById('workLogTable').getElementsByTagName('tbody')[0];
         workLogTable.innerHTML = ''; // Clear existing rows
+        
+        if (workLog===null)
+            return
+
         workLog.forEach(entry => {
-            console.log('Work log entry:', entry); // Log the entry to check its structure
             const row = workLogTable.insertRow();
             row.classList.add('table-row');
             row.insertCell(0).textContent = entry.dateTime;
@@ -89,25 +96,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const deleteCell = row.insertCell(4);
             deleteCell.innerHTML = '<span class="delete-button">Delete</span>';
             deleteCell.querySelector('.delete-button').addEventListener('click', function() {
-                console.log('Deleting entry with ID:', entry.id); // Log the ID before deleting
                 deleteRecord(entry.id);
             });
         });
     }
 
-    function addRecord(hours, minutes) {
+    function addRecord(name, email, hours, minutes) {
         fetch('/record/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ hours, minutes })
+            body: JSON.stringify({ name, email, hours, minutes })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 localStorage.setItem('userData', JSON.stringify({ user: data.user }));
-                updateWorkLogTable(data.user.worklog);
+                loadUserProfile()
                 showFeedback('Record added successfully!', 'success');
             } else {
                 showFeedback('Failed to add record.', 'error');
@@ -119,9 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function deleteRecord(id) {
-        console.log('Preparing to delete record with ID:', id); // Log the record ID
         const requestBody = JSON.stringify({ id: id });
-        console.log('Request body:', requestBody); // Log the request body
         
         fetch('/record/delete', {
             method: 'POST',
@@ -133,7 +137,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                updateWorkLogTable(data.workLog);
+                localStorage.setItem('userData', JSON.stringify({ user: data.user }));
+                loadUserProfile()
                 showFeedback('Record deleted successfully!', 'success');
             } else {
                 showFeedback('Failed to delete record.', 'error');

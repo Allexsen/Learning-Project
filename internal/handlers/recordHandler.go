@@ -54,12 +54,15 @@ func RecordDelete() gin.HandlerFunc {
 		}
 
 		log.Print(reqData.ID)
-		err := controllers.RecordRemove(reqData.ID)
+		u, err := controllers.RecordRemove(reqData.ID)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't delete the record"})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"success": true})
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"user":    u,
+		})
 	}
 }

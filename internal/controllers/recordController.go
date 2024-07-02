@@ -48,25 +48,26 @@ func RecordAdd(name, email, hrStr, minStr string) (models.User, error) {
 	return u, nil
 }
 
-func RecordRemove(rid int) error {
+func RecordRemove(rid int) (models.User, error) {
 	r := models.Record{ID: int64(rid)}
 	if err := r.RetrieveRecordByID(); err != nil {
-		return fmt.Errorf("couldn't retrieve the record by the record id: %v", err)
+		return models.User{}, fmt.Errorf("couldn't retrieve the record by the record id: %v", err)
 	}
 
 	if err := r.RemoveRecord(); err != nil {
-		return err
+		return models.User{}, err
 	}
 
 	r.Hours *= -1
 	r.Minutes *= -1
-	if _, err := UpdateUserWorklogInfo(r, -1); err != nil {
+	u, err := UpdateUserWorklogInfo(r, -1)
+	if err != nil {
 		if _, err2 := r.AddRecord(); err2 != nil {
-			return fmt.Errorf("failed to update the user worklog: %v, and failed to revert the record %d back: %v", err, r.ID, err2)
+			return models.User{}, fmt.Errorf("failed to update the user worklog: %v, and failed to revert the record %d back: %v", err, r.ID, err2)
 		}
 
-		return fmt.Errorf("couldn't delete the record - failed to update the user worklog: %v", err)
+		return models.User{}, fmt.Errorf("couldn't delete the record - failed to update the user worklog: %v", err)
 	}
 
-	return nil
+	return u, nil
 }
