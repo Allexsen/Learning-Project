@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/statics/css/shared.css">
+    <link rel="stylesheet" href="/statics/css/form.css">
+    <link rel="stylesheet" href="/statics/css/navbar.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <div class="navbar-right">
+            <a href="/statics/html/login.html">Login</a>
+            <a href="/statics/html/register.html">Register</a>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <h1>Register</h1>
+        <form id="registerForm">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+            
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" name="confirmPassword" id="confirmPassword" required>
+            
+            <label for="firstName">First Name:</label>
+            <input type="text" name="firstName" id="firstName" required>
+            
+            <label for="lastName">Last Name:</label>
+            <input type="text" name="lastName" id="lastName" required>
+
+            <input type="submit" value="Register" class="button">
+        </form>
+    </div>
+    <script src="/statics/js/register.js"></script>
+</body>
+</html>

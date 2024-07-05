@@ -1,13 +1,21 @@
 document.getElementById('addRecordForm').addEventListener('submit', function(event) {
     event.preventDefault();
+    const userToken = localStorage.getItem('userToken');
+    if (!userToken) {
+        window.location.href = '/statics/html/login.html';
+        return;
+    }
+
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const hours = document.getElementById('hours').value;
     const minutes = document.getElementById('minutes').value;
+
     fetch('/record/add', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${userToken}`
         },
         body: JSON.stringify({ name, email, hours, minutes })
     })

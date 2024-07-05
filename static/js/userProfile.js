@@ -26,6 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     addRecordButton.addEventListener('click', function() {
+        const userToken = localStorage.getItem('userToken');
+        if (!userToken) {
+            window.location.href = '/statics/html/login.html';
+            return;
+        }
         addRecordModal.style.display = 'block';
     });
 
@@ -36,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const parsedData = JSON.parse(userData);
             const user = parsedData.user;
 
-            const name = user.name
-            const email = user.email
+            const name = user.name;
+            const email = user.email;
             const hours = document.getElementById('hours').value;
             const minutes = document.getElementById('minutes').value;
             addRecord(name, email, hours, minutes);
@@ -68,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 const user = data.user;
                 localStorage.setItem('userData', JSON.stringify({ user: data.user }));
-                loadUserProfile()
+                loadUserProfile();
                 showFeedback('User profile retrieved successfully!', 'success');
             } else {
                 showFeedback('Failed to retrieve user profile.', 'error');
@@ -82,9 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateWorkLogTable(workLog) {
         const workLogTable = document.getElementById('workLogTable').getElementsByTagName('tbody')[0];
         workLogTable.innerHTML = ''; // Clear existing rows
-        
-        if (workLog===null)
-            return
+
+        if (!workLog) return;
 
         workLog.forEach(entry => {
             const row = workLogTable.insertRow();
@@ -102,10 +106,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function addRecord(name, email, hours, minutes) {
+        const userToken = localStorage.getItem('userToken');
         fetch('/record/add', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken}`
             },
             body: JSON.stringify({ name, email, hours, minutes })
         })
@@ -113,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 localStorage.setItem('userData', JSON.stringify({ user: data.user }));
-                loadUserProfile()
+                loadUserProfile();
                 showFeedback('Record added successfully!', 'success');
             } else {
                 showFeedback('Failed to add record.', 'error');
@@ -125,20 +131,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function deleteRecord(id) {
-        const requestBody = JSON.stringify({ id: id });
-        
+        const userToken = localStorage.getItem('userToken');
         fetch('/record/delete', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken}`
             },
-            body: requestBody
+            body: JSON.stringify({ id })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 localStorage.setItem('userData', JSON.stringify({ user: data.user }));
-                loadUserProfile()
+                loadUserProfile();
                 showFeedback('Record deleted successfully!', 'success');
             } else {
                 showFeedback('Failed to delete record.', 'error');

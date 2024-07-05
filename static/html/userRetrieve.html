@@ -6,16 +6,26 @@
     <title>Retrieve Record</title>
     <link rel="stylesheet" href="/statics/css/shared.css">
     <link rel="stylesheet" href="/statics/css/userRetrieve.css">
+    <link rel="stylesheet" href="/statics/css/navbar.css">
 </head>
 <body>
-    <div class="user-retrieve">
-        <h1>Retrieve User Work Log</h1>
-        <form id="retrieveForm">
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email">
-            <input type="submit" value="Retrieve" class="button">
-        </form>
+    <div class="navbar">
+        <a href="/statics/html/index.html">Home</a>
+        <div class="navbar-right"></div>
     </div>
+
+    <div class="content">
+        <div class="user-retrieve">
+            <h1>Retrieve User Work Log</h1>
+            <form id="retrieveForm">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email">
+                <input type="submit" value="Retrieve" class="button">
+            </form>
+        </div>
+    </div>
+
     <script src="/statics/js/userRetrieve.js"></script>
+    <script src="/statics/js/navbar.js"></script>
 </body>
 </html>
