@@ -8,16 +8,20 @@ import (
 
 type User struct {
 	ID           int64    `db:"id" json:"id"`
-	Name         string   `db:"name" json:"name"`
+	Firstname    string   `db:"firstname" json:"firstName"`
+	Lastname     string   `db:"lastname" json:"lastName"`
 	Email        string   `db:"email" json:"email"`
+	Username     string   `db:"username" json:"username"`
+	Password     string   `db:"password" json:"-"`
 	LogCount     int      `db:"log_count" json:"log_count"`
 	TotalHours   int      `db:"total_hours" json:"total_hours"`
 	TotalMinutes int      `db:"total_minutes" json:"total_minutes"`
 	Records      []Record `db:"-" json:"worklog"`
 }
 
-func (u *User) AddUser() (int64, error) {
-	result, err := db.DB.Exec(`INSERT INTO practice_db.users (name, email, log_count) VALUES (?, ?, ?)`, u.Name, u.Email, u.LogCount)
+func (u User) AddUser() (int64, error) {
+	q := `INSERT INTO practice_db.users (firstname, lastname, email, log_count) VALUES(?, ?, ?, ?)`
+	result, err := db.DB.Exec(q, u.Firstname, u.Lastname, u.Email, u.LogCount)
 	if err != nil {
 		return -1, fmt.Errorf("couldn't add the user: %v", err)
 	}
@@ -25,9 +29,22 @@ func (u *User) AddUser() (int64, error) {
 	return result.LastInsertId()
 }
 
+func (u User) Register() (int64, error) {
+	q := `INSERT INTO practice_db.users (firstname, lastname, email, username, password) VALUES(?, ?, ?, ?, ?)`
+	result, err := db.DB.Exec(q, u.Firstname, u.Lastname, u.Email, u.Username, u.Password)
+	if err != nil {
+		return -1, fmt.Errorf("couldn't register a new user: %v", err)
+	}
+
+	return result.LastInsertId()
+}
+
 func (u *User) RetrieveUserbyID() error {
-	err := db.DB.QueryRow(`SELECT * FROM practice_db.users WHERE id=?`, u.ID).Scan(
-		&u.ID, &u.Name, &u.Email, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
+	q := `SELECT (firstname, lastname, email, username, log_count, total_hours, total_minutes)
+	FROM practice_db.users
+	WHERE id=?`
+	err := db.DB.QueryRow(q, u.ID).Scan(
+		&u.Firstname, u.Lastname, &u.Email, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
 	if err != nil {
 		return fmt.Errorf("couldn't retrieve the user by id: %v", err)
 	}
@@ -36,8 +53,10 @@ func (u *User) RetrieveUserbyID() error {
 }
 
 func (u *User) RetrieveUserByEmail() error {
-	err := db.DB.QueryRow(`SELECT * FROM practice_db.users WHERE email=?`, u.Email).Scan(
-		&u.ID, &u.Name, &u.Email, &u.TotalHours, &u.TotalMinutes, &u.LogCount)
+	q := `SELECT (id, firstname, lastname, username, log_count, total_hours, total_minutes)
+		FROM practice_db.users
+		WHERE email=?`
+	err := db.DB.QueryRow(q, u.Email).Scan(&u.ID, &u.Firstname, u.Lastname, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
 	if err != nil {
 		return fmt.Errorf("couldn't retrieve the user by email: %v", err)
 	}
@@ -74,29 +93,4 @@ func (u User) UpdateUserWorklogInfoByID() error {
 	}
 
 	return nil
-}
-
-func RetrieveAllRecordsByUserID(uid int64) ([]Record, error) {
-	rows, err := db.DB.Query(`SELECT id, hours, minutes FROM practice_db.records WHERE user_id=?`, uid)
-	if err != nil {
-		return []Record{}, fmt.Errorf("couldn't query the database: %v", err)
-	}
-	defer rows.Close()
-
-	var records []Record
-	for rows.Next() {
-		r := Record{UserID: uid}
-		err = rows.Scan(&r.ID, &r.Hours, &r.Minutes)
-		if err != nil {
-			return []Record{}, fmt.Errorf("couldn't scan a row: %v", err)
-		}
-
-		records = append(records, r)
-	}
-
-	if err = rows.Err(); err != nil {
-		return []Record{}, fmt.Errorf("error during the iteration of the rows: %v", err)
-	}
-
-	return records, nil
 }

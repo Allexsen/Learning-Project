@@ -10,27 +10,28 @@ import (
 
 func RecordAdd(c *gin.Context) {
 	var reqData struct {
-		Name    string `json:"name"`
-		Email   string `json:"email"`
-		Hours   string `json:"hours"`
-		Minutes string `json:"minutes"`
+		Firstname string `json:"firstName"`
+		Lastname  string `json:"lastName"`
+		Email     string `json:"email"`
+		Hours     string `json:"hours"`
+		Minutes   string `json:"minutes"`
 	}
 
 	if err := c.ShouldBindJSON(&reqData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		log.Print(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		log.Printf("couldn't bind json: %v", err)
 		return
 	}
 
 	if reqData.Hours == "0" && reqData.Minutes == "0" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Hours and minutes can not both be zero"})
-		log.Print("hours and minutes are both 0")
+		log.Print("hours and minutes can't both be 0")
 		return
 	}
 
-	u, err := controllers.RecordAdd(reqData.Name, reqData.Email, reqData.Hours, reqData.Minutes)
+	u, err := controllers.RecordAdd(reqData.Firstname, reqData.Lastname, reqData.Email, reqData.Hours, reqData.Minutes)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "couldn't add a new record"})
 		log.Print(err)
 		return
 	}

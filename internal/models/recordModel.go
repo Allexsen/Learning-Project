@@ -13,7 +13,7 @@ type Record struct {
 	Minutes int   `db:"minutes" json:"minutes"`
 }
 
-func (r *Record) AddRecord() (int64, error) {
+func (r Record) AddRecord() (int64, error) {
 	q := `INSERT INTO practice_db.records (user_id, hours, minutes) VALUES (?, ?, ?)`
 	result, err := db.DB.Exec(q, r.UserID, r.Hours, r.Minutes)
 	if err != nil {

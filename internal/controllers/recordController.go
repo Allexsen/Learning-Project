@@ -7,7 +7,7 @@ import (
 	models "github.com/Allexsen/Learning-Project/internal/models"
 )
 
-func RecordAdd(name, email, hrStr, minStr string) (models.User, error) {
+func RecordAdd(firstname, lastname, email, hrStr, minStr string) (models.User, error) {
 	hours, err := strconv.Atoi(hrStr)
 	if err != nil {
 		return models.User{}, fmt.Errorf("failed to convert hrStr to int: %v", err)
@@ -19,10 +19,10 @@ func RecordAdd(name, email, hrStr, minStr string) (models.User, error) {
 	}
 
 	r := models.Record{Hours: hours, Minutes: minutes}
-	r.UserID, err = GetUserIDByEmail(email)
+	r.UserID, err = UserGetIDByEmail(email)
 	if err != nil {
 		if r.UserID == -1 {
-			r.UserID, err = AddNewUser(name, email)
+			r.UserID, err = UserAdd(firstname, lastname, email)
 			if err != nil {
 				return models.User{}, fmt.Errorf("failed to add the record - couldn't create a new user: %v", err)
 			}
@@ -36,7 +36,7 @@ func RecordAdd(name, email, hrStr, minStr string) (models.User, error) {
 		return models.User{}, fmt.Errorf("failed to add the record: %v", err)
 	}
 
-	u, err := UpdateUserWorklogInfo(r, 1)
+	u, err := UserUpdateWorklogInfo(r, 1)
 	if err != nil {
 		if err2 := r.RemoveRecord(); err2 != nil {
 			return models.User{}, fmt.Errorf("failed to update the user worklog: %v, and failed to revert the record back: %v", err, err2)
@@ -60,7 +60,7 @@ func RecordRemove(rid int) (models.User, error) {
 
 	r.Hours *= -1
 	r.Minutes *= -1
-	u, err := UpdateUserWorklogInfo(r, -1)
+	u, err := UserUpdateWorklogInfo(r, -1)
 	if err != nil {
 		if _, err2 := r.AddRecord(); err2 != nil {
 			return models.User{}, fmt.Errorf("failed to update the user worklog: %v, and failed to revert the record %d back: %v", err, r.ID, err2)
