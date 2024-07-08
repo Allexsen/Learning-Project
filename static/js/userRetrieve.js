@@ -1,3 +1,12 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailParam = urlParams.get('email');
+    if (emailParam) {
+        document.getElementById('email').value = emailParam;
+        document.getElementById('retrieveForm').submit();
+    }
+});
+
 document.getElementById('retrieveForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const email = document.getElementById('email').value;

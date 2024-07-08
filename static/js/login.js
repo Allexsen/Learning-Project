@@ -14,7 +14,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     .then(data => {
         if (data.success) {
             localStorage.setItem('userToken', data.token);
-            window.location.href = '/statics/html/userProfile.html';
+            window.location.href = `/statics/html/userRetrieve.html?email=${encodeURIComponent(email)}`;
         } else {
             alert('Invalid credentials');
         }

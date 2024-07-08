@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (userData) {
             const parsedData = JSON.parse(userData);
             const user = parsedData.user;
-            document.getElementById('userName').textContent = `Full Name: ${user.name}`;
+            document.getElementById('userName').textContent = `Full Name: ${user.firstName} ${user.lastName}`;
             document.getElementById('userEmail').textContent = `Email: ${user.email}`;
             document.getElementById('userUsername').textContent = `Username: ${user.username}`;
             document.getElementById('totalTimeWorked').textContent = `Total Time Worked: ${user.total_hours} hours, ${user.total_minutes} minutes`;
@@ -41,11 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const parsedData = JSON.parse(userData);
             const user = parsedData.user;
 
-            const name = user.name;
+            const firstName = user.firstName;
+            const lastName = user.lastName;
             const email = user.email;
             const hours = document.getElementById('hours').value;
             const minutes = document.getElementById('minutes').value;
-            addRecord(name, email, hours, minutes);
+            addRecord(firstName, lastName, email, hours, minutes);
             addRecordModal.style.display = 'none';
         }
     });
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function addRecord(name, email, hours, minutes) {
+    function addRecord(firstName, lastName, email, hours, minutes) {
         const userToken = localStorage.getItem('userToken');
         fetch('/record/add', {
             method: 'POST',
@@ -113,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${userToken}`
             },
-            body: JSON.stringify({ name, email, hours, minutes })
+            body: JSON.stringify({ firstName, lastName, email, hours, minutes })
         })
         .then(response => response.json())
         .then(data => {
