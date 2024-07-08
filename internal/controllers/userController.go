@@ -22,13 +22,16 @@ func UserRegister(firstname, lastname, username, email, pswd string) (models.Use
 	return u, nil
 }
 
-func UserLogin(username, password string) error {
-	pswdHash, err := utils.GetPasswordHash(username)
+func UserLogin(email, password string) error {
+	pswdHash, err := utils.GetPasswordHashByEmail(email)
 	if err != nil {
-		return fmt.Errorf("couldn't log in a user: %v", err)
+		pswdHash, err = utils.GetPasswordHashByUsername(email)
+		if err != nil {
+			return fmt.Errorf("couldn't log in a user: %v", err)
+		}
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(pswdHash), []byte(pswdHash))
+	err = bcrypt.CompareHashAndPassword([]byte(pswdHash), []byte(password))
 	if err != nil {
 		return fmt.Errorf("couldn't log in a user: %v", err)
 	}

@@ -32,10 +32,21 @@ func RetrieveAllRecordsByUserID(uid int64) ([]models.Record, error) {
 	return records, nil
 }
 
-func GetPasswordHash(username string) (string, error) {
+func GetPasswordHashByUsername(username string) (string, error) {
 	q := `SELECT password FROM practice_db.users WHERE username=?`
 	var pswdHash string
-	err := db.DB.QueryRow(q, username).Scan(pswdHash)
+	err := db.DB.QueryRow(q, username).Scan(&pswdHash)
+	if err != nil {
+		return "", fmt.Errorf("couldn't scan a row: %v", err)
+	}
+
+	return pswdHash, nil
+}
+
+func GetPasswordHashByEmail(email string) (string, error) {
+	q := `SELECT password FROM practice_db.users WHERE email=?`
+	var pswdHash string
+	err := db.DB.QueryRow(q, email).Scan(&pswdHash)
 	if err != nil {
 		return "", fmt.Errorf("couldn't scan a row: %v", err)
 	}

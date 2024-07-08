@@ -39,7 +39,7 @@ func UserRegister(c *gin.Context) {
 
 func UserLogin(c *gin.Context) {
 	var reqData struct {
-		Username string `json:"username"`
+		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 
@@ -48,13 +48,13 @@ func UserLogin(c *gin.Context) {
 		log.Printf("couldn't bind json: %v", err)
 	}
 
-	if err := controllers.UserLogin(reqData.Username, reqData.Password); err != nil {
+	if err := controllers.UserLogin(reqData.Email, reqData.Password); err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		log.Printf("couldn't log in the user due to invalid credentials: %v", err)
 		return
 	}
 
-	tokenString, err := utils.GenerateJWT(reqData.Username)
+	tokenString, err := utils.GenerateJWT(reqData.Email)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't generate jwt"})
 		log.Printf("failed to generate a token string: %v", err)

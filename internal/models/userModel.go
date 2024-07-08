@@ -23,7 +23,7 @@ func (u User) AddUser() (int64, error) {
 	q := `INSERT INTO practice_db.users (firstname, lastname, email, log_count) VALUES(?, ?, ?, ?)`
 	result, err := db.DB.Exec(q, u.Firstname, u.Lastname, u.Email, u.LogCount)
 	if err != nil {
-		return -1, fmt.Errorf("couldn't add the user: %v", err)
+		return -1, fmt.Errorf("couldn't add a user: %v", err)
 	}
 
 	return result.LastInsertId()
@@ -40,25 +40,26 @@ func (u User) Register() (int64, error) {
 }
 
 func (u *User) RetrieveUserbyID() error {
-	q := `SELECT (firstname, lastname, email, username, log_count, total_hours, total_minutes)
-	FROM practice_db.users
-	WHERE id=?`
+	q := `SELECT firstname, lastname, email, username, log_count, total_hours, total_minutes
+		FROM practice_db.users
+		WHERE id=?`
 	err := db.DB.QueryRow(q, u.ID).Scan(
-		&u.Firstname, u.Lastname, &u.Email, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
+		&u.Firstname, &u.Lastname, &u.Email, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
 	if err != nil {
-		return fmt.Errorf("couldn't retrieve the user by id: %v", err)
+		return fmt.Errorf("couldn't retrieve a user by id: %v", err)
 	}
 
 	return nil
 }
 
 func (u *User) RetrieveUserByEmail() error {
-	q := `SELECT (id, firstname, lastname, username, log_count, total_hours, total_minutes)
+	q := `SELECT id, firstname, lastname, username, log_count, total_hours, total_minutes
 		FROM practice_db.users
 		WHERE email=?`
-	err := db.DB.QueryRow(q, u.Email).Scan(&u.ID, &u.Firstname, u.Lastname, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
+
+	err := db.DB.QueryRow(q, u.Email).Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
 	if err != nil {
-		return fmt.Errorf("couldn't retrieve the user by email: %v", err)
+		return fmt.Errorf("couldn't retrieve a user by email: %v", err)
 	}
 
 	return nil
@@ -67,7 +68,7 @@ func (u *User) RetrieveUserByEmail() error {
 func (u *User) RetrieveUserIDByEmail() error {
 	err := db.DB.QueryRow(`SELECT id FROM practice_db.users WHERE email=?`, u.Email).Scan(&u.ID)
 	if err != nil {
-		return fmt.Errorf("couldn't retrieve the user id by email: %v", err)
+		return fmt.Errorf("couldn't retrieve a user id by email: %v", err)
 	}
 
 	return nil
