@@ -10,11 +10,9 @@ import (
 
 func RecordAdd(c *gin.Context) {
 	var reqData struct {
-		Firstname string `json:"firstName"`
-		Lastname  string `json:"lastName"`
-		Email     string `json:"email"`
-		Hours     string `json:"hours"`
-		Minutes   string `json:"minutes"`
+		Email   string `json:"email"`
+		Hours   string `json:"hours"`
+		Minutes string `json:"minutes"`
 	}
 
 	if err := c.ShouldBindJSON(&reqData); err != nil {
@@ -25,11 +23,11 @@ func RecordAdd(c *gin.Context) {
 
 	if reqData.Hours == "0" && reqData.Minutes == "0" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Hours and minutes can not both be zero"})
-		log.Print("hours and minutes can't both be 0")
+		log.Print("failed to add a record: hours and minutes can't both be 0")
 		return
 	}
 
-	u, err := controllers.RecordAdd(reqData.Firstname, reqData.Lastname, reqData.Email, reqData.Hours, reqData.Minutes)
+	u, err := controllers.RecordAdd(reqData.Email, reqData.Hours, reqData.Minutes)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "couldn't add a new record"})
 		log.Print(err)

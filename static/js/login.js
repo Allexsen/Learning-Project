@@ -2,6 +2,8 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     event.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect') || `/`;
 
     fetch('/user/login', {
         method: 'POST',
@@ -14,12 +16,30 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     .then(data => {
         if (data.success) {
             localStorage.setItem('userToken', data.token);
-            window.location.href = `/statics/html/userRetrieve.html?email=${encodeURIComponent(email)}`;
+            return fetch('/user/retrieve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${data.token}`
+                },
+                body: JSON.stringify({ email: email })
+            });
         } else {
             alert('Invalid credentials');
+            throw new Error('Invalid credentials');
+        }
+    })
+    .then(response => response.json())
+    .then(profileData => {
+        if (profileData.success) {
+            localStorage.setItem('userData', JSON.stringify({ user: profileData.user }));
+            window.location.href = redirectUrl;
+        } else {
+            alert('Failed to retrieve user profile.');
         }
     })
     .catch(error => {
         alert('An error occurred while logging in.');
+        console.error(error);
     });
 });

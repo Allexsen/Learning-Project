@@ -50,7 +50,7 @@ func UserLogin(c *gin.Context) {
 
 	if err := controllers.UserLogin(reqData.Email, reqData.Password); err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-		log.Printf("couldn't log in the user due to invalid credentials: %v", err)
+		log.Printf("couldn't authorize a user due to invalid credentials: %v", err)
 		return
 	}
 

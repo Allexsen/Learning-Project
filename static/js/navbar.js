@@ -14,9 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = '/statics/html/login.html';
         });
     } else {
+        const currentPath = encodeURIComponent(window.location.pathname);
         navbarRight.innerHTML = `
-            <a href="/statics/html/login.html">Login</a>
-            <a href="/statics/html/register.html">Register</a>
+            <a href="/statics/html/login.html?redirect=${currentPath}">Login</a>
+            <a href="/statics/html/register.html?redirect=${currentPath}">Register</a>
         `;
     }
 });

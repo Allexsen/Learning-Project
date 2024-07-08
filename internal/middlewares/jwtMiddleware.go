@@ -26,7 +26,7 @@ func CheckJWT() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("username", claims.Username)
+		c.Set("email", claims.Email)
 		c.Next()
 	}
 }

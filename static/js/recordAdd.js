@@ -2,12 +2,10 @@ document.getElementById('addRecordForm').addEventListener('submit', function(eve
     event.preventDefault();
     const userToken = localStorage.getItem('userToken');
     if (!userToken) {
-        window.location.href = '/statics/html/login.html';
+        window.location.href = `/statics/html/login.html?redirect=${encodeURIComponent(window.location.pathname)}`;
         return;
     }
 
-    const firstName = document.getElementById('firstname').value;
-    const lastName = document.getElementById('lastname').value;
     const email = document.getElementById('email').value;
     const hours = document.getElementById('hours').value;
     const minutes = document.getElementById('minutes').value;
@@ -18,7 +16,7 @@ document.getElementById('addRecordForm').addEventListener('submit', function(eve
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${userToken}`
         },
-        body: JSON.stringify({ firstName, lastName, email, hours, minutes })
+        body: JSON.stringify({ email, hours, minutes })
     })
     .then(response => response.json())
     .then(data => {
