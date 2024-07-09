@@ -3,7 +3,6 @@
     margin: auto;
     padding: 20px;
     text-align: center;
-    color: #333;
 }
 
 .search, .user-info, .work-log {
@@ -16,6 +15,7 @@ h1, h2 {
 
 table {
     width: 100%;
+    background-color: #3d3d3d;
     border-collapse: collapse;
 }
 
@@ -29,7 +29,7 @@ th, td {
 }
 
 th {
-    background-color: #f3f3f3;
+    background-color: #393939;
 }
 
 .feedback {
@@ -41,15 +41,32 @@ th {
 }
 
 .feedback.success {
-    background-color: #d4edda;
-    color: #155724;
+    background-color: #92f6a9;
+    color: #14782b;
     border: 1px solid #c3e6cb;
 }
 
 .feedback.error {
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: #ec737d;
+    color: #82020e;
     border: 1px solid #f5c6cb;
+}
+
+.user-info .button {
+    border-width: 0px;
+    border-radius: 12px;
+    margin: 0 3px;
+    padding: 3px 8px;
+    box-shadow: 0 0 3px #f3f3f3;
+}
+
+.user-info .button:hover {
+    cursor: pointer;
+    text-shadow: 0 0 1px #e3e3e3;
+    box-shadow: 0 0 6px #f3f3f3;
+    border-width: 0px;
+
+    transition: all 0.2s;
 }
 
 /* Modal styles */
@@ -70,15 +87,15 @@ th {
 }
 
 .modal-content {
-    background-color: #fefefe;
+    background-color: #595151;
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
+    border-radius: 30px;
     width: 80%;
-    max-width: 600px; /* Added max-width for better responsiveness */
+    max-width: 650px; /* Added max-width for better responsiveness */
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
-
 
 .close {
     color: #aaa;
@@ -89,7 +106,7 @@ th {
 
 .close:hover,
 close:focus {
-    color: black;
+    color: rgb(248, 52, 52);
     text-decoration: none;
     cursor: pointer;
 }

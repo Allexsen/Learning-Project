@@ -1,7 +1,3 @@
-body {
-    background-color: #333;
-}
-
 h1 {
     position: absolute;
     left: 50%;
@@ -25,11 +21,11 @@ h1 {
     margin-right: 50px;
     border-radius: 12px;
     font-size: 30px;
-    box-shadow: 0 0 65px #f2073e53;
+    box-shadow: 0 0 25px #f3f3f3;
 }
 
 .op-type-buttons .button:hover {
-    text-shadow: 0 0 5px #f33d67;
-    box-shadow: 0 0 35px #fa2657ae;
+    text-shadow: 0 0 2px #e3e3e3b5;
+    box-shadow: 0 0 15px #f3f3f3;
     transition: all 0.5s cubic-bezier(0.16, 0.33, 0.56, 1.0);
 }

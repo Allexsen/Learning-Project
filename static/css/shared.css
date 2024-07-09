@@ -1,12 +1,19 @@
+body {
+    background-color: #333;
+    color: #f3f3f3
+}
+
 .content {
-    padding-top: 70px; /* Adjust based on the height of your navbar */
+    padding-top: 70px; /* Adjust based on the height navbar */
 }
 
 .button {
     display: inline-block;
-    color: #fa295d;
+    color: #c8c8c8;
     white-space: nowrap;
     text-decoration: none;
+    border-width: 0px;
+    border-color: white;
     
     background-color: #43464B;
     backdrop-filter: blur(10px);
@@ -23,26 +30,38 @@
 
 .button:hover {
     cursor: pointer;
-    text-shadow: 0 0 5px #f33d67;
-    box-shadow: 0 0 35px #fa2657ae;
+    text-shadow: 0 0 5px #e3e3e3;
+    box-shadow: 0 0 15px #f3f3f3;
+    border-width: 3px;
     transition: all 0.2s cubic-bezier(0.16, 0.33, 0.56, 1.0) reverse;
 }
 
 form .button {
-    border-width: 1px;
+    border-width: 0px;
     border-radius: 12px;
-    box-shadow: 0 0 5px #f2073e53;
+    margin: 0 3px;
+    padding: 3px 8px;
+    box-shadow: 0 0 3px #f3f3f3;
 }
 
 form .button:hover {
     cursor: pointer;
-    text-shadow: 0 0 1px #f33d67;
-    box-shadow: 0 0 10px #fa2657ae;
+    text-shadow: 0 0 1px #e3e3e3;
+    box-shadow: 0 0 6px #f3f3f3;
+    border-width: 0px;
 
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.16, 0.33, 0.56, 1.0);
 }
 
 form input {
+    /* display: block; */
+    background-color: #363636;
+    padding: 2px 8px;
+    color: #f3f3f3;
     border-radius: 6px;
     text-indent: 3px;
+}
+
+form label {
+    margin-left: 15px;
 }
