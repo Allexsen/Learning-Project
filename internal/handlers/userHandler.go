@@ -25,10 +25,37 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
+	exists, err := utils.IsExistingEmail(reqData.Email)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error checking email availability"})
+		log.Printf("couldn't check email availability: %v", err)
+		return
+	}
+
+	if exists {
+		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": "The email already exists"})
+		log.Printf("couldn't register a user, existing email: %v", reqData.Email)
+		return
+	}
+
+	exists, err = utils.IsExistingUsername(reqData.Username)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error checking username availability"})
+		log.Printf("couldn't check username availability: %v", err)
+		return
+	}
+
+	if exists {
+		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": "Username is already taken"})
+		log.Printf("couldn't register a user, existing username: %v", reqData.Username)
+		return
+	}
+
 	u, err := controllers.UserRegister(reqData.Firstname, reqData.Lastname, reqData.Username, reqData.Email, reqData.Password)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "couldn't register a new user"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't register a new user"})
 		log.Print(err)
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -56,7 +83,7 @@ func UserLogin(c *gin.Context) {
 
 	tokenString, err := utils.GenerateJWT(reqData.Email)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't generate jwt"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't generate a JWT"})
 		log.Printf("failed to generate a token string: %v", err)
 		return
 	}
@@ -82,7 +109,7 @@ func UserGet(c *gin.Context) {
 	u, err := controllers.UserGetByEmail(u.Email)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		log.Print(err)
+		log.Printf("couldn't retrieve a user: %v", err)
 		return
 	}
 
@@ -90,4 +117,42 @@ func UserGet(c *gin.Context) {
 		"success": true,
 		"user":    u,
 	})
+}
+
+func IsAvailableCreds(c *gin.Context) {
+	var reqData struct {
+		Email    string `json:"email"`
+		Username string `json:"username"`
+	}
+
+	if err := c.ShouldBindJSON(&reqData); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		log.Printf("couldn't bind json: %v", err)
+	}
+
+	exists, err := utils.IsExistingEmail(reqData.Email)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error checking email availability"})
+		log.Printf("couldn't check email availability: %v", err)
+		return
+	}
+
+	if exists {
+		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": "The email already exists"})
+		log.Printf("couldn't register a user, existing email: %v", reqData.Email)
+		return
+	}
+
+	exists, err = utils.IsExistingUsername(reqData.Username)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error checking username availability"})
+		log.Printf("couldn't check username availability: %v", err)
+		return
+	}
+
+	if exists {
+		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": "Username is already taken"})
+		log.Printf("couldn't register a user, existing username: %v", reqData.Username)
+		return
+	}
 }

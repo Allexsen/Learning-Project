@@ -51,3 +51,21 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 
 	return claims, nil
 }
+
+func IsAvailableCreds(email, username string) (bool, error) {
+	exists, err := IsExistingEmail(email)
+	if err != nil {
+		return false, fmt.Errorf("couldn't verify email availability: %v", err)
+	}
+
+	if exists {
+		return false, nil
+	}
+
+	exists, err = IsExistingUsername(username)
+	if err != nil {
+		return false, fmt.Errorf("couldn't verify username availability: %v", err)
+	}
+
+	return !exists, nil
+}

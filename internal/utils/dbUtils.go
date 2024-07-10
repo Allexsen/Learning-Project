@@ -53,3 +53,25 @@ func GetPasswordHashByEmail(email string) (string, error) {
 
 	return pswdHash, nil
 }
+
+func IsExistingEmail(email string) (bool, error) {
+	var exists bool
+	q := `SELECT EXISTS (SELECT 1 FROM practice_db.users WHERE email=?)`
+	err := db.DB.QueryRow(q, email).Scan(&exists)
+	if err != nil {
+		return false, fmt.Errorf("couldn't scan a row: %v", err)
+	}
+
+	return exists, nil
+}
+
+func IsExistingUsername(username string) (bool, error) {
+	var exists bool
+	q := `SELECT EXISTS (SELECT 1 FROM practice_db.users WHERE username=?)`
+	err := db.DB.QueryRow(q, username).Scan(&exists)
+	if err != nil {
+		return false, fmt.Errorf("couldn't scan a row: %v", err)
+	}
+
+	return exists, nil
+}
