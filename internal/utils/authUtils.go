@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -52,20 +53,18 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 	return claims, nil
 }
 
-func IsAvailableCreds(email, username string) (bool, error) {
-	exists, err := IsExistingEmail(email)
-	if err != nil {
-		return false, fmt.Errorf("couldn't verify email availability: %v", err)
+func IsValidEmail(email string) bool {
+	emailRegex := `^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`
+	re := regexp.MustCompile(emailRegex)
+	return re.MatchString(email)
+}
+
+func IsValidUsername(username string) bool {
+	if len(username) <= 3 {
+		return false
 	}
 
-	if exists {
-		return false, nil
-	}
-
-	exists, err = IsExistingUsername(username)
-	if err != nil {
-		return false, fmt.Errorf("couldn't verify username availability: %v", err)
-	}
-
-	return !exists, nil
+	usernameRegex := `^[a-zA-Z0-9-_]+$`
+	re := regexp.MustCompile(usernameRegex)
+	return re.MatchString(username)
 }

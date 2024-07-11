@@ -2,9 +2,12 @@ package utils
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 
 	"github.com/Allexsen/Learning-Project/internal/db"
 	"github.com/Allexsen/Learning-Project/internal/models"
+	"github.com/gin-gonic/gin"
 )
 
 func RetrieveAllRecordsByUserID(uid int64) ([]models.Record, error) {
@@ -74,4 +77,38 @@ func IsExistingUsername(username string) (bool, error) {
 	}
 
 	return exists, nil
+}
+
+func IsExistingCreds(email, username string, c *gin.Context) bool {
+	if email != "" {
+		exists, err := IsExistingEmail(email)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error checking email availability"})
+			log.Printf("couldn't check email availability: %v", err)
+			return true
+		}
+
+		if exists {
+			c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": "Email already exists"})
+			log.Printf("couldn't register a user, existing email: %v", email)
+			return true
+		}
+	}
+
+	if username != "" {
+		exists, err := IsExistingUsername(username)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error checking username availability"})
+			log.Printf("couldn't check username availability: %v", err)
+			return true
+		}
+
+		if exists {
+			c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": "Username is already taken"})
+			log.Printf("couldn't register a user, existing username: %v", username)
+			return true
+		}
+	}
+
+	return false
 }
