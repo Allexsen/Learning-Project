@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
+	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,9 +16,7 @@ func RecordAdd(c *gin.Context) {
 		Minutes string `json:"minutes"`
 	}
 
-	if err := c.ShouldBindJSON(&reqData); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		log.Printf("couldn't bind json: %v", err)
+	if !utils.BindJSON(c, &reqData) {
 		return
 	}
 
@@ -45,9 +44,7 @@ func RecordDelete(c *gin.Context) {
 		ID int `json:"id"`
 	}
 
-	if err := c.ShouldBindJSON(&reqData); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		log.Print(err)
+	if !utils.BindJSON(c, &reqData) {
 		return
 	}
 

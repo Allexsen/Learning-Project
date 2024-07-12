@@ -19,9 +19,7 @@ func UserRegister(c *gin.Context) {
 		Password  string `json:"password"`
 	}
 
-	if err := c.ShouldBindJSON(&reqData); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		log.Printf("couldn't bind json: %v", err)
+	if !utils.BindJSON(c, &reqData) {
 		return
 	}
 
@@ -60,9 +58,8 @@ func UserLogin(c *gin.Context) {
 		Password string `json:"password"`
 	}
 
-	if err := c.ShouldBindJSON(&reqData); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		log.Printf("couldn't bind json: %v", err)
+	if !utils.BindJSON(c, &reqData) {
+		return
 	}
 
 	if err := controllers.UserLogin(reqData.Email, reqData.Password); err != nil {
@@ -89,9 +86,7 @@ func UserGet(c *gin.Context) {
 		Email string `json:"email"`
 	}
 
-	if err := c.ShouldBindJSON(&reqData); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		log.Printf("couldn't bind json: %v", err)
+	if !utils.BindJSON(c, &reqData) {
 		return
 	}
 
@@ -114,9 +109,8 @@ func IsAvailableEmail(c *gin.Context) {
 		Email string `json:"email"`
 	}
 
-	if err := c.ShouldBindJSON(&reqData); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		log.Printf("couldn't bind json: %v", err)
+	if !utils.BindJSON(c, &reqData) {
+		return
 	}
 
 	if utils.IsExistingCreds(reqData.Email, "", c) {
@@ -131,9 +125,8 @@ func IsAvailableUsername(c *gin.Context) {
 		Username string `json:"username"`
 	}
 
-	if err := c.ShouldBindJSON(&reqData); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		log.Printf("couldn't bind json: %v", err)
+	if !utils.BindJSON(c, &reqData) {
+		return
 	}
 
 	if utils.IsExistingCreds("", reqData.Username, c) {
