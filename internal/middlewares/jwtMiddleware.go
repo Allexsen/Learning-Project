@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
+	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -13,16 +13,24 @@ func CheckJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
-			log.Printf("empty jwt in the request header")
+			apperrors.HandleError(c, apperrors.New(
+				http.StatusUnauthorized,
+				"Authorization header required",
+				apperrors.ErrMissingAuthHeader,
+				map[string]interface{}{"details": "empty jwt in the request header"},
+			))
 			return
 		}
 
 		tokenString := strings.TrimSpace(strings.Replace(authHeader, "Bearer", "", 1))
 		claims, err := utils.ValidateJWT(tokenString)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Couldn't validate a JWT"})
-			log.Printf("couldn't validate a jwt: %v", err)
+			apperrors.HandleError(c, apperrors.New(
+				http.StatusUnauthorized,
+				"Couldn't validate JWT",
+				apperrors.ErrInvalidJWT,
+				map[string]interface{}{"details": err.Error()},
+			))
 			return
 		}
 

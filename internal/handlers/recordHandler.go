@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
+	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -21,15 +21,18 @@ func RecordAdd(c *gin.Context) {
 	}
 
 	if reqData.Hours == "0" && reqData.Minutes == "0" {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Hours and minutes can not both be zero"})
-		log.Print("failed to add a record: hours and minutes can't both be 0")
+		apperrors.HandleError(c, apperrors.New(
+			http.StatusBadRequest,
+			"Hours and minutes can not both be zero",
+			apperrors.ErrInvalidInput,
+			map[string]interface{}{"details": "Hours and minutes can not both be zero"},
+		))
 		return
 	}
 
 	u, err := controllers.RecordAdd(reqData.Email, reqData.Hours, reqData.Minutes)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "couldn't add a new record"})
-		log.Print(err)
+		handleError(c, err)
 		return
 	}
 
@@ -50,8 +53,7 @@ func RecordDelete(c *gin.Context) {
 
 	u, err := controllers.RecordRemove(reqData.ID)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't delete the record"})
-		log.Print(err)
+		handleError(c, err)
 		return
 	}
 

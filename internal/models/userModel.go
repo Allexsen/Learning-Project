@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/Allexsen/Learning-Project/internal/db"
 )
 
@@ -19,24 +17,24 @@ type User struct {
 	Records      []Record `db:"-" json:"worklog"`
 }
 
-func (u User) AddUser() (int64, error) {
+func (u User) AddUser() (int64, error) { // here, should it be "error" or "*customErrors.Err" ??
 	q := `INSERT INTO practice_db.users (firstname, lastname, email, log_count) VALUES(?, ?, ?, ?)`
 	result, err := db.DB.Exec(q, u.Firstname, u.Lastname, u.Email, u.LogCount)
 	if err != nil {
-		return -1, fmt.Errorf("couldn't add a user: %v", err)
+		return -1, getQueryError(q, "Couldn't add a new user", u, err)
 	}
 
-	return result.LastInsertId()
+	return getLastInsertId(result, q, u)
 }
 
 func (u User) Register() (int64, error) {
 	q := `INSERT INTO practice_db.users (firstname, lastname, email, username, password) VALUES(?, ?, ?, ?, ?)`
 	result, err := db.DB.Exec(q, u.Firstname, u.Lastname, u.Email, u.Username, u.Password)
 	if err != nil {
-		return -1, fmt.Errorf("couldn't register a new user: %v", err)
+		return -1, getQueryError(q, "Couldn't register a new user", u, err)
 	}
 
-	return result.LastInsertId()
+	return getLastInsertId(result, q, u)
 }
 
 func (u *User) RetrieveUserbyID() error {
@@ -45,53 +43,56 @@ func (u *User) RetrieveUserbyID() error {
 		WHERE id=?`
 	err := db.DB.QueryRow(q, u.ID).Scan(
 		&u.Firstname, &u.Lastname, &u.Email, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
-	if err != nil {
-		return fmt.Errorf("couldn't retrieve a user by id: %v", err)
-	}
 
-	return nil
+	return getQueryError(q, "Couldn't retrieve user by id", u, err)
 }
 
 func (u *User) RetrieveUserByEmail() error {
 	q := `SELECT id, firstname, lastname, username, log_count, total_hours, total_minutes
 		FROM practice_db.users
 		WHERE email=?`
-
 	err := db.DB.QueryRow(q, u.Email).Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
-	if err != nil {
-		return fmt.Errorf("couldn't retrieve a user by email: %v", err)
-	}
 
-	return nil
+	return getQueryError(q, "Couldn't retrieve user by email", u, err)
 }
 
 func (u *User) RetrieveUserIDByEmail() error {
-	err := db.DB.QueryRow(`SELECT id FROM practice_db.users WHERE email=?`, u.Email).Scan(&u.ID)
-	if err != nil {
-		return fmt.Errorf("couldn't retrieve a user id by email: %v", err)
-	}
+	q := `SELECT id FROM practice_db.users WHERE email=?`
+	err := db.DB.QueryRow(q, u.Email).Scan(&u.ID)
 
-	return nil
+	return getQueryError(q, "Couldn't retrieve user id by email", u, err)
 }
 
 func (u User) UpdateUserWorklogInfoByID() error {
 	q := `UPDATE practice_db.users
 		SET log_count=?, total_hours=?, total_minutes=?
 		WHERE id=?`
+	result, err := db.DB.Exec(q, u.LogCount, u.TotalHours, u.TotalMinutes, u.ID)
 
-	res, err := db.DB.Exec(q, u.LogCount, u.TotalHours, u.TotalMinutes, u.ID)
+	return handleUpdateQuery(result, err, q, u)
+}
+
+func (u *User) RetrieveAllRecordsByUserID() error {
+	q := `SELECT id, hours, minutes FROM practice_db.records WHERE user_id=?`
+	rows, err := db.DB.Query(q, u.ID)
 	if err != nil {
-		return fmt.Errorf("couldn't update the user info by id: %v", err)
+		return getQueryError(q, "Couldn't query the database", u, err)
+	}
+	defer rows.Close()
+
+	var records []Record
+	for rows.Next() {
+		r := Record{UserID: u.ID}
+		if err = rows.Scan(&r.ID, &r.Hours, &r.Minutes); err != nil {
+			return getQueryError(q, "Couldn't scan a row", u, err)
+		}
+		records = append(records, r)
 	}
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("couldn't retrieve rows affected: %v", err)
+	if err = rows.Err(); err != nil {
+		return getQueryError(q, "Error during the iteration of the rows", u, err)
 	}
 
-	if rowsAffected == 0 {
-		return fmt.Errorf("no user found with id: %d", u.ID)
-	}
-
+	u.Records = records
 	return nil
 }

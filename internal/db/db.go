@@ -2,9 +2,11 @@ package db
 
 import (
 	"database/sql"
-	"log"
+	"net/http"
 	"os"
 	"time"
+
+	customErrors "github.com/Allexsen/Learning-Project/internal/errors"
 )
 
 var DB *sql.DB
@@ -13,8 +15,12 @@ func InitDB() {
 	var err error
 	DB, err = sql.Open("mysql", os.Getenv("MYSQL_AUTH_CREDS"))
 	if err != nil {
-		log.Fatal("[Error]: Coul dn't open a database connection: " + err.Error())
-		panic(err)
+		customErrors.HandleCriticalError(customErrors.New(
+			http.StatusInternalServerError,
+			"Could not open a database connection",
+			customErrors.ErrDBConnection,
+			map[string]interface{}{"details": err.Error()},
+		))
 	}
 
 	DB.SetConnMaxLifetime(time.Minute * 3)

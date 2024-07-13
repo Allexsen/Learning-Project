@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fmt"
+	"database/sql"
 
 	"github.com/Allexsen/Learning-Project/internal/db"
 )
@@ -13,51 +13,33 @@ type Record struct {
 	Minutes int   `db:"minutes" json:"minutes"`
 }
 
-func (r Record) AddRecord() (int64, error) {
+func (r Record) AddRecord(tx *sql.Tx) (int64, error) {
 	q := `INSERT INTO practice_db.records (user_id, hours, minutes) VALUES (?, ?, ?)`
-	result, err := db.DB.Exec(q, r.UserID, r.Hours, r.Minutes)
+	result, err := tx.Exec(q, r.UserID, r.Hours, r.Minutes)
 	if err != nil {
-		return -1, fmt.Errorf("couldn't add the record: %v", err)
+		return -1, getQueryError(q, "Couldn't add new record", r, err)
 	}
 
-	return result.LastInsertId()
+	return getLastInsertId(result, q, r)
 }
 
 func (r *Record) RetrieveRecordByID() error {
 	q := `SELECT user_id, hours, minutes FROM practice_db.records WHERE id=?`
 	err := db.DB.QueryRow(q, r.ID).Scan(&r.UserID, &r.Hours, &r.Minutes)
-	if err != nil {
-		return fmt.Errorf("couldn't find the record by id: %v", err)
-	}
 
-	return nil
+	return getQueryError(q, "Couldn't find record by id", r, err)
 }
 
 func (r *Record) RetrieveUserIDByRecordID() error {
 	q := `SELECT user_id FROM practice_db.records WHERE id=?`
 	err := db.DB.QueryRow(q, r.ID).Scan(&r.UserID)
-	if err != nil {
-		return fmt.Errorf("couldn't retrieve the user id by the record by id: %v", err)
-	}
 
-	return nil
+	return getQueryError(q, "Couldn't retrieve user id by record id", r, err)
 }
 
-func (r Record) RemoveRecord() error {
+func (r Record) RemoveRecord(tx *sql.Tx) error {
 	q := `DELETE FROM practice_db.records WHERE id=?`
-	res, err := db.DB.Exec(q, r.ID)
-	if err != nil {
-		return fmt.Errorf("couldn't remove the record: %v", err)
-	}
+	result, err := db.DB.Exec(q, r.ID)
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("couldn't retrieve the rows affected: %v", err)
-	}
-
-	if rowsAffected == 0 {
-		return fmt.Errorf("no record found with id: %d", r.ID)
-	}
-
-	return nil
+	return handleUpdateQuery(result, err, q, r)
 }

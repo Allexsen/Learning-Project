@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
+	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/Allexsen/Learning-Project/internal/models"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -24,25 +25,33 @@ func UserRegister(c *gin.Context) {
 	}
 
 	if !utils.IsValidEmail(reqData.Email) {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid email"})
-		log.Printf("couldn't register a user, invalid email: %s", reqData.Email)
+		apperrors.HandleError(c, apperrors.New(
+			http.StatusBadRequest,
+			"Invalid email",
+			apperrors.ErrInvalidInput,
+			map[string]interface{}{"details": fmt.Sprintf("invalid email: %s", reqData.Email)},
+		))
 		return
 	}
 
 	if !utils.IsValidUsername(reqData.Username) {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid username"})
-		log.Printf("couldn't register a user, invalid username: %s", reqData.Username)
+		apperrors.HandleError(c, apperrors.New(
+			http.StatusBadRequest,
+			"Invalid username",
+			apperrors.ErrInvalidInput,
+			map[string]interface{}{"details": fmt.Sprintf("invalid username: %s", reqData.Username)},
+		))
 		return
 	}
 
-	if utils.IsExistingCreds(reqData.Email, reqData.Username, c) {
+	if exists, err := utils.IsExistingCreds(c, reqData.Email, reqData.Username); err != nil || exists {
+		handleError(c, err)
 		return
 	}
 
 	u, err := controllers.UserRegister(reqData.Firstname, reqData.Lastname, reqData.Username, reqData.Email, reqData.Password)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't register a new user"})
-		log.Print(err)
+		handleError(c, err)
 		return
 	}
 
@@ -63,15 +72,13 @@ func UserLogin(c *gin.Context) {
 	}
 
 	if err := controllers.UserLogin(reqData.Email, reqData.Password); err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-		log.Printf("couldn't authorize a user due to invalid credentials: %v", err)
+		handleError(c, err)
 		return
 	}
 
 	tokenString, err := utils.GenerateJWT(reqData.Email)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Couldn't generate a JWT"})
-		log.Printf("failed to generate a token string: %v", err)
+		handleError(c, err)
 		return
 	}
 
@@ -93,8 +100,7 @@ func UserGet(c *gin.Context) {
 	u := models.User{Email: reqData.Email}
 	u, err := controllers.UserGetByEmail(u.Email)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		log.Printf("couldn't retrieve a user: %v", err)
+		handleError(c, err)
 		return
 	}
 
@@ -113,7 +119,8 @@ func IsAvailableEmail(c *gin.Context) {
 		return
 	}
 
-	if utils.IsExistingCreds(reqData.Email, "", c) {
+	if exists, err := utils.IsExistingCreds(c, reqData.Email, ""); err != nil || exists {
+		handleError(c, err)
 		return
 	}
 
@@ -129,7 +136,8 @@ func IsAvailableUsername(c *gin.Context) {
 		return
 	}
 
-	if utils.IsExistingCreds("", reqData.Username, c) {
+	if exists, err := utils.IsExistingCreds(c, "", reqData.Username); err != nil || exists {
+		handleError(c, err)
 		return
 	}
 

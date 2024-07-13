@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	config.LoadConfig()
+	config.LoadEnv()
 
 	db.InitDB()
 	defer db.DB.Close()

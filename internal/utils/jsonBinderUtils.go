@@ -1,16 +1,20 @@
 package utils
 
 import (
-	"log"
 	"net/http"
 
+	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/gin-gonic/gin"
 )
 
 func BindJSON(c *gin.Context, obj interface{}) bool {
 	if err := c.ShouldBindJSON(&obj); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
-		log.Printf("couldn't bind json: %v", err)
+		apperrors.HandleError(c, apperrors.New(
+			http.StatusBadRequest,
+			"Invalid JSON",
+			apperrors.ErrBindJson,
+			map[string]interface{}{"details": err.Error()},
+		))
 		return false
 	}
 
