@@ -1,13 +1,7 @@
 package errors
 
 import (
-	"errors"
 	"fmt"
-)
-
-var (
-	ErrNotFound = errors.New("resource not found")
-	// to be added...
 )
 
 type CustomError struct {
