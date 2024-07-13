@@ -1,7 +1,6 @@
-package utils
+package errors
 
 import (
-	"github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -14,16 +13,16 @@ func init() {
 	logr.SetLevel(logrus.InfoLevel)
 }
 
-func HandleError(c *gin.Context, err *errors.CustomError) {
+func HandleError(c *gin.Context, err *CustomError) {
 	logError(err)
 	c.AbortWithStatusJSON(err.Code, err.Message)
 }
 
-func logError(err *errors.CustomError) {
+func logError(err *CustomError) {
 	logr.WithFields(logrus.Fields{
 		"code":    err.Code,
 		"message": err.Message,
 		"error":   err.Err,
 		"context": err.Context,
-	})
+	}).Error("An error occurred")
 }
