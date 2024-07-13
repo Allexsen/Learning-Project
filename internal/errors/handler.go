@@ -1,4 +1,4 @@
-package errors
+package customErrors
 
 import (
 	"github.com/gin-gonic/gin"
@@ -15,7 +15,14 @@ func init() {
 
 func HandleError(c *gin.Context, err *CustomError) {
 	logError(err)
-	c.AbortWithStatusJSON(err.Code, err.Message)
+	if c != nil {
+		c.AbortWithStatusJSON(err.Code, err.Message)
+	}
+}
+
+func HandleCriticalError(err *CustomError) {
+	logError(err)
+	panic(err)
 }
 
 func logError(err *CustomError) {
