@@ -1,3 +1,4 @@
+// Package utils provides useful utilities for common functions throughout the app
 package utils
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+// JWT key secret loaded from env variables.
 var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 type Claims struct {
@@ -17,6 +19,8 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+// GenerateJWT sets expiration date to 24 hours, generates a new JWT,
+// signs and returns the token string.
 func GenerateJWT(email string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
@@ -40,6 +44,8 @@ func GenerateJWT(email string) (string, error) {
 	return tokenString, nil
 }
 
+// ValidateJWT checks the given token string by
+// its expiration date, signature, and validity.
 func ValidateJWT(tokenString string) (*Claims, error) {
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
@@ -75,12 +81,14 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 	return claims, nil
 }
 
+// IsValidEmail is a regex for email validation
 func IsValidEmail(email string) bool {
 	emailRegex := `^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`
 	re := regexp.MustCompile(emailRegex)
 	return re.MatchString(email)
 }
 
+// IsValidUsername is a regex for username validation
 func IsValidUsername(username string) bool {
 	if len(username) <= 3 {
 		return false

@@ -1,3 +1,5 @@
+// Package apperrors provides custom errors to centralize
+// errors & error logging through the application.
 package apperrors
 
 import "errors"

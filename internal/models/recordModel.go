@@ -1,3 +1,4 @@
+// Package models declares object models, provides methods and database interaction for them.
 package models
 
 import (
@@ -6,11 +7,13 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/db"
 )
 
+// Record represents an internal object.
+// It stores a single work session duration of a user.
 type Record struct {
-	ID      int64 `db:"id" json:"id"`
-	UserID  int64 `db:"user_id" json:"user_id"`
-	Hours   int   `db:"hours" json:"hours"`
-	Minutes int   `db:"minutes" json:"minutes"`
+	ID      int64 `db:"id" json:"id"`           // Unique record id
+	UserID  int64 `db:"user_id" json:"user_id"` // Corresponding user
+	Hours   int   `db:"hours" json:"hours"`     // Hours worked during a session
+	Minutes int   `db:"minutes" json:"minutes"` // Minutes worked during a session
 }
 
 func (r Record) AddRecord(tx *sql.Tx) (int64, error) {

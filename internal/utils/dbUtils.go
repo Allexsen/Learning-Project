@@ -1,3 +1,4 @@
+// Package utils provides useful utilities for common functions throughout the app
 package utils
 
 import (
@@ -40,6 +41,7 @@ func GetPasswordHashByEmail(email string) (string, error) {
 	return pswdHash, nil
 }
 
+// IsExistingEmail checks if the email is present in the db
 func IsExistingEmail(email string) (bool, error) {
 	var exists bool
 	q := `SELECT EXISTS (SELECT 1 FROM practice_db.users WHERE email=?)`
@@ -56,6 +58,7 @@ func IsExistingEmail(email string) (bool, error) {
 	return exists, nil
 }
 
+// IsExistingEmail checks if the username is present in the db
 func IsExistingUsername(username string) (bool, error) {
 	var exists bool
 	q := `SELECT EXISTS (SELECT 1 FROM practice_db.users WHERE username=?)`
@@ -72,6 +75,7 @@ func IsExistingUsername(username string) (bool, error) {
 	return exists, nil
 }
 
+// IsExistingCreds checks if the email and/or username are present in the db
 func IsExistingCreds(c *gin.Context, email, username string) (bool, error) {
 	if email != "" {
 		if exists, err := IsExistingEmail(email); err != nil || exists {

@@ -1,3 +1,4 @@
+// Package handlers defines API endpoints handlers, parsing and validating the request
 package handlers
 
 import (
@@ -11,6 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// UserRegister parses & validates input, and
+// sends it to controllers for registering a new user
 func UserRegister(c *gin.Context) {
 	var reqData struct {
 		Firstname string `json:"firstName"`
@@ -20,7 +23,7 @@ func UserRegister(c *gin.Context) {
 		Password  string `json:"password"`
 	}
 
-	if !utils.BindJSON(c, &reqData) {
+	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
 
@@ -44,6 +47,7 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
+	// Check if the given email and/or username already exist.
 	if exists, err := utils.IsExistingCreds(c, reqData.Email, reqData.Username); err != nil || exists {
 		handleError(c, err)
 		return
@@ -61,13 +65,15 @@ func UserRegister(c *gin.Context) {
 	})
 }
 
+// UserLogin parses input, and sends data to controllers.
+// If the request is successful, generates and adds JWT to headers.
 func UserLogin(c *gin.Context) {
 	var reqData struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 
-	if !utils.BindJSON(c, &reqData) {
+	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
 
@@ -88,12 +94,14 @@ func UserLogin(c *gin.Context) {
 	})
 }
 
+// UserGet parses input, queries controllers for retrieving
+// user, and sets it as a header if successful.
 func UserGet(c *gin.Context) {
 	var reqData struct {
 		Email string `json:"email"`
 	}
 
-	if !utils.BindJSON(c, &reqData) {
+	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
 
@@ -110,15 +118,18 @@ func UserGet(c *gin.Context) {
 	})
 }
 
+// IsAvailableEmail parses input, and checks
+// if the email is available
 func IsAvailableEmail(c *gin.Context) {
 	var reqData struct {
 		Email string `json:"email"`
 	}
 
-	if !utils.BindJSON(c, &reqData) {
+	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
 
+	// Querying with empty username to check email only
 	if exists, err := utils.IsExistingCreds(c, reqData.Email, ""); err != nil || exists {
 		handleError(c, err)
 		return
@@ -127,15 +138,18 @@ func IsAvailableEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
+// IsAvailableEmail parses input, and checks
+// if the username is available
 func IsAvailableUsername(c *gin.Context) {
 	var reqData struct {
 		Username string `json:"username"`
 	}
 
-	if !utils.BindJSON(c, &reqData) {
+	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
 
+	// Querying with empty email to check username only
 	if exists, err := utils.IsExistingCreds(c, "", reqData.Username); err != nil || exists {
 		handleError(c, err)
 		return

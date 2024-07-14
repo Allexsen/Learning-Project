@@ -1,3 +1,4 @@
+// Package config sets up configuration files and variables
 package config
 
 import (
@@ -7,6 +8,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// LoadEnv loads environment variables from a .env file.
+// If the .env file cannot be loaded, it handles the error as a critical failure.
 func LoadEnv() {
 	err := godotenv.Load()
 	if err != nil {

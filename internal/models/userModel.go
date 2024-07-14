@@ -4,30 +4,22 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/db"
 )
 
+// User represents an internal object.
+// It stores user data (:D)
 type User struct {
-	ID           int64    `db:"id" json:"id"`
-	Firstname    string   `db:"firstname" json:"firstName"`
-	Lastname     string   `db:"lastname" json:"lastName"`
-	Email        string   `db:"email" json:"email"`
-	Username     string   `db:"username" json:"username"`
-	Password     string   `db:"password" json:"-"`
-	LogCount     int      `db:"log_count" json:"log_count"`
-	TotalHours   int      `db:"total_hours" json:"total_hours"`
-	TotalMinutes int      `db:"total_minutes" json:"total_minutes"`
-	Records      []Record `db:"-" json:"worklog"`
+	ID           int64    `db:"id" json:"id"`                       // Unique user id
+	Firstname    string   `db:"firstname" json:"firstName"`         // Firstname
+	Lastname     string   `db:"lastname" json:"lastName"`           // Lastname
+	Email        string   `db:"email" json:"email"`                 // Email
+	Username     string   `db:"username" json:"username"`           // Unique username
+	Password     string   `db:"password" json:"-"`                  // Password hash
+	LogCount     int      `db:"log_count" json:"log_count"`         // Total number of logs
+	TotalHours   int      `db:"total_hours" json:"total_hours"`     // Total hours worked
+	TotalMinutes int      `db:"total_minutes" json:"total_minutes"` // Total minutes worked
+	Records      []Record `db:"-" json:"worklog"`                   // List of records
 }
 
-func (u User) AddUser() (int64, error) { // here, should it be "error" or "*customErrors.Err" ??
-	q := `INSERT INTO practice_db.users (firstname, lastname, email, log_count) VALUES(?, ?, ?, ?)`
-	result, err := db.DB.Exec(q, u.Firstname, u.Lastname, u.Email, u.LogCount)
-	if err != nil {
-		return -1, getQueryError(q, "Couldn't add a new user", u, err)
-	}
-
-	return getLastInsertId(result, q, u)
-}
-
-func (u User) Register() (int64, error) {
+func (u User) AddUser() (int64, error) {
 	q := `INSERT INTO practice_db.users (firstname, lastname, email, username, password) VALUES(?, ?, ?, ?, ?)`
 	result, err := db.DB.Exec(q, u.Firstname, u.Lastname, u.Email, u.Username, u.Password)
 	if err != nil {
@@ -63,6 +55,8 @@ func (u *User) RetrieveUserIDByEmail() error {
 	return getQueryError(q, "Couldn't retrieve user id by email", u, err)
 }
 
+// UpdateUserWorklogInfoByID changes the information about the user's worklog by user id,
+// precisely: log count, hours and minutes worked.
 func (u User) UpdateUserWorklogInfoByID() error {
 	q := `UPDATE practice_db.users
 		SET log_count=?, total_hours=?, total_minutes=?
@@ -72,6 +66,8 @@ func (u User) UpdateUserWorklogInfoByID() error {
 	return handleUpdateQuery(result, err, q, u)
 }
 
+// RetrieveAllRecordsByUserID scans records table,
+// looking for every record associated with the user.
 func (u *User) RetrieveAllRecordsByUserID() error {
 	q := `SELECT id, hours, minutes FROM practice_db.records WHERE user_id=?`
 	rows, err := db.DB.Query(q, u.ID)

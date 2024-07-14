@@ -1,3 +1,4 @@
+// Package handlers defines API endpoints handlers, parsing and validating requests
 package handlers
 
 import (
@@ -9,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// RecordAdd parses & validates input, and
+// sends it to controllers for adding a record.
 func RecordAdd(c *gin.Context) {
 	var reqData struct {
 		Email   string `json:"email"`
@@ -16,10 +19,11 @@ func RecordAdd(c *gin.Context) {
 		Minutes string `json:"minutes"`
 	}
 
-	if !utils.BindJSON(c, &reqData) {
+	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
 
+	// hours=minutes=0 is basically an empty record, making it invalid
 	if reqData.Hours == "0" && reqData.Minutes == "0" {
 		apperrors.HandleError(c, apperrors.New(
 			http.StatusBadRequest,
@@ -42,12 +46,14 @@ func RecordAdd(c *gin.Context) {
 	})
 }
 
+// RecordDelete parses input, and sends data
+// to controllers for deleting a record
 func RecordDelete(c *gin.Context) {
 	var reqData struct {
 		ID int `json:"id"`
 	}
 
-	if !utils.BindJSON(c, &reqData) {
+	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
 

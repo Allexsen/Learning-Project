@@ -1,3 +1,4 @@
+// Package utils provides useful utilities for common functions throughout the app
 package utils
 
 import (
@@ -7,6 +8,8 @@ import (
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 )
 
+// Atoi acts just as strconv.Atoi,
+// except it also provides a centrilized error handling
 func Atoi(s string) (int, error) {
 	res, err := strconv.Atoi(s)
 	if err != nil {

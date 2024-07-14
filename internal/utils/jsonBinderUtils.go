@@ -1,3 +1,4 @@
+// Package utils provides useful utilities for common functions throughout the app
 package utils
 
 import (
@@ -7,7 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func BindJSON(c *gin.Context, obj interface{}) bool {
+// ShouldBindJSON acts just as c.ShouldBindJSON,
+// except it also provides a centralized error handling.
+func ShouldBindJSON(c *gin.Context, obj interface{}) bool {
 	if err := c.ShouldBindJSON(&obj); err != nil {
 		apperrors.HandleError(c, apperrors.New(
 			http.StatusBadRequest,

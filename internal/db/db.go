@@ -1,3 +1,4 @@
+// Package db sets up a connection to a database
 package db
 
 import (
@@ -9,8 +10,11 @@ import (
 	customErrors "github.com/Allexsen/Learning-Project/internal/errors"
 )
 
+// DB variable provides a way for the project to interact with the database
 var DB *sql.DB
 
+// InitDB connects to the db, and sets a connection parameters.
+// Invokes a critical error in case of failure.
 func InitDB() {
 	var err error
 	DB, err = sql.Open("mysql", os.Getenv("MYSQL_AUTH_CREDS"))

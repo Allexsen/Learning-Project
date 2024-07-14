@@ -1,3 +1,4 @@
+// Package models declares object models, provides methods and database interaction for them.
 package models
 
 import (
@@ -9,6 +10,9 @@ import (
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 )
 
+// getLastInsertId handles sql insertion query result,
+// and returns the last insert id.
+// Returns -1 and error in case of failure.
 func getLastInsertId(result sql.Result, q string, data interface{}) (int64, error) {
 	dataType := reflect.TypeOf(data).Name()
 	lastInsertId, err := result.LastInsertId()
@@ -24,6 +28,8 @@ func getLastInsertId(result sql.Result, q string, data interface{}) (int64, erro
 	return lastInsertId, nil
 }
 
+// handleUpdateQuery validates sql update query by checking
+// update error, affected rows error, or no rows affected error.
 func handleUpdateQuery(res sql.Result, err error, q string, data interface{}) error {
 	dataType := reflect.TypeOf(data).Name()
 	if err != nil {
@@ -45,6 +51,7 @@ func handleUpdateQuery(res sql.Result, err error, q string, data interface{}) er
 		)
 	}
 
+	// If no rows were affected, then the requested resource was not found
 	if rowsAffected == 0 {
 		return apperrors.New(
 			http.StatusNotFound,
@@ -57,12 +64,15 @@ func handleUpdateQuery(res sql.Result, err error, q string, data interface{}) er
 	return nil
 }
 
+// getQueryError checks if there was an error in execution.
+// Returns AppError if found any, or nil otherwise.
 func getQueryError(q, message string, data interface{}, err error) error {
 	if err == nil {
 		return nil
 	}
 
 	code, errType := http.StatusInternalServerError, apperrors.ErrDBQuery
+	// If the resource was not found, return 400 and ErrNotFound.
 	if err == sql.ErrNoRows {
 		code = http.StatusBadRequest
 		errType = apperrors.ErrNotFound

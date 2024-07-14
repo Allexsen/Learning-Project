@@ -1,3 +1,4 @@
+// Package middlewares provides middleware functions for API request validations.
 package middlewares
 
 import (
@@ -9,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CheckJWT reads auth header, and
+// checks its validity, if present.
 func CheckJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")

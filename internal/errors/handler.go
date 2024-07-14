@@ -1,3 +1,5 @@
+// Package apperrors provides custom errors to centralize
+// errors & error logging through the application.
 package apperrors
 
 import (
@@ -7,14 +9,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// using logr to differentiate from the built-in log package
+// Using logr to avoid confusion with the built-in errors package.
 var logr = logrus.New()
 
+// init sets the logging parameters
 func init() {
 	logr.SetFormatter(&logrus.JSONFormatter{})
 	logr.SetLevel(logrus.InfoLevel)
 }
 
+// HandleError logs the error, and writes response header.
+// Changes error message if Code = 500.
 func HandleError(c *gin.Context, err *AppError) {
 	logError(err)
 	if c != nil {
@@ -32,11 +37,13 @@ func HandleError(c *gin.Context, err *AppError) {
 	}
 }
 
+// HandleCriticalError logs the error, and then panics.
 func HandleCriticalError(err *AppError) {
 	logError(err)
 	panic(err)
 }
 
+// logError logs the error to the console.
 func logError(err *AppError) {
 	logr.WithFields(logrus.Fields{
 		"code":    err.Code,
