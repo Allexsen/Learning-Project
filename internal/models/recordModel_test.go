@@ -23,7 +23,7 @@ func TestAddRecord(t *testing.T) {
 		Minutes: 30,
 	}
 
-	query := `INSERT INTO practice_db.records \(user_id, hours, minutes\) VALUES \(\?, \?, \?\)`
+	query := `INSERT INTO practice_db\.records \(user_id, hours, minutes\) VALUES \(\?, \?, \?\)`
 	mock.ExpectExec(query).WithArgs(record.UserID, record.Hours, record.Minutes).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -46,7 +46,7 @@ func TestRetrieveRecordByID(t *testing.T) {
 	}
 
 	// Define the SQL query and rows to return
-	query := `SELECT user_id, hours, minutes FROM practice_db.records WHERE id=\?`
+	query := `SELECT user_id, hours, minutes FROM practice_db\.records WHERE id=\?`
 	rows := sqlmock.NewRows([]string{"user_id", "hours", "minutes"}).
 		AddRow(1, 2, 30)
 
