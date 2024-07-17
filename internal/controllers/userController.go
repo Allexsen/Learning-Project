@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	database "github.com/Allexsen/Learning-Project/internal/db"
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/Allexsen/Learning-Project/internal/models"
 	"github.com/Allexsen/Learning-Project/internal/utils"
@@ -20,9 +21,10 @@ func UserRegister(firstname, lastname, username, email, pswd string) (models.Use
 		return models.User{}, err
 	}
 
+	db := database.DB
 	u := models.User{Firstname: firstname, Lastname: lastname, Username: username, Email: email, Password: string(pswdHash)}
 	// Query adding to the db
-	if u.ID, err = u.AddUser(); err != nil {
+	if u.ID, err = u.AddUser(db); err != nil {
 		return models.User{}, err
 	}
 
@@ -34,11 +36,13 @@ func UserRegister(firstname, lastname, username, email, pswd string) (models.Use
 func UserLogin(credential, password string) error {
 	var pswdHash string
 	var err error
+	db := database.DB
+
 	// Check if the provided credentail is email or username, and query accordingly
 	if strings.Contains(credential, "@") {
-		pswdHash, err = utils.GetPasswordHashByEmail(credential)
+		pswdHash, err = utils.GetPasswordHashByEmail(db, credential)
 	} else {
-		pswdHash, err = utils.GetPasswordHashByUsername(credential)
+		pswdHash, err = utils.GetPasswordHashByUsername(db, credential)
 	}
 
 	if err != nil {
@@ -60,13 +64,14 @@ func UserLogin(credential, password string) error {
 
 // UserGetByEmail retrieves user from the database by user email
 func UserGetByEmail(email string) (models.User, error) {
+	db := database.DB
 	u := models.User{Email: email}
-	if err := u.RetrieveUserByEmail(); err != nil {
+	if err := u.RetrieveUserByEmail(db); err != nil {
 		return models.User{}, err
 	}
 
 	// retrieves records associated with the user by user id
-	if err := u.RetrieveAllRecordsByUserID(); err != nil {
+	if err := u.RetrieveAllRecordsByUserID(db); err != nil {
 		return models.User{}, err
 	}
 
@@ -75,9 +80,9 @@ func UserGetByEmail(email string) (models.User, error) {
 
 // UserGetIDByEmail retrieves user ID by user email.
 // return -1 and error in case of failure
-func UserGetIDByEmail(email string) (int64, error) {
+func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {
 	u := models.User{Email: email}
-	if err := u.RetrieveUserIDByEmail(); err != nil {
+	if err := u.RetrieveUserIDByEmail(db); err != nil {
 		return -1, err
 	}
 
@@ -85,9 +90,9 @@ func UserGetIDByEmail(email string) (int64, error) {
 }
 
 // UserUpdateWorklogInfo updates the user worklog data by the provided record
-func UserUpdateWorklogInfo(r models.Record, countChange int, tx *sql.Tx) (models.User, error) {
+func userUpdateWorklogInfo(db *sql.DB, r models.Record, countChange int, tx *sql.Tx) (models.User, error) {
 	u := models.User{ID: r.UserID}
-	if err := u.RetrieveUserbyID(); err != nil {
+	if err := u.RetrieveUserbyID(db); err != nil {
 		return models.User{}, err
 	}
 
@@ -103,11 +108,11 @@ func UserUpdateWorklogInfo(r models.Record, countChange int, tx *sql.Tx) (models
 	u.LogCount += countChange
 
 	// Query update to the db
-	if err := u.UpdateUserWorklogInfoByID(); err != nil {
+	if err := u.UpdateUserWorklogInfoByID(tx); err != nil {
 		return models.User{}, err
 	}
 
-	err := u.RetrieveAllRecordsByUserID()
+	err := u.RetrieveAllRecordsByUserID(db)
 	if err != nil {
 		return models.User{}, err
 	}

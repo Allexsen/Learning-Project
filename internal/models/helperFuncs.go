@@ -1,4 +1,4 @@
-// Package models declares object models, provides methods and database interaction for them.
+// Package models declares object models, and provides methods for database interaction.
 package models
 
 import (

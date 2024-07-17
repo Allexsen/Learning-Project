@@ -1,5 +1,5 @@
 // Package db sets up a connection to a database
-package db
+package database
 
 import (
 	"database/sql"

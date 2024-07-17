@@ -1,10 +1,10 @@
-// Package models declares object models, provides methods and database interaction for them.
+// Package models declares object models, and provides methods for database interaction.
 package models
 
 import (
 	"database/sql"
 
-	"github.com/Allexsen/Learning-Project/internal/db"
+	database "github.com/Allexsen/Learning-Project/internal/db"
 )
 
 // Record represents an internal object.
@@ -26,23 +26,23 @@ func (r Record) AddRecord(tx *sql.Tx) (int64, error) {
 	return getLastInsertId(result, q, r)
 }
 
-func (r *Record) RetrieveRecordByID() error {
+func (r *Record) RetrieveRecordByID(db *sql.DB) error {
 	q := `SELECT user_id, hours, minutes FROM practice_db.records WHERE id=?`
-	err := db.DB.QueryRow(q, r.ID).Scan(&r.UserID, &r.Hours, &r.Minutes)
+	err := db.QueryRow(q, r.ID).Scan(&r.UserID, &r.Hours, &r.Minutes)
 
 	return getQueryError(q, "Couldn't find record by id", r, err)
 }
 
-func (r *Record) RetrieveUserIDByRecordID() error {
+func (r *Record) RetrieveUserIDByRecordID(db *sql.DB) error {
 	q := `SELECT user_id FROM practice_db.records WHERE id=?`
-	err := db.DB.QueryRow(q, r.ID).Scan(&r.UserID)
+	err := db.QueryRow(q, r.ID).Scan(&r.UserID)
 
 	return getQueryError(q, "Couldn't retrieve user id by record id", r, err)
 }
 
 func (r Record) RemoveRecord(tx *sql.Tx) error {
 	q := `DELETE FROM practice_db.records WHERE id=?`
-	result, err := db.DB.Exec(q, r.ID)
+	result, err := database.DB.Exec(q, r.ID)
 
 	return handleUpdateQuery(result, err, q, r)
 }

@@ -2,17 +2,18 @@
 package utils
 
 import (
+	"database/sql"
 	"net/http"
 
-	"github.com/Allexsen/Learning-Project/internal/db"
+	database "github.com/Allexsen/Learning-Project/internal/db"
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/gin-gonic/gin"
 )
 
-func GetPasswordHashByUsername(username string) (string, error) {
+func GetPasswordHashByUsername(db *sql.DB, username string) (string, error) {
 	q := `SELECT password FROM practice_db.users WHERE username=?`
 	var pswdHash string
-	err := db.DB.QueryRow(q, username).Scan(&pswdHash)
+	err := db.QueryRow(q, username).Scan(&pswdHash)
 	if err != nil {
 		return "", apperrors.New(
 			http.StatusInternalServerError,
@@ -25,10 +26,10 @@ func GetPasswordHashByUsername(username string) (string, error) {
 	return pswdHash, nil
 }
 
-func GetPasswordHashByEmail(email string) (string, error) {
+func GetPasswordHashByEmail(db *sql.DB, email string) (string, error) {
 	q := `SELECT password FROM practice_db.users WHERE email=?`
 	var pswdHash string
-	err := db.DB.QueryRow(q, email).Scan(&pswdHash)
+	err := db.QueryRow(q, email).Scan(&pswdHash)
 	if err != nil {
 		return "", apperrors.New(
 			http.StatusInternalServerError,
@@ -42,10 +43,10 @@ func GetPasswordHashByEmail(email string) (string, error) {
 }
 
 // IsExistingEmail checks if the email is present in the db
-func IsExistingEmail(email string) (bool, error) {
+func IsExistingEmail(db *sql.DB, email string) (bool, error) {
 	var exists bool
 	q := `SELECT EXISTS (SELECT 1 FROM practice_db.users WHERE email=?)`
-	err := db.DB.QueryRow(q, email).Scan(&exists)
+	err := db.QueryRow(q, email).Scan(&exists)
 	if err != nil {
 		return false, apperrors.New(
 			http.StatusInternalServerError,
@@ -59,10 +60,10 @@ func IsExistingEmail(email string) (bool, error) {
 }
 
 // IsExistingEmail checks if the username is present in the db
-func IsExistingUsername(username string) (bool, error) {
+func IsExistingUsername(db *sql.DB, username string) (bool, error) {
 	var exists bool
 	q := `SELECT EXISTS (SELECT 1 FROM practice_db.users WHERE username=?)`
-	err := db.DB.QueryRow(q, username).Scan(&exists)
+	err := db.QueryRow(q, username).Scan(&exists)
 	if err != nil {
 		return false, apperrors.New(
 			http.StatusInternalServerError,
@@ -77,14 +78,15 @@ func IsExistingUsername(username string) (bool, error) {
 
 // IsExistingCreds checks if the email and/or username are present in the db
 func IsExistingCreds(c *gin.Context, email, username string) (bool, error) {
+	db := database.DB
 	if email != "" {
-		if exists, err := IsExistingEmail(email); err != nil || exists {
+		if exists, err := IsExistingEmail(db, email); err != nil || exists {
 			return true, err
 		}
 	}
 
 	if username != "" {
-		if exists, err := IsExistingUsername(username); err != nil || exists {
+		if exists, err := IsExistingUsername(db, username); err != nil || exists {
 			return true, err
 		}
 	}
