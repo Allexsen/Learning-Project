@@ -30,7 +30,7 @@ func getLastInsertId(result sql.Result, q string, data interface{}) (int64, erro
 
 // handleUpdateQuery validates sql update query by checking
 // update error, affected rows error, or no rows affected error.
-func handleUpdateQuery(res sql.Result, err error, q string, data interface{}) error {
+func handleUpdateQuery(result sql.Result, err error, q string, data interface{}) error {
 	dataType := reflect.TypeOf(data).Name()
 	if err != nil {
 		return apperrors.New(
@@ -41,7 +41,7 @@ func handleUpdateQuery(res sql.Result, err error, q string, data interface{}) er
 		)
 	}
 
-	rowsAffected, err := res.RowsAffected()
+	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return apperrors.New(
 			http.StatusInternalServerError,
