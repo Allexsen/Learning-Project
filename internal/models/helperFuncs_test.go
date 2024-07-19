@@ -52,8 +52,7 @@ func TestGetLastInsertId(t *testing.T) {
 		assert.Equal(t, "Couldn't retrieve last insert ID", appErr.Message)
 		assert.Equal(t, "some error", appErr.Err.Error())
 		assert.Equal(t, "INSERT INTO ...", appErr.Context["query"])
-		// type assert returns nil for unnamed types, don't expect "struct{}"
-		assert.Equal(t, nil, appErr.Context["dataType"])
+		assert.Equal(t, nil, appErr.Context["dataType"]) // type assert returns nil for unnamed types, don't expect "struct{}"
 	})
 }
 
@@ -81,13 +80,14 @@ func TestHandleUpdateQuery(t *testing.T) {
 		appErr, ok := err.(*apperrors.AppError)
 		assert.True(t, ok)
 		assert.Equal(t, http.StatusInternalServerError, appErr.Code)
+
 		// type assert returns nil for unnamed types, causing extra space
 		// therefore it's "the  info" and not "the struct{} info"
 		assert.Equal(t, "Couldn't alter the  info", appErr.Message)
+
 		assert.Equal(t, apperrors.ErrDBQuery, appErr.Err)
 		assert.Equal(t, "UPDATE practice_db.users SET ...", appErr.Context["query"])
-		// type assert returns nil for unnamed types, don't expect "struct{}"
-		assert.Equal(t, nil, appErr.Context["dataType"])
+		assert.Equal(t, nil, appErr.Context["dataType"]) // type assert returns nil for unnamed types, don't expect "struct{}"
 		assert.Equal(t, execErr, appErr.Context["error"])
 	})
 
@@ -106,8 +106,7 @@ func TestHandleUpdateQuery(t *testing.T) {
 		assert.Equal(t, "Couldn't retrieve rows affected", appErr.Message)
 		assert.Equal(t, apperrors.ErrDBQuery, appErr.Err)
 		assert.Equal(t, "UPDATE practice_db.users SET ...", appErr.Context["query"])
-		// type assert returns nil for unnamed types, don't expect "struct{}"
-		assert.Equal(t, nil, appErr.Context["dataType"])
+		assert.Equal(t, nil, appErr.Context["dataType"]) // type assert returns nil for unnamed types, don't expect "struct{}"
 		assert.Equal(t, sqlMockResult.err, appErr.Context["error"])
 	})
 
@@ -123,13 +122,14 @@ func TestHandleUpdateQuery(t *testing.T) {
 		appErr, ok := err.(*apperrors.AppError)
 		assert.True(t, ok)
 		assert.Equal(t, http.StatusNotFound, appErr.Code)
+
 		// type assert returns nil for unnamed types, causing extra space
 		// therefore it's "No  found" and not "No struct{} found"
 		assert.Equal(t, "No  found with the given ID", appErr.Message)
+
 		assert.Equal(t, apperrors.ErrNotFound, appErr.Err)
 		assert.Equal(t, "UPDATE practice_db.users SET ...", appErr.Context["query"])
-		// type assert returns nil for unnamed types, don't expect "struct{}"
-		assert.Equal(t, nil, appErr.Context["dataType"])
+		assert.Equal(t, nil, appErr.Context["dataType"]) // type assert returns nil for unnamed types, don't expect "struct{}"
 	})
 }
 
@@ -149,8 +149,7 @@ func TestGetQueryError(t *testing.T) {
 		assert.Equal(t, "Resource not found", appErr.Message)
 		assert.Equal(t, apperrors.ErrNotFound, appErr.Err)
 		assert.Equal(t, "SELECT * FROM table WHERE id=?", appErr.Context["query"])
-		// type assert returns nil for unnamed types, don't expect "struct{}"
-		assert.Equal(t, nil, appErr.Context["dataType"])
+		assert.Equal(t, nil, appErr.Context["dataType"]) // type assert returns nil for unnamed types, don't expect "struct{}"
 		assert.Equal(t, sql.ErrNoRows.Error(), appErr.Context["details"])
 	})
 
@@ -165,8 +164,7 @@ func TestGetQueryError(t *testing.T) {
 		assert.Equal(t, "Database error", appErr.Message)
 		assert.Equal(t, apperrors.ErrDBQuery, appErr.Err)
 		assert.Equal(t, "SELECT * FROM table WHERE id=?", appErr.Context["query"])
-		// type assert returns nil for unnamed types, don't expect "struct{}"
-		assert.Equal(t, nil, appErr.Context["dataType"])
+		assert.Equal(t, nil, appErr.Context["dataType"]) // type assert returns nil for unnamed types, don't expect "struct{}"
 		assert.Equal(t, someErr.Error(), appErr.Context["details"])
 	})
 }
