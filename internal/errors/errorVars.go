@@ -10,10 +10,10 @@ var (
 	ErrNotFound            = errors.New("resource not found")
 	ErrInternalServerError = errors.New("internal server error")
 	ErrBadRequest          = errors.New("bad request")
-	ErrTypeConversion      = errors.New("type conversion failed")
+	ErrTypeConversion      = errors.New("type conversion failure")
 
 	// .env
-	ErrLoadEnv = errors.New("failed to load env vars")
+	ErrLoadEnv = errors.New("env vars loading failure")
 
 	// User-related
 	ErrUserNotFound           = errors.New("user not found")
@@ -26,9 +26,12 @@ var (
 	ErrInvalidRecordData = errors.New("invalid record data")
 
 	// DB-related
-	ErrDBConnection  = errors.New("database connection error")
-	ErrDBQuery       = errors.New("database query failed")
-	ErrDBTransaction = errors.New("transaction failed")
+	ErrDBConnection   = errors.New("database connection error")
+	ErrDBQuery        = errors.New("invalid database query")
+	ErrDBTransaction  = errors.New("invalid transaction")
+	ErrDBLastInsertId = errors.New("sql: last insert ID failure")
+	ErrDBRowsAffected = errors.New("sql: affected rows inaccsessible")
+	ErrDBNoRows       = errors.New("sql: no rows in result set")
 
 	// Validation-related
 	ErrInvalidInput         = errors.New("invalid input")
