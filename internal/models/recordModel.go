@@ -3,8 +3,6 @@ package models
 
 import (
 	"database/sql"
-
-	database "github.com/Allexsen/Learning-Project/internal/db"
 )
 
 // Record represents an internal object.
@@ -42,7 +40,7 @@ func (r *Record) RetrieveUserIDByRecordID(db *sql.DB) error {
 
 func (r Record) RemoveRecord(tx *sql.Tx) error {
 	q := `DELETE FROM practice_db.records WHERE id=?`
-	result, err := database.DB.Exec(q, r.ID)
+	result, err := tx.Exec(q, r.ID)
 
 	return handleUpdateQuery(result, err, q, r)
 }
