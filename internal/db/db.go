@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	customErrors "github.com/Allexsen/Learning-Project/internal/errors"
+	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 )
 
 // DB variable provides a way for the project to interact with the database
@@ -19,10 +19,10 @@ func InitDB() {
 	var err error
 	DB, err = sql.Open("mysql", os.Getenv("MYSQL_AUTH_CREDS"))
 	if err != nil {
-		customErrors.HandleCriticalError(customErrors.New(
+		apperrors.HandleCriticalError(apperrors.New(
 			http.StatusInternalServerError,
 			"Could not open a database connection",
-			customErrors.ErrDBConnection,
+			apperrors.ErrDBConnection,
 			map[string]interface{}{"details": err.Error()},
 		))
 	}
@@ -31,4 +31,16 @@ func InitDB() {
 	DB.SetConnMaxIdleTime(time.Minute * 1)
 	DB.SetMaxOpenConns(10)
 	DB.SetMaxIdleConns(10)
+}
+
+func CloseDB(db *sql.DB) {
+	err := db.Close()
+	if err != nil {
+		apperrors.HandleCriticalError(apperrors.New(
+			http.StatusInternalServerError,
+			"Could not close a database connection",
+			apperrors.ErrDBConnection,
+			map[string]interface{}{"details": err.Error()},
+		))
+	}
 }

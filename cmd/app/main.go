@@ -27,7 +27,7 @@ func main() {
 	config.LoadEnv()
 
 	database.InitDB()
-	defer database.DB.Close()
+	defer database.CloseDB(database.DB)
 
 	router.InitRouter()
 }
