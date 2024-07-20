@@ -3,6 +3,8 @@ package models
 
 import (
 	"database/sql"
+
+	"github.com/Allexsen/Learning-Project/internal/utils"
 )
 
 // User represents an internal object.
@@ -24,10 +26,10 @@ func (u User) AddUser(db *sql.DB) (int64, error) {
 	q := `INSERT INTO practice_db.users (firstname, lastname, email, username, password) VALUES(?, ?, ?, ?, ?)`
 	result, err := db.Exec(q, u.Firstname, u.Lastname, u.Email, u.Username, u.Password)
 	if err != nil {
-		return -1, getQueryError(q, "Couldn't register a new user", u, err)
+		return -1, utils.GetQueryError(q, "Couldn't register a new user", u, err)
 	}
 
-	return getLastInsertId(result, q, u)
+	return utils.GetLastInsertId(result, q, u)
 }
 
 func (u *User) RetrieveUserbyID(db *sql.DB) error {
@@ -37,7 +39,7 @@ func (u *User) RetrieveUserbyID(db *sql.DB) error {
 	err := db.QueryRow(q, u.ID).Scan(
 		&u.Firstname, &u.Lastname, &u.Email, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
 
-	return getQueryError(q, "Couldn't retrieve user by id", u, err)
+	return utils.GetQueryError(q, "Couldn't retrieve user by id", u, err)
 }
 
 func (u *User) RetrieveUserByEmail(db *sql.DB) error {
@@ -46,14 +48,14 @@ func (u *User) RetrieveUserByEmail(db *sql.DB) error {
 		WHERE email=?`
 	err := db.QueryRow(q, u.Email).Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Username, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
 
-	return getQueryError(q, "Couldn't retrieve user by email", u, err)
+	return utils.GetQueryError(q, "Couldn't retrieve user by email", u, err)
 }
 
 func (u *User) RetrieveUserIDByEmail(db *sql.DB) error {
 	q := `SELECT id FROM practice_db.users WHERE email=?`
 	err := db.QueryRow(q, u.Email).Scan(&u.ID)
 
-	return getQueryError(q, "Couldn't retrieve user id by email", u, err)
+	return utils.GetQueryError(q, "Couldn't retrieve user id by email", u, err)
 }
 
 // UpdateUserWorklogInfoByID changes the information about the user's worklog by user id,
@@ -64,7 +66,7 @@ func (u User) UpdateUserWorklogInfoByID(tx *sql.Tx) error {
 		WHERE id=?`
 	result, err := tx.Exec(q, u.LogCount, u.TotalHours, u.TotalMinutes, u.ID)
 
-	return handleUpdateQuery(result, err, q, u)
+	return utils.HandleUpdateQuery(result, err, q, u)
 }
 
 // RetrieveAllRecordsByUserID scans records table,
@@ -73,7 +75,7 @@ func (u *User) RetrieveAllRecordsByUserID(db *sql.DB) error {
 	q := `SELECT id, hours, minutes FROM practice_db.records WHERE user_id=?`
 	rows, err := db.Query(q, u.ID)
 	if err != nil {
-		return getQueryError(q, "Couldn't query the database", u, err)
+		return utils.GetQueryError(q, "Couldn't query the database", u, err)
 	}
 	defer rows.Close()
 
@@ -81,13 +83,13 @@ func (u *User) RetrieveAllRecordsByUserID(db *sql.DB) error {
 	for rows.Next() {
 		r := Record{UserID: u.ID}
 		if err = rows.Scan(&r.ID, &r.Hours, &r.Minutes); err != nil {
-			return getQueryError(q, "Couldn't scan a row", u, err)
+			return utils.GetQueryError(q, "Couldn't scan a row", u, err)
 		}
 		records = append(records, r)
 	}
 
 	if err = rows.Err(); err != nil {
-		return getQueryError(q, "Error during the iteration of the rows", u, err)
+		return utils.GetQueryError(q, "Error during the iteration of the rows", u, err)
 	}
 
 	u.Records = records

@@ -3,6 +3,8 @@ package models
 
 import (
 	"database/sql"
+
+	"github.com/Allexsen/Learning-Project/internal/utils"
 )
 
 // Record represents an internal object.
@@ -18,29 +20,29 @@ func (r Record) AddRecord(tx *sql.Tx) (int64, error) {
 	q := `INSERT INTO practice_db.records (user_id, hours, minutes) VALUES (?, ?, ?)`
 	result, err := tx.Exec(q, r.UserID, r.Hours, r.Minutes)
 	if err != nil {
-		return -1, getQueryError(q, "Couldn't add new record", r, err)
+		return -1, utils.GetQueryError(q, "Couldn't add new record", r, err)
 	}
 
-	return getLastInsertId(result, q, r)
+	return utils.GetLastInsertId(result, q, r)
 }
 
 func (r *Record) RetrieveRecordByID(db *sql.DB) error {
 	q := `SELECT user_id, hours, minutes FROM practice_db.records WHERE id=?`
 	err := db.QueryRow(q, r.ID).Scan(&r.UserID, &r.Hours, &r.Minutes)
 
-	return getQueryError(q, "Couldn't find record by id", r, err)
+	return utils.GetQueryError(q, "Couldn't find record by id", r, err)
 }
 
 func (r *Record) RetrieveUserIDByRecordID(db *sql.DB) error {
 	q := `SELECT user_id FROM practice_db.records WHERE id=?`
 	err := db.QueryRow(q, r.ID).Scan(&r.UserID)
 
-	return getQueryError(q, "Couldn't retrieve user id by record id", r, err)
+	return utils.GetQueryError(q, "Couldn't retrieve user id by record id", r, err)
 }
 
 func (r Record) RemoveRecord(tx *sql.Tx) error {
 	q := `DELETE FROM practice_db.records WHERE id=?`
 	result, err := tx.Exec(q, r.ID)
 
-	return handleUpdateQuery(result, err, q, r)
+	return utils.HandleUpdateQuery(result, err, q, r)
 }
