@@ -12,34 +12,16 @@ import (
 
 func GetPasswordHashByUsername(db *sql.DB, username string) (string, error) {
 	q := `SELECT password FROM practice_db.users WHERE username=?`
-	var pswdHash string
+	pswdHash := ""
 	err := db.QueryRow(q, username).Scan(&pswdHash)
-	if err != nil {
-		return "", apperrors.New(
-			http.StatusInternalServerError,
-			"Failed scanning a row",
-			apperrors.ErrDBQuery,
-			map[string]interface{}{"query": q, "username": username, "details": err.Error()},
-		)
-	}
-
-	return pswdHash, nil
+	return pswdHash, getQueryError(q, map[string]interface{}{"username": username}, err)
 }
 
 func GetPasswordHashByEmail(db *sql.DB, email string) (string, error) {
 	q := `SELECT password FROM practice_db.users WHERE email=?`
-	var pswdHash string
+	pswdHash := ""
 	err := db.QueryRow(q, email).Scan(&pswdHash)
-	if err != nil {
-		return "", apperrors.New(
-			http.StatusInternalServerError,
-			"Failed scanning a row",
-			apperrors.ErrDBQuery,
-			map[string]interface{}{"query": q, "email": email, "details": err.Error()},
-		)
-	}
-
-	return pswdHash, nil
+	return pswdHash, getQueryError(q, map[string]interface{}{"email": email}, err)
 }
 
 // IsExistingEmail checks if the email is present in the db
@@ -47,16 +29,7 @@ func IsExistingEmail(db *sql.DB, email string) (bool, error) {
 	var exists bool
 	q := `SELECT EXISTS (SELECT 1 FROM practice_db.users WHERE email=?)`
 	err := db.QueryRow(q, email).Scan(&exists)
-	if err != nil {
-		return false, apperrors.New(
-			http.StatusInternalServerError,
-			"Failed scanning a row",
-			apperrors.ErrDBQuery,
-			map[string]interface{}{"query": q, "email": email, "details": err.Error()},
-		)
-	}
-
-	return exists, nil
+	return exists, getQueryError(q, map[string]interface{}{"email": email}, err)
 }
 
 // IsExistingEmail checks if the username is present in the db
@@ -64,16 +37,7 @@ func IsExistingUsername(db *sql.DB, username string) (bool, error) {
 	var exists bool
 	q := `SELECT EXISTS (SELECT 1 FROM practice_db.users WHERE username=?)`
 	err := db.QueryRow(q, username).Scan(&exists)
-	if err != nil {
-		return false, apperrors.New(
-			http.StatusInternalServerError,
-			"Failed scanning a row",
-			apperrors.ErrDBQuery,
-			map[string]interface{}{"query": q, "username": username, "details": err.Error()},
-		)
-	}
-
-	return exists, nil
+	return exists, getQueryError(q, map[string]interface{}{"username": username}, err)
 }
 
 // IsExistingCreds checks if the email and/or username are present in the db
@@ -92,4 +56,19 @@ func IsExistingCreds(c *gin.Context, email, username string) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func getQueryError(q string, context map[string]interface{}, err error) error {
+	if err == nil {
+		return nil
+	}
+
+	context["query"] = q
+	context["error"] = err.Error()
+	return apperrors.New(
+		http.StatusInternalServerError,
+		"Couldn't scan a row",
+		apperrors.ErrDBQuery,
+		context,
+	)
 }
