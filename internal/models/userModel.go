@@ -50,6 +50,8 @@ func (u *User) RetrieveUserByEmail(db *sql.DB) error {
 }
 
 func (u *User) RetrieveUserIDByEmail(db *sql.DB) error {
+	u.ID = -1
+
 	q := `SELECT id FROM practice_db.users WHERE email=?`
 	err := db.QueryRow(q, u.Email).Scan(&u.ID)
 
