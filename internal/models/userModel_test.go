@@ -57,7 +57,7 @@ func TestRetrieveUserById(t *testing.T) {
 	assert.Equal(t, 2, user.TotalHours)
 	assert.Equal(t, 3, user.TotalMinutes)
 
-	assert.NoError(t, err)
+	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
 func TestRetrieveUserByEmail(t *testing.T) {
@@ -87,7 +87,7 @@ func TestRetrieveUserByEmail(t *testing.T) {
 	assert.Equal(t, 2, user.TotalHours)
 	assert.Equal(t, 3, user.TotalMinutes)
 
-	assert.NoError(t, err)
+	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
 func TestRetrieveUserIDByEmail(t *testing.T) {
@@ -108,7 +108,7 @@ func TestRetrieveUserIDByEmail(t *testing.T) {
 
 	assert.Equal(t, int64(1), user.ID)
 
-	assert.NoError(t, err)
+	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
 func TestUpdateUserWorklogInfoByID(t *testing.T) {
