@@ -1,4 +1,4 @@
-package utils
+package models
 
 import (
 	"database/sql"
@@ -7,31 +7,8 @@ import (
 	"testing"
 
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestGetPasswordHashByUsername(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	assert.NoError(t, err)
-	defer db.Close()
-
-	rows := sqlmock.NewRows([]string{"password"}).AddRow("pswdHash")
-	q := `SELECT password FROM practice_db.users WHERE username=?`
-	username := "usrnm"
-
-	t.Run("Success", func(t *testing.T) {
-		mock.ExpectQuery(q).WithArgs(username).WillReturnRows(rows)
-		pswd, err := GetPasswordHashByUsername(db, username)
-		assert.NoError(t, err)
-
-		assert.Equal(t, "pswdHash", pswd)
-
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
-
-	// t.Run("")
-}
 
 type sqlMockResult struct {
 	lastInsertId int64
@@ -54,7 +31,7 @@ func TestGetLastInsertId(t *testing.T) {
 			err:          nil,
 		}
 
-		lastInsertId, err := GetLastInsertId(sqlMockResult, "INSERT INTO ...", struct{}{})
+		lastInsertId, err := getLastInsertId(sqlMockResult, "INSERT INTO ...", struct{}{})
 		assert.NoError(t, err)
 		assert.Equal(t, int64(1), lastInsertId)
 	})
@@ -65,7 +42,7 @@ func TestGetLastInsertId(t *testing.T) {
 			err:          errors.New("some error"),
 		}
 
-		lastInsertId, err := GetLastInsertId(sqlMockResult, "INSERT INTO ...", struct{}{})
+		lastInsertId, err := getLastInsertId(sqlMockResult, "INSERT INTO ...", struct{}{})
 		assert.Error(t, err)
 		assert.Equal(t, int64(-1), lastInsertId)
 
@@ -86,7 +63,7 @@ func TestHandleUpdateQuery(t *testing.T) {
 			err:          nil,
 		}
 
-		err := HandleUpdateQuery(sqlMockResult, nil, "UPDATE practice_db.users SET ...", struct{}{})
+		err := handleUpdateQuery(sqlMockResult, nil, "UPDATE practice_db.users SET ...", struct{}{})
 		assert.NoError(t, err)
 	})
 
@@ -97,7 +74,7 @@ func TestHandleUpdateQuery(t *testing.T) {
 		}
 
 		execErr := errors.New("execution error")
-		err := HandleUpdateQuery(sqlMockResult, execErr, "UPDATE practice_db.users SET ...", struct{}{})
+		err := handleUpdateQuery(sqlMockResult, execErr, "UPDATE practice_db.users SET ...", struct{}{})
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)
@@ -120,7 +97,7 @@ func TestHandleUpdateQuery(t *testing.T) {
 			err:          errors.New("rows affected error"),
 		}
 
-		err := HandleUpdateQuery(sqlMockResult, nil, "UPDATE practice_db.users SET ...", struct{}{})
+		err := handleUpdateQuery(sqlMockResult, nil, "UPDATE practice_db.users SET ...", struct{}{})
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)
@@ -139,7 +116,7 @@ func TestHandleUpdateQuery(t *testing.T) {
 			err:          nil,
 		}
 
-		err := HandleUpdateQuery(sqlMockResult, nil, "UPDATE practice_db.users SET ...", struct{}{})
+		err := handleUpdateQuery(sqlMockResult, nil, "UPDATE practice_db.users SET ...", struct{}{})
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)
@@ -158,12 +135,12 @@ func TestHandleUpdateQuery(t *testing.T) {
 
 func TestGetQueryError(t *testing.T) {
 	t.Run("No error", func(t *testing.T) {
-		err := GetQueryError("SELECT * FROM table", "No error", struct{}{}, nil)
+		err := getQueryError("SELECT * FROM table", "No error", struct{}{}, nil)
 		assert.NoError(t, err)
 	})
 
 	t.Run("Resource not found", func(t *testing.T) {
-		err := GetQueryError("SELECT * FROM table WHERE id=?", "Resource not found", struct{}{}, sql.ErrNoRows)
+		err := getQueryError("SELECT * FROM table WHERE id=?", "Resource not found", struct{}{}, sql.ErrNoRows)
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)
@@ -178,7 +155,7 @@ func TestGetQueryError(t *testing.T) {
 
 	t.Run("Other error", func(t *testing.T) {
 		someErr := errors.New("some error")
-		err := GetQueryError("SELECT * FROM table WHERE id=?", "Database error", struct{}{}, someErr)
+		err := getQueryError("SELECT * FROM table WHERE id=?", "Database error", struct{}{}, someErr)
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)
