@@ -112,7 +112,12 @@ func userUpdateWorklogInfo(db *sql.DB, r models.Record, countChange int, tx *sql
 		return models.User{}, err
 	}
 
-	err := u.RetrieveAllRecordsByUserID(db)
+	err := tx.Commit()
+	if err != nil {
+		tx.Rollback()
+	}
+
+	err = u.RetrieveAllRecordsByUserID(db)
 	if err != nil {
 		return models.User{}, err
 	}

@@ -63,6 +63,11 @@ func RecordAdd(email, hrStr, minStr string) (models.User, error) {
 		return models.User{}, err
 	}
 
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+	}
+
 	return u, nil
 }
 
@@ -107,6 +112,11 @@ func RecordRemove(rid int) (models.User, error) {
 	u, err := userUpdateWorklogInfo(db, r, -1, tx)
 	if err != nil {
 		return models.User{}, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
 	}
 
 	return u, nil
