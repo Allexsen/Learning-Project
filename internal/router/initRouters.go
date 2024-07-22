@@ -2,6 +2,8 @@
 package router
 
 import (
+	"html/template"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,6 +20,12 @@ func GetEngine() *gin.Engine {
 // InitRouter initializes default rout and statics folder routing,
 // and then invokes initialization of other routers too.
 func InitRouter() {
+	r.SetFuncMap(template.FuncMap{
+		"safeHTML": func(s string) template.HTML {
+			return template.HTML(template.HTMLEscapeString(s))
+		},
+	})
+
 	r.Static("/statics/", "../../static/")
 
 	r.GET("/", func(c *gin.Context) {
