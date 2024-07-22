@@ -8,6 +8,7 @@ import (
 	"time"
 
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // DB variable provides a way for the project to interact with the database
