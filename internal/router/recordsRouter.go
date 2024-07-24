@@ -8,10 +8,10 @@ import (
 
 // initRecordsRouter sets up routes associated with records
 func initRecordsRouter() {
-	records := r.Group("/record")
-	records.Use(middlewares.CheckJWT())
+	recordRouter := r.Group("/record")
+	recordRouter.Use(middlewares.CheckJWT())
 	{
-		r.POST("/record/add", handlers.RecordAdd)
-		r.POST("/record/delete", handlers.RecordDelete)
+		recordRouter.POST("/add", handlers.RecordAdd)
+		recordRouter.POST("/delete", handlers.RecordDelete)
 	}
 }

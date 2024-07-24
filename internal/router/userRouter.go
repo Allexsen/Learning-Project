@@ -5,9 +5,12 @@ import "github.com/Allexsen/Learning-Project/internal/handlers"
 
 // initUserRouter sets up routes associated with users
 func initUserRouter() {
-	r.POST("/user/register", handlers.UserRegister)
-	r.POST("/user/login", handlers.UserLogin)
-	r.POST("/user/retrieve", handlers.UserGet)
-	r.POST("/user/check-email", handlers.IsAvailableEmail)
-	r.POST("/user/check-username", handlers.IsAvailableUsername)
+	userRouter := r.Group("/user")
+	{
+		userRouter.POST("/register", handlers.UserRegister)
+		userRouter.POST("/login", handlers.UserLogin)
+		userRouter.POST("/retrieve", handlers.UserGet)
+		userRouter.POST("/check-email", handlers.IsAvailableEmail)
+		userRouter.POST("/check-username", handlers.IsAvailableUsername)
+	}
 }
