@@ -4,6 +4,7 @@ package router
 import (
 	"html/template"
 
+	"github.com/Allexsen/Learning-Project/internal/ws"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,6 +35,10 @@ func InitRouter() {
 
 	initUserRouter()
 	initRecordsRouter()
+
+	wsManager := ws.NewWsManager()
+	go wsManager.Run()
+	initWsRouter(wsManager)
 
 	r.Run(":8080")
 }

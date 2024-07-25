@@ -1,13 +1,16 @@
 package router
 
 import (
-	"github.com/Allexsen/Learning-Project/internal/handlers"
+	"github.com/Allexsen/Learning-Project/internal/ws"
+	"github.com/gin-gonic/gin"
 )
 
-func initWsRouter() {
+func initWsRouter(wsManager *ws.WsManager) {
 	wsRouter := r.Group("/ws")
 	{
-		// Placeholder for now
-		wsRouter.GET("", handlers.ServeWs)
+		// TODO: Swap out the placeholder
+		wsRouter.GET("", func(c *gin.Context) {
+			ws.ServeWs(wsManager, c)
+		})
 	}
 }
