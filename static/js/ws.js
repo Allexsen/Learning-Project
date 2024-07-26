@@ -8,10 +8,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const messageInput = document.getElementById("messageInput");
 
     connectBtn.addEventListener("click", () => {
-        socket = new WebSocket("ws://localhost:8080/ws");
+        const userData = localStorage.getItem('userData');
+        let username = 'Guest';
+        if (userData) {
+            const parsedData = JSON.parse(userData);
+            username = parsedData.user.username;
+        }
+
+        // Include the username as a query parameter in the WebSocket URL
+        socket = new WebSocket(`ws://localhost:8080/ws?username=${encodeURIComponent(username)}`);
 
         socket.onopen = () => {
-            connectionStatus.textContent = "Connected";
+            connectionStatus.textContent = "Connected as " + username;
             connectBtn.disabled = true;
             disconnectBtn.disabled = false;
             sendBtn.disabled = false;

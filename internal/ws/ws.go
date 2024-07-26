@@ -10,8 +10,10 @@ import (
 
 // Client represents a single WebSocket connection
 type Client struct {
-	conn *websocket.Conn
-	send chan []byte // Message to send to client
+	conn     *websocket.Conn
+	send     chan []byte // Message to send to client
+	manager  *WsManager
+	username string
 }
 
 // WsManager manages WebSocket connections and messages
@@ -52,7 +54,17 @@ func ServeWs(manager *WsManager, c *gin.Context) {
 		return
 	}
 
-	client := &Client{conn: conn, send: make(chan []byte, 256)}
+	username := c.Query("username")
+	if username == "" {
+		username = "anonymous"
+	}
+
+	client := &Client{
+		conn:     conn,
+		send:     make(chan []byte, 256),
+		username: username,
+	}
+
 	manager.register <- client
 
 	go client.writeLoop()
