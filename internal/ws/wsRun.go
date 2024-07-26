@@ -26,16 +26,16 @@ func (manager *WsManager) Run() {
 			}
 			manager.Unlock()
 		case message := <-manager.broadcast:
+			manager.Lock() // Must be unlocked
 			for client := range manager.clients {
 				select {
 				case client.send <- message:
 				default:
-					manager.Lock() // Must be unlocked
 					delete(manager.clients, client)
 					close(client.send)
-					manager.Unlock()
 				}
 			}
+			manager.Unlock()
 		}
 	}
 }
