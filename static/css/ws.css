@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #494949;
     margin: 0;
     padding: 0;
     display: flex;
@@ -10,7 +10,7 @@ body {
 }
 
 #container {
-    background: #fff;
+    background: #494949;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -28,18 +28,18 @@ button {
     border: none;
     border-radius: 5px;
     background-color: #007BFF;
-    color: #fff;
+    color: #f3f3f3;
     font-size: 1em;
     cursor: pointer;
 }
 
 button:disabled {
-    background-color: #cccccc;
+    background-color: #929292;
     cursor: not-allowed;
 }
 
 #messages {
-    border: 1px solid #cccccc;
+    border: 1px solid #f3f3f3;
     padding: 10px;
     margin: 10px 0;
     height: 150px;
@@ -48,6 +48,7 @@ button:disabled {
 }
 
 #messageInput {
+    background-color: #c7c7c7;
     width: 80%;
     padding: 10px;
     margin-right: 5px;

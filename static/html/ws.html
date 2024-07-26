@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebSocket Test</title>
     <link rel="stylesheet" href="/statics/css/ws.css">
+    <link rel="stylesheet" href="/statics/css/navbar.css">
+    <link rel="stylesheet" href="/statics/css/shared.css">
 </head>
 <body>
+    <div class="navbar">
+        <a href="/statics/html/index.html">Home</a>
+        <div class="navbar-right"></div>
+    </div>
+
     <div id="container">
         <h1>WebSocket Test</h1>
         <div id="connectionStatus">Disconnected</div>
@@ -16,6 +23,7 @@
         <input type="text" id="messageInput" placeholder="Enter message...">
         <button id="sendBtn" disabled>Send</button>
     </div>
+    <script src="/statics/js/navbar.js"></script>
     <script src="/statics/js/ws.js"></script>
 </body>
 </html>

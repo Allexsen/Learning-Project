@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (userToken) {
         navbarRight.innerHTML = `
             <a href="/statics/html/userProfile.html">Profile</a>
+            <a href="/statics/html/ws.html">WebSocket</a>
             <a href="#" id="logout">Logout</a>
         `;
 
