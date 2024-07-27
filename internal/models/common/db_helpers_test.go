@@ -1,4 +1,4 @@
-package models
+package common
 
 import (
 	"database/sql"
@@ -17,7 +17,7 @@ func TestGetLastInsertId(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		res := sqlmock.NewResult(1, 1)
 
-		lastInsertId, err := getLastInsertId(res, q, struct{}{})
+		lastInsertId, err := GetLastInsertId(res, q, struct{}{})
 		assert.NoError(t, err)
 		assert.Equal(t, int64(1), lastInsertId)
 	})
@@ -25,7 +25,7 @@ func TestGetLastInsertId(t *testing.T) {
 	t.Run("Failure", func(t *testing.T) {
 		res := sqlmock.NewErrorResult(apperrors.ErrDBLastInsertId)
 
-		lastInsertId, err := getLastInsertId(res, q, struct{}{})
+		lastInsertId, err := GetLastInsertId(res, q, struct{}{})
 		assert.Error(t, err)
 		assert.Equal(t, int64(-1), lastInsertId)
 
@@ -41,7 +41,7 @@ func TestHandleUpdateQuery(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		res := sqlmock.NewResult(1, 1)
 
-		err := handleUpdateQuery(res, nil, q, struct{}{})
+		err := HandleUpdateQuery(res, nil, q, struct{}{})
 		assert.NoError(t, err)
 	})
 
@@ -49,7 +49,7 @@ func TestHandleUpdateQuery(t *testing.T) {
 		res := sqlmock.NewResult(1, 0)
 
 		execErr := errors.New("execution error")
-		err := handleUpdateQuery(res, execErr, q, struct{}{})
+		err := HandleUpdateQuery(res, execErr, q, struct{}{})
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)
@@ -61,7 +61,7 @@ func TestHandleUpdateQuery(t *testing.T) {
 	t.Run("Error in RowsAffected", func(t *testing.T) {
 		errRes := sqlmock.NewErrorResult(apperrors.ErrDBRowsAffected)
 
-		err := handleUpdateQuery(errRes, nil, q, struct{}{})
+		err := HandleUpdateQuery(errRes, nil, q, struct{}{})
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)
@@ -73,7 +73,7 @@ func TestHandleUpdateQuery(t *testing.T) {
 	t.Run("Not Found", func(t *testing.T) {
 		res := sqlmock.NewResult(1, 0)
 
-		err := handleUpdateQuery(res, nil, q, struct{}{})
+		err := HandleUpdateQuery(res, nil, q, struct{}{})
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)
@@ -86,12 +86,12 @@ func TestHandleUpdateQuery(t *testing.T) {
 func TestGetQueryError(t *testing.T) {
 	q := "SELECT ... FROM ..."
 	t.Run("Success", func(t *testing.T) {
-		err := getQueryError(q, "No error", struct{}{}, nil)
+		err := GetQueryError(q, "No error", struct{}{}, nil)
 		assert.NoError(t, err)
 	})
 
 	t.Run("Not Found", func(t *testing.T) {
-		err := getQueryError(q, "Resource not found", struct{}{}, sql.ErrNoRows)
+		err := GetQueryError(q, "Resource not found", struct{}{}, sql.ErrNoRows)
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)
@@ -101,7 +101,7 @@ func TestGetQueryError(t *testing.T) {
 	})
 
 	t.Run("Query Error", func(t *testing.T) {
-		err := getQueryError(q, "Database error", struct{}{}, apperrors.ErrDBQuery)
+		err := GetQueryError(q, "Database error", struct{}{}, apperrors.ErrDBQuery)
 		assert.Error(t, err)
 
 		appErr, ok := err.(*apperrors.AppError)

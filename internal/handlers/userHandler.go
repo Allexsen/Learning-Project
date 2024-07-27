@@ -7,7 +7,7 @@ import (
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
-	"github.com/Allexsen/Learning-Project/internal/models"
+	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -105,7 +105,7 @@ func UserGet(c *gin.Context) {
 		return
 	}
 
-	u := models.User{Email: reqData.Email}
+	u := user.User{Email: reqData.Email}
 	u, err := controllers.UserGetByEmail(u.Email)
 	if err != nil {
 		handleError(c, err)

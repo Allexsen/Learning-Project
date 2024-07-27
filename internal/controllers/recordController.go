@@ -6,30 +6,31 @@ import (
 
 	database "github.com/Allexsen/Learning-Project/internal/db"
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
-	models "github.com/Allexsen/Learning-Project/internal/models"
+	"github.com/Allexsen/Learning-Project/internal/models/record"
+	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 )
 
 // RecordAdd adds a new record to the database,
 // then updates the user and user's worklog.
-func RecordAdd(email, hrStr, minStr string) (models.User, error) {
+func RecordAdd(email, hrStr, minStr string) (user.User, error) {
 	hours, err := utils.Atoi(hrStr)
 	if err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	minutes, err := utils.Atoi(minStr)
 	if err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	db := database.DB
 
-	r := models.Record{Hours: hours, Minutes: minutes}
+	r := record.Record{Hours: hours, Minutes: minutes}
 	// Get corresponding user
 	r.UserID, err = UserGetIDByEmail(db, email)
 	if err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	// Start transaction to ensure both, record and user
@@ -37,7 +38,7 @@ func RecordAdd(email, hrStr, minStr string) (models.User, error) {
 	// must be rolled back to maintain data integrity.
 	tx, err := db.Begin()
 	if err != nil {
-		return models.User{}, apperrors.New(
+		return user.User{}, apperrors.New(
 			http.StatusInternalServerError,
 			"Failed to begin transaction",
 			apperrors.ErrDBTransaction,
@@ -55,12 +56,12 @@ func RecordAdd(email, hrStr, minStr string) (models.User, error) {
 	// Query adding to the db
 	r.ID, err = r.AddRecord(tx)
 	if err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	u, err := userUpdateWorklogInfo(db, r, 1, tx)
 	if err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	err = tx.Commit()
@@ -73,11 +74,11 @@ func RecordAdd(email, hrStr, minStr string) (models.User, error) {
 
 // RecordRemove deletes a record by record id,
 // then updates the user and user's worklog.
-func RecordRemove(rid int) (models.User, error) {
+func RecordRemove(rid int) (user.User, error) {
 	db := database.DB
-	r := models.Record{ID: int64(rid)}
+	r := record.Record{ID: int64(rid)}
 	if err := r.RetrieveRecordByID(db); err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	// Start transaction to ensure both, record and user
@@ -85,7 +86,7 @@ func RecordRemove(rid int) (models.User, error) {
 	// must be rolled back to maintain data integrity.
 	tx, err := db.Begin()
 	if err != nil {
-		return models.User{}, apperrors.New(
+		return user.User{}, apperrors.New(
 			http.StatusInternalServerError,
 			"Failed to begin transaction",
 			apperrors.ErrDBTransaction,
@@ -102,7 +103,7 @@ func RecordRemove(rid int) (models.User, error) {
 
 	// Query removal from the db
 	if err := r.RemoveRecord(tx); err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	// Removing record decreases user's work time,
@@ -111,7 +112,7 @@ func RecordRemove(rid int) (models.User, error) {
 	r.Minutes *= -1
 	u, err := userUpdateWorklogInfo(db, r, -1, tx)
 	if err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	err = tx.Commit()
