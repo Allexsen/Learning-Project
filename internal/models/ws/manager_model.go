@@ -57,7 +57,7 @@ func ServeWs(manager *WsManager, c *gin.Context) {
 	client := &Client{
 		conn: conn,
 		send: make(chan []byte, 256),
-		user: &user.User{}, // Placeholder
+		user: &user.User{Username: username}, // Placeholder
 	}
 
 	manager.register <- client

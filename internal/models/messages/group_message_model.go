@@ -3,7 +3,7 @@ package messages
 import (
 	"time"
 
-	"github.com/Allexsen/Learning-Project/internal/ws"
+	"github.com/Allexsen/Learning-Project/internal/models/ws"
 )
 
 // GroupMessage represents a group chat message
