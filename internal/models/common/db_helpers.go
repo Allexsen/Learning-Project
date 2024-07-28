@@ -1,5 +1,5 @@
-// Package models declares object models, and provides methods for database interaction.
-package models
+// Package common provides helper functions for models package.
+package common
 
 import (
 	"database/sql"
@@ -10,10 +10,10 @@ import (
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 )
 
-// getLastInsertId handles sql insertion query result,
+// GetLastInsertId handles sql insertion query result,
 // and returns the last insert id.
 // Returns -1 and error in case of failure.
-func getLastInsertId(result sql.Result, q string, data interface{}) (int64, error) {
+func GetLastInsertId(result sql.Result, q string, data interface{}) (int64, error) {
 	dataType := reflect.TypeOf(data).Name()
 	lastInsertId, err := result.LastInsertId()
 	if err != nil {
@@ -28,9 +28,9 @@ func getLastInsertId(result sql.Result, q string, data interface{}) (int64, erro
 	return lastInsertId, nil
 }
 
-// getQueryError checks if there was an error in execution.
+// GetQueryError checks if there was an error in execution.
 // Returns AppError if found any, or nil otherwise.
-func getQueryError(q, message string, data interface{}, err error) error {
+func GetQueryError(q, message string, data interface{}, err error) error {
 	if err == nil {
 		return nil
 	}
@@ -50,9 +50,9 @@ func getQueryError(q, message string, data interface{}, err error) error {
 	)
 }
 
-// handleUpdateQuery validates sql update query by checking
+// HandleUpdateQuery validates sql update query by checking
 // update error, affected rows error, or no rows affected error.
-func handleUpdateQuery(result sql.Result, err error, q string, data interface{}) error {
+func HandleUpdateQuery(result sql.Result, err error, q string, data interface{}) error {
 	dataType := reflect.TypeOf(data).Name()
 	if err != nil {
 		return apperrors.New(

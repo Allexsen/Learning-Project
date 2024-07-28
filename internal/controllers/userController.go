@@ -8,24 +8,25 @@ import (
 
 	database "github.com/Allexsen/Learning-Project/internal/db"
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
-	"github.com/Allexsen/Learning-Project/internal/models"
+	"github.com/Allexsen/Learning-Project/internal/models/record"
+	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // UserRegister takes user info, generates bcrypt
 // password hash, and adds the user to the database
-func UserRegister(firstname, lastname, username, email, pswd string) (models.User, error) {
+func UserRegister(firstname, lastname, username, email, pswd string) (user.User, error) {
 	pswdHash, err := bcrypt.GenerateFromPassword([]byte(pswd), 10)
 	if err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	db := database.DB
-	u := models.User{Firstname: firstname, Lastname: lastname, Username: username, Email: email, Password: string(pswdHash)}
+	u := user.User{Firstname: firstname, Lastname: lastname, Username: username, Email: email, Password: string(pswdHash)}
 	// Query adding to the db
 	if u.ID, err = u.AddUser(db); err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	return u, nil
@@ -63,16 +64,16 @@ func UserLogin(credential, password string) error {
 }
 
 // UserGetByEmail retrieves user from the database by user email
-func UserGetByEmail(email string) (models.User, error) {
+func UserGetByEmail(email string) (user.User, error) {
 	db := database.DB
-	u := models.User{Email: email}
+	u := user.User{Email: email}
 	if err := u.RetrieveUserByEmail(db); err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	// retrieves records associated with the user by user id
 	if err := u.RetrieveAllRecordsByUserID(db); err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	return u, nil
@@ -81,7 +82,7 @@ func UserGetByEmail(email string) (models.User, error) {
 // UserGetIDByEmail retrieves user ID by user email.
 // return -1 and error in case of failure
 func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {
-	u := models.User{Email: email}
+	u := user.User{Email: email}
 	if err := u.RetrieveUserIDByEmail(db); err != nil {
 		return -1, err
 	}
@@ -90,10 +91,10 @@ func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {
 }
 
 // UserUpdateWorklogInfo updates the user worklog data by the provided record
-func userUpdateWorklogInfo(db *sql.DB, r models.Record, countChange int, tx *sql.Tx) (models.User, error) {
-	u := models.User{ID: r.UserID}
+func userUpdateWorklogInfo(db *sql.DB, r record.Record, countChange int, tx *sql.Tx) (user.User, error) {
+	u := user.User{ID: r.UserID}
 	if err := u.RetrieveUserbyID(db); err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	u.TotalMinutes += r.Minutes
@@ -109,7 +110,7 @@ func userUpdateWorklogInfo(db *sql.DB, r models.Record, countChange int, tx *sql
 
 	// Query update to the db
 	if err := u.UpdateUserWorklogInfoByID(tx); err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	err := tx.Commit()
@@ -119,7 +120,7 @@ func userUpdateWorklogInfo(db *sql.DB, r models.Record, countChange int, tx *sql
 
 	err = u.RetrieveAllRecordsByUserID(db)
 	if err != nil {
-		return models.User{}, err
+		return user.User{}, err
 	}
 
 	return u, nil

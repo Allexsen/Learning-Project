@@ -4,7 +4,7 @@ package router
 import (
 	"html/template"
 
-	"github.com/Allexsen/Learning-Project/internal/ws"
+	"github.com/Allexsen/Learning-Project/internal/models/ws"
 	"github.com/gin-gonic/gin"
 )
 
