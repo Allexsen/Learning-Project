@@ -36,7 +36,7 @@ func InitRouter() {
 	initUserRouter()
 	initRecordsRouter()
 
-	wsManager := ws.NewWsManager()
+	wsManager := ws.NewManager()
 	go wsManager.Run()
 	initWsRouter(wsManager)
 
