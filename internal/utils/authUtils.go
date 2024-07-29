@@ -8,6 +8,7 @@ import (
 	"time"
 
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
+	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -15,16 +16,16 @@ import (
 var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 type Claims struct {
-	Email string `json:"email"`
+	UserDTO user.UserDTO
 	jwt.StandardClaims
 }
 
 // GenerateJWT sets expiration date to 24 hours, generates a new JWT,
 // signs and returns the token string.
-func GenerateJWT(email string) (string, error) {
+func GenerateJWT(userDTO user.UserDTO) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
-		Email: email,
+		UserDTO: userDTO,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

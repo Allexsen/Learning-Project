@@ -17,11 +17,12 @@ func TestAddUser(t *testing.T) {
 	defer db.Close()
 
 	user := User{
-		Firstname: "fn",
-		Lastname:  "ln",
-		Email:     "em",
-		Username:  "un",
-		Password:  "pswdHash",
+		UserDTO: UserDTO{Firstname: "fn",
+			Lastname: "ln",
+			Email:    "em",
+			Username: "un",
+		},
+		Password: "pswdHash",
 	}
 
 	q := `INSERT INTO practice_db\.users \(firstname, lastname, email, username, password\) VALUES\(\?, \?, \?, \?, \?\)`
@@ -75,7 +76,9 @@ func TestRetrieveUserById(t *testing.T) {
 	defer db.Close()
 
 	user := User{
-		ID: 1,
+		UserDTO: UserDTO{
+			ID: 1,
+		},
 	}
 
 	q := `SELECT firstname, lastname, email, username, log_count, total_hours, total_minutes
@@ -134,7 +137,9 @@ func TestRetrieveUserByEmail(t *testing.T) {
 	defer db.Close()
 
 	user := User{
-		Email: "test@gmail.com",
+		UserDTO: UserDTO{
+			Email: "test@gmail.com",
+		},
 	}
 
 	q := `SELECT id, firstname, lastname, username, log_count, total_hours, total_minutes
@@ -192,7 +197,9 @@ func TestRetrieveUserIDByEmail(t *testing.T) {
 	defer db.Close()
 
 	user := User{
-		Email: "test@gmail.com",
+		UserDTO: UserDTO{
+			Email: "test@gmail.com",
+		},
 	}
 
 	q := `SELECT id FROM practice_db\.users WHERE email=\?`
@@ -243,7 +250,9 @@ func TestUpdateUserWorklogInfoByID(t *testing.T) {
 	defer db.Close()
 
 	user := User{
-		ID:           1,
+		UserDTO: UserDTO{
+			ID: 1,
+		},
 		LogCount:     2,
 		TotalHours:   3,
 		TotalMinutes: 4,
@@ -304,7 +313,9 @@ func TestRetrieveAllRecordsByUserID(t *testing.T) {
 	defer db.Close()
 
 	user := User{
-		ID: 1,
+		UserDTO: UserDTO{
+			ID: 1,
+		},
 	}
 
 	q := `SELECT id, hours, minutes FROM practice_db\.records WHERE user_id=\?`

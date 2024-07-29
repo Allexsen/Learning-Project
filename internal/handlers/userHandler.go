@@ -69,7 +69,7 @@ func UserRegister(c *gin.Context) {
 // If the request is successful, generates and adds JWT to headers.
 func UserLogin(c *gin.Context) {
 	var reqData struct {
-		Email    string `json:"email"`
+		Cred     string `json:"cred"`
 		Password string `json:"password"`
 	}
 
@@ -77,12 +77,13 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
-	if err := controllers.UserLogin(reqData.Email, reqData.Password); err != nil {
+	userDTO, err := controllers.UserLogin(reqData.Cred, reqData.Password)
+	if err != nil {
 		handleError(c, err)
 		return
 	}
 
-	tokenString, err := utils.GenerateJWT(reqData.Email)
+	tokenString, err := utils.GenerateJWT(userDTO)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -98,14 +99,19 @@ func UserLogin(c *gin.Context) {
 // user, and sets it as a header if successful.
 func UserGet(c *gin.Context) {
 	var reqData struct {
-		Email string `json:"email"`
+		Cred string `json:"cred"`
 	}
 
 	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
 
-	u := user.User{Email: reqData.Email}
+	u := user.User{
+		UserDTO: user.UserDTO{
+			Email: reqData.Cred, // Swap out later, for now, use email as cred
+		},
+	}
+
 	u, err := controllers.UserGetByEmail(u.Email)
 	if err != nil {
 		handleError(c, err)
