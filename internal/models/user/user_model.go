@@ -8,14 +8,18 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/models/record"
 )
 
+type UserDTO struct {
+	ID        int64  `db:"id" json:"id"`               // Unique user id
+	Firstname string `db:"firstname" json:"firstName"` // Firstname
+	Lastname  string `db:"lastname" json:"lastName"`   // Lastname
+	Email     string `db:"email" json:"email"`         // Email
+	Username  string `db:"username" json:"username"`   // Unique username
+}
+
 // User represents an internal object.
 // It stores user data (:D)
 type User struct {
-	ID           int64           `db:"id" json:"id"`                       // Unique user id
-	Firstname    string          `db:"firstname" json:"firstName"`         // Firstname
-	Lastname     string          `db:"lastname" json:"lastName"`           // Lastname
-	Email        string          `db:"email" json:"email"`                 // Email
-	Username     string          `db:"username" json:"username"`           // Unique username
+	UserDTO
 	Password     string          `db:"password" json:"-"`                  // Password hash
 	LogCount     int             `db:"log_count" json:"log_count"`         // Total number of logs
 	TotalHours   int             `db:"total_hours" json:"total_hours"`     // Total hours worked
@@ -59,6 +63,22 @@ func (u *User) RetrieveUserIDByEmail(db *sql.DB) error {
 	err := db.QueryRow(q, u.Email).Scan(&u.ID)
 
 	return common.GetQueryError(q, "Couldn't retrieve user id by email", u, err)
+}
+
+// New, not tested
+func (u *User) RetrieveUserIDByUsername(db *sql.DB) error {
+	q := `SELECT id FROM practice_db.users WHERE username=?`
+	err := db.QueryRow(q, u.Username).Scan(&u.ID)
+
+	return common.GetQueryError(q, "Couldn't retrieve user id by username", u, err)
+}
+
+// New, not tested
+func (u *UserDTO) RetrieveUserDTOByCred(db *sql.DB) error {
+	q := `SELECT id, firstname, lastname, email, username FROM practice_db.users WHERE email=? OR username=?`
+	err := db.QueryRow(q, u.Email, u.Username).Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Username)
+
+	return common.GetQueryError(q, "Couldn't retrieve user by email or username", u, err)
 }
 
 // UpdateUserWorklogInfoByID changes the information about the user's worklog by user id,

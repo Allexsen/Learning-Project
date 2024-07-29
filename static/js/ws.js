@@ -1,59 +1,63 @@
-document.addEventListener("DOMContentLoaded", () => {
-    let socket;
-    const connectBtn = document.getElementById("connectBtn");
-    const disconnectBtn = document.getElementById("disconnectBtn");
-    const sendBtn = document.getElementById("sendBtn");
-    const connectionStatus = document.getElementById("connectionStatus");
-    const messages = document.getElementById("messages");
-    const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+const messageInput = document.getElementById("messageInput");
+const messagesDiv = document.getElementById("messages");
+const connectionStatus = document.getElementById("connectionStatus");
+const userData = JSON.parse(localStorage.getItem('userData'));
 
-    connectBtn.addEventListener("click", () => {
-        const userData = localStorage.getItem('userData');
-        let username = 'Guest';
-        if (userData) {
-            const parsedData = JSON.parse(userData);
-            username = parsedData.user.username;
-        }
+let socket;
 
-        // Include the username as a query parameter in the WebSocket URL
-        socket = new WebSocket(`ws://localhost:8080/ws?username=${encodeURIComponent(username)}`);
+connectBtn.addEventListener("click", () => {
+    const userToken = localStorage.getItem('userToken');
 
-        socket.onopen = () => {
-            connectionStatus.textContent = "Connected as " + username;
-            connectBtn.disabled = true;
-            disconnectBtn.disabled = false;
-            sendBtn.disabled = false;
+    if (!userToken || !userId) {
+        alert('User is not logged in.');
+        return;
+    }
+
+    // Include user information as query parameters
+    const wsUrl = `ws://localhost:8080/ws?token=${encodeURIComponent(userToken)}`;
+    socket = new WebSocket(wsUrl);
+    
+    socket.onopen = () => {
+        connectionStatus.textContent = "Connected";
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+        sendBtn.disabled = false;
+    };
+    
+    socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        const messageElement = document.createElement('div');
+        messageElement.textContent = `${message.sender_id}: ${message.content}`;
+        messagesDiv.appendChild(messageElement);
+    };
+
+    socket.onclose = () => {
+        connectionStatus.textContent = "Disconnected";
+        connectBtn.disabled = false;
+        disconnectBtn.disabled = true;
+        sendBtn.disabled = true;
+    };
+});
+
+disconnectBtn.addEventListener("click", () => {
+    if (socket) {
+        socket.close();
+    }
+});
+
+sendBtn.addEventListener("click", () => {
+    const messageContent = messageInput.value;
+
+    if (messageContent && socket && socket.readyState === WebSocket.OPEN) {
+        const message = {
+            id: Date.now(), // Placeholder message ID
+            sender_id: userData.userId,
+            content: messageContent,
+            timestamp: Date.now(),
+            status: "sent" // TBD
         };
-
-        socket.onmessage = (event) => {
-            const message = document.createElement("div");
-            message.textContent = event.data;
-            messages.appendChild(message);
-        };
-
-        socket.onclose = () => {
-            connectionStatus.textContent = "Disconnected";
-            connectBtn.disabled = false;
-            disconnectBtn.disabled = true;
-            sendBtn.disabled = true;
-        };
-
-        socket.onerror = (error) => {
-            console.error("WebSocket Error: ", error);
-        };
-    });
-
-    disconnectBtn.addEventListener("click", () => {
-        if (socket) {
-            socket.close();
-        }
-    });
-
-    sendBtn.addEventListener("click", () => {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            const message = messageInput.value;
-            socket.send(message);
-            messageInput.value = "";
-        }
-    });
+        socket.send(JSON.stringify(message));
+        messageInput.value = "";
+    }
 });

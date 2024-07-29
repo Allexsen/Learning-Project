@@ -23,7 +23,15 @@ func UserRegister(firstname, lastname, username, email, pswd string) (user.User,
 	}
 
 	db := database.DB
-	u := user.User{Firstname: firstname, Lastname: lastname, Username: username, Email: email, Password: string(pswdHash)}
+	u := user.User{
+		UserDTO: user.UserDTO{
+			Firstname: firstname,
+			Lastname:  lastname,
+			Username:  username,
+			Email:     email,
+		},
+		Password: string(pswdHash),
+	}
 	// Query adding to the db
 	if u.ID, err = u.AddUser(db); err != nil {
 		return user.User{}, err
@@ -34,25 +42,28 @@ func UserRegister(firstname, lastname, username, email, pswd string) (user.User,
 
 // UserLogin retrieves bcrypt password hash, authenticates
 // user credentials and, if successful, logs in the user
-func UserLogin(credential, password string) error {
+func UserLogin(credential, password string) (user.UserDTO, error) {
 	var pswdHash string
 	var err error
 	db := database.DB
+	userDTO := user.UserDTO{}
 
 	// Check if the provided credentail is email or username, and query accordingly
 	if strings.Contains(credential, "@") {
 		pswdHash, err = utils.GetPasswordHashByEmail(db, credential)
+		userDTO.Email = credential
 	} else {
 		pswdHash, err = utils.GetPasswordHashByUsername(db, credential)
+		userDTO.Username = credential
 	}
 
 	if err != nil {
-		return err
+		return user.UserDTO{}, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(pswdHash), []byte(password))
 	if err != nil {
-		return apperrors.New(
+		return user.UserDTO{}, apperrors.New(
 			http.StatusUnauthorized,
 			"Invalid credentials",
 			apperrors.ErrUnauthorized,
@@ -60,13 +71,24 @@ func UserLogin(credential, password string) error {
 		)
 	}
 
-	return nil
+	// Retrieve user info by email or username
+	err = userDTO.RetrieveUserDTOByCred(db)
+	if err != nil {
+		return user.UserDTO{}, err
+	}
+
+	return userDTO, nil
 }
 
 // UserGetByEmail retrieves user from the database by user email
 func UserGetByEmail(email string) (user.User, error) {
 	db := database.DB
-	u := user.User{Email: email}
+	u := user.User{
+		UserDTO: user.UserDTO{
+			Email: email,
+		},
+	}
+
 	if err := u.RetrieveUserByEmail(db); err != nil {
 		return user.User{}, err
 	}
@@ -82,7 +104,12 @@ func UserGetByEmail(email string) (user.User, error) {
 // UserGetIDByEmail retrieves user ID by user email.
 // return -1 and error in case of failure
 func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {
-	u := user.User{Email: email}
+	u := user.User{
+		UserDTO: user.UserDTO{
+			Email: email,
+		},
+	}
+
 	if err := u.RetrieveUserIDByEmail(db); err != nil {
 		return -1, err
 	}
@@ -92,7 +119,12 @@ func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {
 
 // UserUpdateWorklogInfo updates the user worklog data by the provided record
 func userUpdateWorklogInfo(db *sql.DB, r record.Record, countChange int, tx *sql.Tx) (user.User, error) {
-	u := user.User{ID: r.UserID}
+	u := user.User{
+		UserDTO: user.UserDTO{
+			ID: r.UserID,
+		},
+	}
+
 	if err := u.RetrieveUserbyID(db); err != nil {
 		return user.User{}, err
 	}

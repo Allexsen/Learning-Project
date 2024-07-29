@@ -1,6 +1,6 @@
 document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    const email = document.getElementById('email').value;
+    const cred = document.getElementById('cred').value;
     const password = document.getElementById('password').value;
     const urlParams = new URLSearchParams(window.location.search);
     const redirectUrl = urlParams.get('redirect') || `/`;
@@ -10,7 +10,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ cred, password })
     })
     .then(response => response.json())
     .then(data => {
@@ -22,7 +22,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${data.token}`
                 },
-                body: JSON.stringify({ email: email })
+                body: JSON.stringify({ cred: cred })
             });
         } else {
             alert('Invalid credentials');
