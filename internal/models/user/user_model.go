@@ -56,6 +56,15 @@ func (u *User) RetrieveUserByEmail(db *sql.DB) error {
 	return common.GetQueryError(q, "Couldn't retrieve user by email", u, err)
 }
 
+func (u *User) RetrieveUserByUsername(db *sql.DB) error {
+	q := `SELECT id, firstname, lastname, email, log_count, total_hours, total_minutes
+		FROM practice_db.users
+		WHERE username=?`
+	err := db.QueryRow(q, u.Username).Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.LogCount, &u.TotalHours, &u.TotalMinutes)
+
+	return common.GetQueryError(q, "Couldn't retrieve user by username", u, err)
+}
+
 func (u *User) RetrieveUserIDByEmail(db *sql.DB) error {
 	u.ID = -1
 

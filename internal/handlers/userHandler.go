@@ -4,6 +4,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
@@ -106,16 +107,20 @@ func UserGet(c *gin.Context) {
 		return
 	}
 
-	u := user.User{
-		UserDTO: user.UserDTO{
-			Email: reqData.Cred, // Swap out later, for now, use email as cred
-		},
-	}
-
-	u, err := controllers.UserGetByEmail(u.Email)
-	if err != nil {
-		handleError(c, err)
-		return
+	var u user.User
+	var err error
+	if strings.Contains(reqData.Cred, "@") {
+		u, err = controllers.UserGetByEmail(reqData.Cred)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+	} else {
+		u, err = controllers.UserGetByUsername(reqData.Cred)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{

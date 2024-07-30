@@ -1,12 +1,12 @@
 document.getElementById('retrieveForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    const email = document.getElementById('email').value;
+    const cred = document.getElementById('cred').value;
     fetch('/user/retrieve', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ cred })
     })
     .then(response => response.json())
     .then(data => {

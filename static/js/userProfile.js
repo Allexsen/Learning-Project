@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     searchForm.addEventListener('submit', function(event) {
         event.preventDefault();
-        const email = document.getElementById('email').value;
-        retrieveUserProfile(email);
+        const cred = document.getElementById('cred').value;
+        retrieveUserProfile(cred);
     });
 
     addRecordButton.addEventListener('click', function() {
@@ -61,13 +61,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function retrieveUserProfile(email) {
+    function retrieveUserProfile(cred) {
         fetch('/user/retrieve', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email })
+            body: JSON.stringify({ cred })
         })
         .then(response => response.json())
         .then(data => {
