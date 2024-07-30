@@ -14,18 +14,25 @@ import (
 // checks its validity, if present.
 func CheckJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			apperrors.HandleError(c, apperrors.New(
-				http.StatusUnauthorized,
-				"Authorization header required",
-				apperrors.ErrMissingAuthHeader,
-				map[string]interface{}{"details": "empty jwt in the request header"},
-			))
-			return
+		token := c.GetHeader("Authorization")
+		if token == "" {
+			token = c.Query("token")
+			if token == "" {
+				apperrors.HandleError(c, apperrors.New(
+					http.StatusUnauthorized,
+					"Authorization header required",
+					apperrors.ErrMissingAuthHeader,
+					map[string]interface{}{"details": "empty jwt in the request header"},
+				))
+				return
+			}
 		}
 
-		tokenString := strings.TrimSpace(strings.Replace(authHeader, "Bearer", "", 1))
+		var tokenString string
+		if !strings.HasPrefix(token, "Bearer") {
+			tokenString = strings.TrimSpace(strings.Replace(token, "Bearer", "", 1))
+		}
+
 		claims, err := utils.ValidateJWT(tokenString)
 		if err != nil {
 			apperrors.HandleError(c, apperrors.New(
@@ -37,7 +44,7 @@ func CheckJWT() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userDTO", claims.UserDTO)
+		c.Set("userDTO", &claims.UserDTO)
 		c.Next()
 	}
 }

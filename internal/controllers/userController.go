@@ -101,6 +101,27 @@ func UserGetByEmail(email string) (user.User, error) {
 	return u, nil
 }
 
+// UserGetByUsername retrieves user from the database by username
+func UserGetByUsername(username string) (user.User, error) {
+	db := database.DB
+	u := user.User{
+		UserDTO: user.UserDTO{
+			Username: username,
+		},
+	}
+
+	if err := u.RetrieveUserByUsername(db); err != nil {
+		return user.User{}, err
+	}
+
+	// retrieves records associated with the user by user id
+	if err := u.RetrieveAllRecordsByUserID(db); err != nil {
+		return user.User{}, err
+	}
+
+	return u, nil
+}
+
 // UserGetIDByEmail retrieves user ID by user email.
 // return -1 and error in case of failure
 func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {

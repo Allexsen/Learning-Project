@@ -51,13 +51,16 @@ func WsHandler(manager *WsManager, c *gin.Context) {
 		return
 	}
 
-	userID, _ := c.Get("id") // TODO: Implement proper JWT validation
+	userDTO, exists := c.Get("userDTO") // TODO: Implement proper JWT validation
+	if !exists {
+		http.NotFound(c.Writer, c.Request) // TODO: Cetralize error handling
+		return
+	}
+
 	client := &Client{
-		conn: conn,
-		send: make(chan msg.Message, 256),
-		userDTO: &user.UserDTO{
-			ID: userID.(int64), // Placeholder
-		},
+		conn:    conn,
+		send:    make(chan msg.Message, 256),
+		userDTO: userDTO.(*user.UserDTO),
 	}
 
 	manager.register <- client

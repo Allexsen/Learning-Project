@@ -9,13 +9,12 @@ let socket;
 connectBtn.addEventListener("click", () => {
     const userToken = localStorage.getItem('userToken');
 
-    if (!userToken || !userId) {
+    if (!userToken) {
         alert('User is not logged in.');
         return;
     }
 
-    // Include user information as query parameters
-    const wsUrl = `ws://localhost:8080/ws?token=${encodeURIComponent(userToken)}`;
+    const wsUrl = `ws://localhost:8080/ws?token=${userToken}`;
     socket = new WebSocket(wsUrl);
     
     socket.onopen = () => {
