@@ -20,14 +20,14 @@ type Chat interface {
 	GetManager() *ws.WsManager
 }
 
-func (c *BaseChat) GetMembers() []int64 {
-	return c.Members
+func (chat *BaseChat) GetMembers() []int64 {
+	return chat.Members
 }
 
-func (c *BaseChat) GetManager() *ws.WsManager {
-	return c.Manager
+func (chat *BaseChat) GetManager() *ws.WsManager {
+	return chat.Manager
 }
 
-func (c *BaseChat) SendMessage(msg msg.Message) {
-	c.Manager.Broadcast(msg)
+func (chat *BaseChat) SendMessage(msg msg.Message) {
+	chat.Manager.Broadcast(msg)
 }
