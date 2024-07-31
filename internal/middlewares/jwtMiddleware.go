@@ -28,10 +28,7 @@ func CheckJWT() gin.HandlerFunc {
 			}
 		}
 
-		var tokenString string
-		if !strings.HasPrefix(token, "Bearer") {
-			tokenString = strings.TrimSpace(strings.Replace(token, "Bearer", "", 1))
-		}
+		tokenString := strings.TrimSpace(strings.Replace(token, "Bearer", "", 1))
 
 		claims, err := utils.ValidateJWT(tokenString)
 		if err != nil {

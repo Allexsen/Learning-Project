@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/Allexsen/Learning-Project/internal/models/msg"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/gin-gonic/gin"
@@ -16,9 +17,10 @@ import (
 // WsManager manages Clients and WebSocket connections
 type WsManager struct {
 	clients    map[*Client]bool
-	broadcast  chan msg.Message
+	broadcast  chan msg.BaseMessage
 	register   chan *Client
 	unregister chan *Client
+	stop       chan struct{}
 	sync.RWMutex
 }
 
@@ -26,9 +28,10 @@ type WsManager struct {
 func NewManager() *WsManager {
 	return &WsManager{
 		clients:    make(map[*Client]bool),
-		broadcast:  make(chan msg.Message),
+		broadcast:  make(chan msg.BaseMessage),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
+		stop:       make(chan struct{}),
 	}
 }
 
@@ -51,9 +54,14 @@ func WsHandler(manager *WsManager, c *gin.Context) {
 		return
 	}
 
-	userDTO, exists := c.Get("userDTO") // TODO: Implement proper JWT validation
+	userDTO, exists := c.Get("userDTO")
 	if !exists {
-		http.NotFound(c.Writer, c.Request) // TODO: Cetralize error handling
+		apperrors.HandleError(c, apperrors.New(
+			http.StatusInternalServerError,
+			"UserDTO not set",
+			apperrors.ErrMissingRequiredField,
+			map[string]interface{}{"details": "userDTO not set in the context"},
+		))
 		return
 	}
 
@@ -78,7 +86,7 @@ func (manager *WsManager) Run() {
 			log.Printf("Client registered: %v", client.userDTO) // Temporary log
 			manager.clients[client] = true
 			client.manager = manager
-			manager.Broadcast(msg.Message{ // Placeholder message
+			manager.Broadcast(msg.BaseMessage{ // Placeholder message
 				ID:        0, // Placeholder
 				SenderID:  0, // Placeholder
 				Timestamp: time.Now().Unix(),
@@ -92,7 +100,7 @@ func (manager *WsManager) Run() {
 				log.Printf("Client unregistered: %v", client.userDTO) // Temporary log
 				delete(manager.clients, client)
 				close(client.send)
-				manager.Broadcast(msg.Message{ // Placeholder message
+				manager.Broadcast(msg.BaseMessage{ // Placeholder message
 					ID:        0, // Placeholder
 					SenderID:  0, // Placeholder
 					Timestamp: time.Now().Unix(),
@@ -105,6 +113,8 @@ func (manager *WsManager) Run() {
 			manager.Lock() // Must be unlocked
 			manager.Broadcast(msg)
 			manager.Unlock()
+		case <-manager.stop:
+			return
 		}
 	}
 }
@@ -118,5 +128,25 @@ func (manager *WsManager) Broadcast(msg msg.Message) {
 			delete(manager.clients, client)
 			close(client.send)
 		}
+	}
+}
+
+func (manager *WsManager) AddClient(userID int64) {
+	manager.register <- &Client{
+		userDTO: &user.UserDTO{ // TODO: Swap with UserDTO once the logic is implemented
+			ID:       userID,
+			Email:    "Place@holder.com", // Placeholder
+			Username: "Placeholder",      // Placeholder
+		},
+	}
+}
+
+func (manager *WsManager) Close() {
+	close(manager.stop)
+	manager.Lock()
+	defer manager.Unlock()
+	for client := range manager.clients {
+		close(client.send)
+		delete(manager.clients, client)
 	}
 }

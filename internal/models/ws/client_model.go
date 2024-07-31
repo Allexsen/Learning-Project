@@ -32,7 +32,7 @@ func (client *Client) readLoop(manager *WsManager) {
 			break
 		}
 
-		var msg msg.Message
+		var msg msg.BaseMessage
 		err = json.Unmarshal(message, &msg)
 		if err != nil {
 			log.Printf("Error unmarshalling message: %v", err)
