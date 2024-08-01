@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
         navbarRight.innerHTML = `
             <a href="/statics/html/userProfile.html">Profile</a>
             <a href="/statics/html/ws.html">WebSocket</a>
+            <a href="/statics/html/rooms.html">Rooms</a>
             <a href="#" id="logout">Logout</a>
         `;
 
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         navbarRight.innerHTML = `
             <a href="/statics/html/login.html?redirect=${currentPath}">Login</a>
             <a href="/statics/html/register.html?redirect=${currentPath}">Register</a>
+            <a href="/statics/html/rooms.html">Rooms</a>
         `;
     }
 });

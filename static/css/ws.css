@@ -55,3 +55,30 @@ button:disabled {
     border-radius: 5px;
     border: 1px solid #cccccc;
 }
+
+.room-card {
+    background: #494949;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    text-align: center;
+}
+.room-card h3 {
+    margin: 0;
+    font-size: 1.5em;
+}
+.room-card p {
+    margin: 5px 0;
+    font-size: 1.2em;
+}
+.room-card button {
+    margin: 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: #f3f3f3;
+    font-size: 1em;
+    cursor: pointer;
+}
