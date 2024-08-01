@@ -5,17 +5,20 @@ import (
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
 	"github.com/Allexsen/Learning-Project/internal/models/chat"
+	"github.com/Allexsen/Learning-Project/internal/models/ws"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func CreateRoom(c *gin.Context) {
 	var reqData chat.Room
-	if utils.ShouldBindJSON(c, &reqData) {
+	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
 
-	room := controllers.RoomCreate(reqData.Name)
+	manager := ws.NewManager()
+	go manager.Run()
+	room := controllers.RoomCreate(reqData.Name, manager)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"room":    room,
@@ -35,10 +38,10 @@ func GetRooms(c *gin.Context) {
 	})
 }
 
+// TODO: Rewise error handling
 func JoinRoom(c *gin.Context) {
-	// TODO: Rewise error handling
 	roomID := c.Param("id")
-	userID := c.GetString("userID")
+	userID := "1" // TODO: Retrieve UserDTO from gin.Context
 	room, err := controllers.RoomAddUser(roomID, userID)
 	if err != nil {
 		handleError(c, err)
