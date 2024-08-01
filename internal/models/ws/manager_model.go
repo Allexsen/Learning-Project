@@ -79,6 +79,7 @@ func WsHandler(manager *WsManager, c *gin.Context) {
 
 // Run starts the WsManager to handle connections and messages
 func (manager *WsManager) Run() {
+	log.Println("Starting WsManager")
 	for {
 		select {
 		case client := <-manager.register:
@@ -138,6 +139,7 @@ func (manager *WsManager) AddClient(userID int64) {
 			Email:    "Place@holder.com", // Placeholder
 			Username: "Placeholder",      // Placeholder
 		},
+		send: make(chan msg.Message),
 	}
 }
 

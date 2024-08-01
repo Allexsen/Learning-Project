@@ -1,15 +1,17 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/Allexsen/Learning-Project/internal/models/chat"
 	"github.com/Allexsen/Learning-Project/internal/models/ws"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 )
 
-func RoomCreate(name string) *chat.Room {
+func RoomCreate(name string, manager *ws.WsManager) *chat.Room {
 	// TODO: Check back on this later on, seems like some part of logic is missing
-	manager := ws.NewManager()
 	room := chat.NewRoom(name, manager)
+	log.Printf("Room: %v", room)
 	return room
 }
 
@@ -25,18 +27,15 @@ func RoomGet(idStr string) (*chat.Room, error) {
 		return nil, err
 	}
 
-	room := chat.Room{
-		BaseChat: chat.BaseChat{
-			ID: int64(id),
-		},
-	}
-
-	err = room.GetRoomByID()
+	room, err := chat.GetRoomByID(int64(id))
+	log.Printf("Room: %v", room)
 	if err != nil {
 		return nil, err
 	}
 
-	return &room, nil
+	log.Printf("Room: %v", room)
+
+	return room, nil
 }
 
 func RoomAddUser(roomIDStr, userIDStr string) (*chat.Room, error) {
@@ -49,6 +48,8 @@ func RoomAddUser(roomIDStr, userIDStr string) (*chat.Room, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Printf("Manager: %v", room.GetManager())
 
 	// TODO: Implement retrieving UserDTO by UserID, and passing it to AddUser
 	err = room.AddUser(int64(userID))
