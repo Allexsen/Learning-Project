@@ -5,6 +5,7 @@ import (
 
 	"github.com/Allexsen/Learning-Project/internal/models/msg"
 	"github.com/Allexsen/Learning-Project/internal/models/ws"
+	"github.com/google/uuid"
 )
 
 type BaseChat struct {
@@ -23,7 +24,7 @@ type Chat interface {
 // NewBaseChat creates a new chat
 func NewBaseChat(manager *ws.WsManager, members ...int64) *BaseChat {
 	return &BaseChat{
-		ID:        int64(0), // TODO: Implement ID generation
+		ID:        int64(uuid.New().ID()),
 		CreatedAt: time.Now().Unix(),
 		UpdatedAt: time.Now().Unix(),
 		Manager:   manager,

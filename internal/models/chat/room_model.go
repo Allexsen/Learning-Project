@@ -26,17 +26,16 @@ var (
 )
 
 // NewRoom creates a new room
-func NewRoom(name string, manager *ws.WsManager) *Room {
-	log.Printf("Manager: %v", manager)
+func NewRoom(name string) *Room {
+	manager := ws.NewManager()
+	go manager.Run()
 	room := &Room{
 		BaseChat: *NewBaseChat(manager),
 		Name:     name,
 	}
 
-	log.Printf("New Room: %v", room)
+	log.Println(room.ID) // Temporary log to join the room
 	roomsManager.Rooms[room.ID] = room
-	log.Printf("Room in map: %v", roomsManager.Rooms[room.ID])
-
 	return room
 }
 
@@ -47,6 +46,7 @@ func GetRooms() ([]*Room, error) {
 	for _, room := range roomsManager.Rooms {
 		rooms = append(rooms, room)
 	}
+
 	return rooms, nil
 }
 
@@ -61,16 +61,13 @@ func GetRoomByID(id int64) (*Room, error) {
 		)
 	}
 
-	log.Printf("Room: %v", room)
 	return room, nil
 }
 
 // AddUser adds a user to the room
 func (room *Room) AddUser(userID int64) error {
 	// TODO: Add database logic
-	log.Printf("User %d joined the room %d", userID, room.ID)
 	room.Members = append(room.Members, userID)
-	log.Printf("Manager: %v", room.Manager)
 	room.Manager.AddClient(userID)
 	return nil
 }

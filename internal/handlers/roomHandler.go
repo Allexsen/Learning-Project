@@ -5,7 +5,6 @@ import (
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
 	"github.com/Allexsen/Learning-Project/internal/models/chat"
-	"github.com/Allexsen/Learning-Project/internal/models/ws"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -16,9 +15,7 @@ func CreateRoom(c *gin.Context) {
 		return
 	}
 
-	manager := ws.NewManager()
-	go manager.Run()
-	room := controllers.RoomCreate(reqData.Name, manager)
+	room := controllers.RoomCreate(reqData.Name)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"room":    room,
