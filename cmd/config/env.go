@@ -2,6 +2,7 @@
 package config
 
 import (
+	"log"
 	"net/http"
 
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
@@ -11,6 +12,8 @@ import (
 // LoadEnv loads environment variables from a .env file.
 // If the .env file cannot be loaded, it handles the error as a critical failure.
 func LoadEnv() {
+	log.Println("Loading environment variables...")
+
 	err := godotenv.Load()
 	if err != nil {
 		apperrors.HandleCriticalError(apperrors.New(
@@ -20,4 +23,6 @@ func LoadEnv() {
 			map[string]interface{}{"details": err.Error()},
 		))
 	}
+
+	log.Println("Environment variables loaded successfully")
 }

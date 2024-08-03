@@ -3,6 +3,7 @@
 package apperrors
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,7 @@ func init() {
 // HandleError logs the error, and writes response header.
 // Changes error message if Code = 500.
 func HandleError(c *gin.Context, err *AppError) {
+	log.Printf("[ERROR] An error occurred: %v", err)
 	logError(err)
 	if c != nil {
 		if err.Code == http.StatusInternalServerError {
@@ -45,6 +47,7 @@ func HandleCriticalError(err *AppError) {
 
 // logError logs the error to the console.
 func logError(err *AppError) {
+	log.Printf("[ERROR] An error occurred: %v", err)
 	logr.WithFields(logrus.Fields{
 		"code":    err.Code,
 		"message": err.Message,

@@ -2,6 +2,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	database "github.com/Allexsen/Learning-Project/internal/db"
@@ -14,6 +15,8 @@ import (
 // RecordAdd adds a new record to the database,
 // then updates the user and user's worklog.
 func RecordAdd(email, hrStr, minStr string) (user.User, error) {
+	log.Printf("[CONTROLLER] Adding record for %s", email)
+
 	hours, err := utils.Atoi(hrStr)
 	if err != nil {
 		return user.User{}, err
@@ -27,6 +30,8 @@ func RecordAdd(email, hrStr, minStr string) (user.User, error) {
 	db := database.DB
 
 	r := record.Record{Hours: hours, Minutes: minutes}
+	log.Printf("[CONTROLLER] Record: %+v", r)
+
 	// Get corresponding user
 	r.UserID, err = UserGetIDByEmail(db, email)
 	if err != nil {
@@ -66,17 +71,25 @@ func RecordAdd(email, hrStr, minStr string) (user.User, error) {
 
 	err = tx.Commit()
 	if err != nil {
+		log.Printf("[CONTROLLER] Couldn't commit the transaction: %s", err)
+		log.Printf("[CONTROLLER] Rolling back the transaction")
 		tx.Rollback()
 	}
 
+	log.Printf("[CONTROLLER] Record has been successfully added for %s", email)
 	return u, nil
 }
 
 // RecordRemove deletes a record by record id,
 // then updates the user and user's worklog.
 func RecordRemove(rid int) (user.User, error) {
+	log.Printf("[CONTROLLER] Removing record %d", rid)
+
 	db := database.DB
 	r := record.Record{ID: int64(rid)}
+
+	log.Printf("[CONTROLLER] Record: %+v", r)
+
 	if err := r.RetrieveRecordByID(db); err != nil {
 		return user.User{}, err
 	}
@@ -117,8 +130,11 @@ func RecordRemove(rid int) (user.User, error) {
 
 	err = tx.Commit()
 	if err != nil {
+		log.Printf("[CONTROLLER] Couldn't commit the transaction: %s", err)
+		log.Printf("[CONTROLLER] Rolling back the transaction")
 		tx.Rollback()
 	}
 
+	log.Printf("[CONTROLLER] Record %d has been successfully removed", rid)
 	return u, nil
 }

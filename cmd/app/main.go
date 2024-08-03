@@ -18,12 +18,15 @@
 package main
 
 import (
+	"log"
+
 	config "github.com/Allexsen/Learning-Project/cmd/config"
 	database "github.com/Allexsen/Learning-Project/internal/db"
 	router "github.com/Allexsen/Learning-Project/internal/router"
 )
 
 func main() {
+	log.Println("Starting the application...")
 	config.LoadEnv()
 
 	database.InitDB()

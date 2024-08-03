@@ -2,6 +2,7 @@
 package utils
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -11,6 +12,7 @@ import (
 // Atoi acts just as strconv.Atoi,
 // except it also provides a centrilized error handling
 func Atoi(s string) (int, error) {
+	log.Printf("[UTILS] Converting ASCII to int: %s", s)
 	res, err := strconv.Atoi(s)
 	if err != nil {
 		return 0, apperrors.New(
@@ -21,5 +23,6 @@ func Atoi(s string) (int, error) {
 		)
 	}
 
+	log.Printf("[UTILS] Converted ASCII to int: %d", res)
 	return res, nil
 }

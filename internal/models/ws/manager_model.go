@@ -48,12 +48,14 @@ var upgrader = websocket.Upgrader{
 
 // WsHandler handles WebSocket requests from the peer
 func WsHandler(manager *WsManager, c *gin.Context) {
+	log.Printf("[WS] Upgrading connection: %v", c.Request.RemoteAddr) // Temporary log
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		http.NotFound(c.Writer, c.Request)
 		return
 	}
 
+	log.Printf("[WS] Connection established: %v", c.Request.RemoteAddr) // Temporary log
 	userDTO, exists := c.Get("userDTO")
 	if !exists {
 		apperrors.HandleError(c, apperrors.New(

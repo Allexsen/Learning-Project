@@ -3,6 +3,7 @@ package controllers
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"strings"
 
@@ -17,6 +18,8 @@ import (
 // UserRegister takes user info, generates bcrypt
 // password hash, and adds the user to the database
 func UserRegister(firstname, lastname, username, email, pswd string) (user.User, error) {
+	log.Printf("[CONTROLLER] Registering user %s", username)
+
 	pswdHash, err := bcrypt.GenerateFromPassword([]byte(pswd), 10)
 	if err != nil {
 		return user.User{}, err
@@ -32,17 +35,21 @@ func UserRegister(firstname, lastname, username, email, pswd string) (user.User,
 		},
 		Password: string(pswdHash),
 	}
+
 	// Query adding to the db
 	if u.ID, err = u.AddUser(db); err != nil {
 		return user.User{}, err
 	}
 
+	log.Printf("[CONTROLLER] User %s has been successfully registered", u.Username)
 	return u, nil
 }
 
 // UserLogin retrieves bcrypt password hash, authenticates
 // user credentials and, if successful, logs in the user
 func UserLogin(credential, password string) (user.UserDTO, error) {
+	log.Printf("[CONTROLLER] Logging in user %s", credential)
+
 	var pswdHash string
 	var err error
 	db := database.DB
@@ -77,11 +84,14 @@ func UserLogin(credential, password string) (user.UserDTO, error) {
 		return user.UserDTO{}, err
 	}
 
+	log.Printf("[CONTROLLER] User %s has been successfully logged in", userDTO.Username)
 	return userDTO, nil
 }
 
 // UserGetByEmail retrieves user from the database by user email
 func UserGetByEmail(email string) (user.User, error) {
+	log.Printf("[CONTROLLER] Retrieving user by email %s", email)
+
 	db := database.DB
 	u := user.User{
 		UserDTO: user.UserDTO{
@@ -98,11 +108,14 @@ func UserGetByEmail(email string) (user.User, error) {
 		return user.User{}, err
 	}
 
+	log.Printf("[CONTROLLER] User %s has been successfully retrieved", u.Username)
 	return u, nil
 }
 
 // UserGetByUsername retrieves user from the database by username
 func UserGetByUsername(username string) (user.User, error) {
+	log.Printf("[CONTROLLER] Retrieving user by username %s", username)
+
 	db := database.DB
 	u := user.User{
 		UserDTO: user.UserDTO{
@@ -119,12 +132,15 @@ func UserGetByUsername(username string) (user.User, error) {
 		return user.User{}, err
 	}
 
+	log.Printf("[CONTROLLER] User %s has been successfully retrieved", u.Username)
 	return u, nil
 }
 
 // UserGetIDByEmail retrieves user ID by user email.
 // return -1 and error in case of failure
 func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {
+	log.Printf("[CONTROLLER] Retrieving user ID by email %s", email)
+
 	u := user.User{
 		UserDTO: user.UserDTO{
 			Email: email,
@@ -135,11 +151,14 @@ func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {
 		return -1, err
 	}
 
+	log.Printf("[CONTROLLER] User ID %d has been successfully retrieved", u.ID)
 	return u.ID, nil
 }
 
 // UserUpdateWorklogInfo updates the user worklog data by the provided record
 func userUpdateWorklogInfo(db *sql.DB, r record.Record, countChange int, tx *sql.Tx) (user.User, error) {
+	log.Printf("[CONTROLLER] Updating user worklog info by record %+v", r)
+
 	u := user.User{
 		UserDTO: user.UserDTO{
 			ID: r.UserID,
@@ -168,6 +187,8 @@ func userUpdateWorklogInfo(db *sql.DB, r record.Record, countChange int, tx *sql
 
 	err := tx.Commit()
 	if err != nil {
+		log.Printf("[CONTROLLER] Couldn't commit the transaction: %s", err)
+		log.Printf("[CONTROLLER] Rolling back the transaction")
 		tx.Rollback()
 	}
 
@@ -176,5 +197,6 @@ func userUpdateWorklogInfo(db *sql.DB, r record.Record, countChange int, tx *sql
 		return user.User{}, err
 	}
 
+	log.Printf("[CONTROLLER] User %s worklog info has been successfully updated", u.Username)
 	return u, nil
 }

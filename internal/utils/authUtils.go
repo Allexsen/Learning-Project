@@ -2,6 +2,8 @@
 package utils
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -82,20 +84,41 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 	return claims, nil
 }
 
-// IsValidEmail is a regex for email validation
-func IsValidEmail(email string) bool {
+// IsValidEmail is a regex for email validation.
+// It returns an error if the email is invalid, nil otherwise.
+func IsValidEmail(email string) error {
+	log.Println("Validating email: ", email)
+
 	emailRegex := `^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`
 	re := regexp.MustCompile(emailRegex)
-	return re.MatchString(email)
+	if !re.MatchString(email) {
+		return apperrors.New(
+			http.StatusBadRequest,
+			"Invalid email",
+			apperrors.ErrInvalidInput,
+			map[string]interface{}{"details": fmt.Sprintf("invalid email: %s", email)},
+		)
+	}
+
+	return nil
 }
 
 // IsValidUsername is a regex for username validation
-func IsValidUsername(username string) bool {
-	if len(username) <= 3 {
-		return false
-	}
+// It returns an error if the username is invalid, nil otherwise.
+func IsValidUsername(username string) error {
+	log.Printf("Validating username: %s", username)
 
 	usernameRegex := `^[a-zA-Z0-9-_]+$`
 	re := regexp.MustCompile(usernameRegex)
-	return re.MatchString(username)
+	if len(username) <= 3 || !re.MatchString(username) {
+		return apperrors.New(
+			http.StatusBadRequest,
+			"Invalid username",
+			apperrors.ErrInvalidInput,
+			map[string]interface{}{"details": fmt.Sprintf("invalid username: %s", username)},
+		)
+	}
+
+	log.Printf("Username %s is valid", username)
+	return nil
 }

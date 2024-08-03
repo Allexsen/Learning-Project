@@ -2,6 +2,7 @@
 package middlewares
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -10,10 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CheckJWT reads auth header, and
-// checks its validity, if present.
+// CheckJWT middleware reads "Authorization" header and validates JWT if present.
 func CheckJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log.Printf("[MIDDLEWARE] Checking JWT for %s", c.ClientIP())
 		token := c.GetHeader("Authorization")
 		if token == "" {
 			token = c.Query("token")
@@ -30,6 +31,8 @@ func CheckJWT() gin.HandlerFunc {
 
 		tokenString := strings.TrimSpace(strings.Replace(token, "Bearer", "", 1))
 
+		log.Printf("[MIDDLEWARE] JWT: %s", tokenString)
+
 		claims, err := utils.ValidateJWT(tokenString)
 		if err != nil {
 			apperrors.HandleError(c, apperrors.New(
@@ -42,6 +45,7 @@ func CheckJWT() gin.HandlerFunc {
 		}
 
 		c.Set("userDTO", &claims.UserDTO)
+		log.Printf("[MIDDLEWARE] JWT Validated: %+v", claims.UserDTO)
 		c.Next()
 	}
 }

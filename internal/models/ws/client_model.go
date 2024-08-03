@@ -24,8 +24,10 @@ func (client *Client) readLoop(manager *WsManager) {
 	defer func() {
 		manager.unregister <- client
 		client.conn.Close()
+		log.Printf("[WS] Client %+v has been unregistered", client)
 	}()
 
+	log.Printf("[WS] Spinning off read loop for client %+v", client)
 	for {
 		_, message, err := client.conn.ReadMessage()
 		if err != nil {
@@ -54,8 +56,10 @@ func (client *Client) writeLoop() {
 	defer func() {
 		client.conn.Close()
 		client.manager = nil
+		log.Printf("[WS] Client %+v has been disconnected", client)
 	}()
 
+	log.Printf("[WS] Spinning off write loop for client %+v", client)
 	for msg := range client.send {
 		message, err := json.Marshal(msg)
 		if err != nil {

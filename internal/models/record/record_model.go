@@ -3,6 +3,7 @@ package record
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/Allexsen/Learning-Project/internal/models/common"
 )
@@ -17,32 +18,64 @@ type Record struct {
 }
 
 func (r Record) AddRecord(tx *sql.Tx) (int64, error) {
+	log.Printf("[RECORD] Adding record: %+v", r)
+
 	q := `INSERT INTO practice_db.records (user_id, hours, minutes) VALUES (?, ?, ?)`
 	result, err := tx.Exec(q, r.UserID, r.Hours, r.Minutes)
 	if err != nil {
 		return -1, common.GetQueryError(q, "Couldn't add new record", r, err)
 	}
 
-	return common.GetLastInsertId(result, q, r)
+	id, err := common.GetLastInsertId(result, q, r)
+	if err != nil {
+		return -1, err
+	}
+
+	log.Printf("[RECORD] Record has been successfully added with id %d", id)
+	return id, nil
 }
 
 func (r *Record) RetrieveRecordByID(db *sql.DB) error {
+	log.Printf("[RECORD] Retrieving record by id %d", r.ID)
+
 	q := `SELECT user_id, hours, minutes FROM practice_db.records WHERE id=?`
 	err := db.QueryRow(q, r.ID).Scan(&r.UserID, &r.Hours, &r.Minutes)
 
-	return common.GetQueryError(q, "Couldn't find record by id", r, err)
+	err = common.GetQueryError(q, "Couldn't retrieve record by id", r, err)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("[RECORD] Record has been successfully retrieved: %+v", r)
+	return nil
 }
 
 func (r *Record) RetrieveUserIDByRecordID(db *sql.DB) error {
+	log.Printf("[RECORD] Retrieving user id by record id %d", r.ID)
+
 	q := `SELECT user_id FROM practice_db.records WHERE id=?`
 	err := db.QueryRow(q, r.ID).Scan(&r.UserID)
 
-	return common.GetQueryError(q, "Couldn't retrieve user id by record id", r, err)
+	err = common.GetQueryError(q, "Couldn't retrieve user id by record id", r, err)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("[RECORD] User id %d has been successfully retrieved by record id %d", r.UserID, r.ID)
+	return nil
 }
 
 func (r Record) RemoveRecord(tx *sql.Tx) error {
+	log.Printf("[RECORD] Removing record %d", r.ID)
+
 	q := `DELETE FROM practice_db.records WHERE id=?`
 	result, err := tx.Exec(q, r.ID)
 
-	return common.HandleUpdateQuery(result, err, q, r)
+	err = common.HandleUpdateQuery(result, err, q, r)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("[RECORD] Record %d has been successfully removed", r.ID)
+	return nil
 }

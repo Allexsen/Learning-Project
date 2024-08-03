@@ -3,6 +3,7 @@ package router
 
 import (
 	"html/template"
+	"log"
 
 	"github.com/Allexsen/Learning-Project/internal/models/ws"
 	"github.com/gin-gonic/gin"
@@ -21,18 +22,21 @@ func GetEngine() *gin.Engine {
 // InitRouter initializes default rout and statics folder routing,
 // and then invokes initialization of other routers too.
 func InitRouter() {
+	log.Println("Initializing the router...")
+
 	r.SetFuncMap(template.FuncMap{
 		"safeHTML": func(s string) template.HTML {
 			return template.HTML(template.HTMLEscapeString(s))
 		},
 	})
 
+	log.Println("Setting up the default route and statics folder routing...")
 	r.Static("/statics/", "../../static/")
-
 	r.GET("/", func(c *gin.Context) {
 		c.File("../../static/html/index.html")
 	})
 
+	log.Println("Initializing other routers...")
 	initUserRouter()
 	initRecordsRouter()
 	initRoomRouter()
@@ -42,4 +46,5 @@ func InitRouter() {
 	initWsRouter(wsManager)
 
 	r.Run(":8080")
+	log.Println("Router initialized")
 }

@@ -27,6 +27,8 @@ var (
 
 // NewRoom creates a new room
 func NewRoom(name string) *Room {
+	log.Printf("[CHAT] Creating room %s", name)
+
 	manager := ws.NewManager()
 	go manager.Run()
 	room := &Room{
@@ -34,7 +36,7 @@ func NewRoom(name string) *Room {
 		Name:     name,
 	}
 
-	log.Println(room.ID) // Temporary log to join the room
+	log.Printf("[CHAT] Room has been successfully created: %+v", room)
 	roomsManager.Rooms[room.ID] = room
 	return room
 }
@@ -42,15 +44,20 @@ func NewRoom(name string) *Room {
 // GetRooms returns all rooms
 func GetRooms() ([]*Room, error) {
 	// TODO: Add Rooms table to the storage and/or database
+	log.Printf("[CHAT] Getting all rooms")
+
 	rooms := make([]*Room, 0, len(roomsManager.Rooms))
 	for _, room := range roomsManager.Rooms {
 		rooms = append(rooms, room)
 	}
 
+	log.Printf("[CHAT] %d rooms have been successfully retrieved", len(rooms))
 	return rooms, nil
 }
 
 func GetRoomByID(id int64) (*Room, error) {
+	log.Printf("[CHAT] Getting room %d", id)
+
 	room, exists := roomsManager.Rooms[id]
 	if !exists {
 		return nil, apperrors.New(
@@ -61,26 +68,34 @@ func GetRoomByID(id int64) (*Room, error) {
 		)
 	}
 
+	log.Printf("[CHAT] Room %d has been successfully retrieved", id)
 	return room, nil
 }
 
 // AddUser adds a user to the room
 func (room *Room) AddUser(userID int64) error {
 	// TODO: Add database logic
+	log.Printf("[CHAT] Adding user %d to room %d", userID, room.ID)
+
 	room.Members = append(room.Members, userID)
 	room.Manager.AddClient(userID)
+
+	log.Printf("[CHAT] User %d has been successfully added to room %d", userID, room.ID)
 	return nil
 }
 
 // DeleteRoom deletes a room
 func (room *Room) DeleteRoom() error {
 	// TODO: Implement removing the room from the roomsManager
+	log.Printf("[CHAT] Removing room %d", room.ID)
+
 	room.Manager.Close()
 	err := removeRoomFromDB(room.ID)
 	if err != nil {
 		return err
 	}
 
+	log.Printf("[CHAT] Room %d has been successfully removed", room.ID)
 	room = nil
 	return nil
 }
@@ -88,5 +103,8 @@ func (room *Room) DeleteRoom() error {
 // RemoveRoomFromDB removes a room from the database
 func removeRoomFromDB(_ int64) error {
 	// TODO: Add database logic
+	log.Printf("[CHAT] Removing room from the database")
+
+	log.Printf("[CHAT] Room has been successfully removed from the database")
 	return nil
 }

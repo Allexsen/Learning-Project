@@ -2,12 +2,11 @@
 package handlers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
-	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -16,6 +15,8 @@ import (
 // UserRegister parses & validates input, and
 // sends it to controllers for registering a new user
 func UserRegister(c *gin.Context) {
+	log.Printf("[HANDLER] Handling registration request for %s", c.ClientIP())
+
 	var reqData struct {
 		Firstname string `json:"firstName"`
 		Lastname  string `json:"lastName"`
@@ -28,23 +29,15 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	if !utils.IsValidEmail(reqData.Email) {
-		apperrors.HandleError(c, apperrors.New(
-			http.StatusBadRequest,
-			"Invalid email",
-			apperrors.ErrInvalidInput,
-			map[string]interface{}{"details": fmt.Sprintf("invalid email: %s", reqData.Email)},
-		))
+	log.Printf("[HANDLER] Request Data: %+v", reqData)
+
+	if err := utils.IsValidEmail(reqData.Email); err != nil {
+		handleError(c, err)
 		return
 	}
 
-	if !utils.IsValidUsername(reqData.Username) {
-		apperrors.HandleError(c, apperrors.New(
-			http.StatusBadRequest,
-			"Invalid username",
-			apperrors.ErrInvalidInput,
-			map[string]interface{}{"details": fmt.Sprintf("invalid username: %s", reqData.Username)},
-		))
+	if err := utils.IsValidUsername(reqData.Username); err != nil {
+		handleError(c, err)
 		return
 	}
 
@@ -60,6 +53,7 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
+	log.Printf("[HANDLER] User %s has been successfully registered", u.Username)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"user":    u,
@@ -69,6 +63,8 @@ func UserRegister(c *gin.Context) {
 // UserLogin parses input, and sends data to controllers.
 // If the request is successful, generates and adds JWT to headers.
 func UserLogin(c *gin.Context) {
+	log.Printf("[HANDLER] Handling login request for %s", c.ClientIP())
+
 	var reqData struct {
 		Cred     string `json:"cred"`
 		Password string `json:"password"`
@@ -77,6 +73,8 @@ func UserLogin(c *gin.Context) {
 	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
+
+	log.Printf("[HANDLER] Request Data: %+v", reqData)
 
 	userDTO, err := controllers.UserLogin(reqData.Cred, reqData.Password)
 	if err != nil {
@@ -90,6 +88,7 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
+	log.Printf("[HANDLER] User %s has been successfully logged in", userDTO.Username)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"token":   tokenString,
@@ -99,6 +98,8 @@ func UserLogin(c *gin.Context) {
 // UserGet parses input, queries controllers for retrieving
 // user, and sets it as a header if successful.
 func UserGet(c *gin.Context) {
+	log.Printf("[HANDLER] Handling user retrieval request for %s", c.ClientIP())
+
 	var reqData struct {
 		Cred string `json:"cred"`
 	}
@@ -106,6 +107,8 @@ func UserGet(c *gin.Context) {
 	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}
+
+	log.Printf("[HANDLER] Request Data: %+v", reqData)
 
 	var u user.User
 	var err error
@@ -123,6 +126,7 @@ func UserGet(c *gin.Context) {
 		}
 	}
 
+	log.Printf("[HANDLER] User %s has been successfully retrieved", u.Username)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"user":    u,
@@ -132,9 +136,13 @@ func UserGet(c *gin.Context) {
 // IsAvailableEmail parses input, and checks
 // if the email is available
 func IsAvailableEmail(c *gin.Context) {
+	log.Printf("[HANDLER] Handling email availability check request for %s", c.ClientIP())
+
 	var reqData struct {
 		Email string `json:"email"`
 	}
+
+	log.Printf("[HANDLER] Request Data: %+v", reqData)
 
 	if !utils.ShouldBindJSON(c, &reqData) {
 		return
@@ -146,15 +154,20 @@ func IsAvailableEmail(c *gin.Context) {
 		return
 	}
 
+	log.Printf("[HANDLER] Email %s is available", reqData.Email)
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
 // IsAvailableEmail parses input, and checks
 // if the username is available
 func IsAvailableUsername(c *gin.Context) {
+	log.Printf("[HANDLER] Handling username availability check request for %s", c.ClientIP())
+
 	var reqData struct {
 		Username string `json:"username"`
 	}
+
+	log.Printf("[HANDLER] Request Data: %+v", reqData)
 
 	if !utils.ShouldBindJSON(c, &reqData) {
 		return
@@ -166,5 +179,6 @@ func IsAvailableUsername(c *gin.Context) {
 		return
 	}
 
+	log.Printf("[HANDLER] Username %s is available", reqData.Username)
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }

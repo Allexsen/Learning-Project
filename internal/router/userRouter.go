@@ -1,10 +1,15 @@
 // Package router sets up API endpoints to serve requests
 package router
 
-import "github.com/Allexsen/Learning-Project/internal/handlers"
+import (
+	"log"
+
+	"github.com/Allexsen/Learning-Project/internal/handlers"
+)
 
 // initUserRouter sets up routes associated with users
 func initUserRouter() {
+	log.Println("Setting up user routes...")
 	userRouter := r.Group("/user")
 	{
 		userRouter.POST("/register", handlers.UserRegister)

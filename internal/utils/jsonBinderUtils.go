@@ -2,6 +2,7 @@
 package utils
 
 import (
+	"log"
 	"net/http"
 
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
@@ -11,6 +12,8 @@ import (
 // ShouldBindJSON acts just as c.ShouldBindJSON,
 // except it also provides a centralized error handling.
 func ShouldBindJSON(c *gin.Context, obj interface{}) bool {
+	log.Printf("Binding JSON for request from %s", c.ClientIP())
+
 	if err := c.ShouldBindJSON(&obj); err != nil {
 		apperrors.HandleError(c, apperrors.New(
 			http.StatusBadRequest,
@@ -21,5 +24,6 @@ func ShouldBindJSON(c *gin.Context, obj interface{}) bool {
 		return false
 	}
 
+	log.Printf("JSON bound successfully: %+v", obj)
 	return true
 }

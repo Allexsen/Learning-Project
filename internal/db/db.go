@@ -3,6 +3,7 @@ package database
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -17,6 +18,8 @@ var DB *sql.DB
 // InitDB connects to the db, and sets a connection parameters.
 // Invokes a critical error in case of failure.
 func InitDB() {
+	log.Println("Connecting to the database...")
+
 	var err error
 	DB, err = sql.Open("mysql", os.Getenv("MYSQL_AUTH_CREDS"))
 	if err != nil {
@@ -32,9 +35,13 @@ func InitDB() {
 	DB.SetConnMaxIdleTime(time.Minute * 1)
 	DB.SetMaxOpenConns(10)
 	DB.SetMaxIdleConns(10)
+
+	log.Println("Connected to the database")
 }
 
 func CloseDB(db *sql.DB) {
+	log.Println("Closing the database connection...")
+
 	err := db.Close()
 	if err != nil {
 		apperrors.HandleCriticalError(apperrors.New(
@@ -44,4 +51,6 @@ func CloseDB(db *sql.DB) {
 			map[string]interface{}{"details": err.Error()},
 		))
 	}
+
+	log.Println("Database connection closed")
 }
