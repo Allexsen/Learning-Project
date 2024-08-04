@@ -110,7 +110,7 @@ func UserGet(c *gin.Context) {
 
 	log.Printf("[HANDLER] Request Data: %+v", reqData)
 
-	var u user.User
+	var u *user.User
 	var err error
 	if strings.Contains(reqData.Cred, "@") {
 		u, err = controllers.UserGetByEmail(reqData.Cred)

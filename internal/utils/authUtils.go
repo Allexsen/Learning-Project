@@ -24,10 +24,10 @@ type Claims struct {
 
 // GenerateJWT sets expiration date to 24 hours, generates a new JWT,
 // signs and returns the token string.
-func GenerateJWT(userDTO user.UserDTO) (string, error) {
+func GenerateJWT(userDTO *user.UserDTO) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
-		UserDTO: userDTO,
+		UserDTO: *userDTO,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

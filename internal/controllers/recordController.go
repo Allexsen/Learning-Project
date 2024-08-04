@@ -14,17 +14,17 @@ import (
 
 // RecordAdd adds a new record to the database,
 // then updates the user and user's worklog.
-func RecordAdd(email, hrStr, minStr string) (user.User, error) {
+func RecordAdd(email, hrStr, minStr string) (*user.User, error) {
 	log.Printf("[CONTROLLER] Adding record for %s", email)
 
 	hours, err := utils.Atoi(hrStr)
 	if err != nil {
-		return user.User{}, err
+		return nil, err
 	}
 
 	minutes, err := utils.Atoi(minStr)
 	if err != nil {
-		return user.User{}, err
+		return nil, err
 	}
 
 	db := database.DB
@@ -35,7 +35,7 @@ func RecordAdd(email, hrStr, minStr string) (user.User, error) {
 	// Get corresponding user
 	r.UserID, err = UserGetIDByEmail(db, email)
 	if err != nil {
-		return user.User{}, err
+		return nil, err
 	}
 
 	// Start transaction to ensure both, record and user
@@ -43,7 +43,7 @@ func RecordAdd(email, hrStr, minStr string) (user.User, error) {
 	// must be rolled back to maintain data integrity.
 	tx, err := db.Begin()
 	if err != nil {
-		return user.User{}, apperrors.New(
+		return nil, apperrors.New(
 			http.StatusInternalServerError,
 			"Failed to begin transaction",
 			apperrors.ErrDBTransaction,
@@ -61,12 +61,12 @@ func RecordAdd(email, hrStr, minStr string) (user.User, error) {
 	// Query adding to the db
 	r.ID, err = r.AddRecord(tx)
 	if err != nil {
-		return user.User{}, err
+		return nil, err
 	}
 
 	u, err := userUpdateWorklogInfo(db, r, 1, tx)
 	if err != nil {
-		return user.User{}, err
+		return nil, err
 	}
 
 	err = tx.Commit()
@@ -82,7 +82,7 @@ func RecordAdd(email, hrStr, minStr string) (user.User, error) {
 
 // RecordRemove deletes a record by record id,
 // then updates the user and user's worklog.
-func RecordRemove(rid int) (user.User, error) {
+func RecordRemove(rid int) (*user.User, error) {
 	log.Printf("[CONTROLLER] Removing record %d", rid)
 
 	db := database.DB
@@ -91,7 +91,7 @@ func RecordRemove(rid int) (user.User, error) {
 	log.Printf("[CONTROLLER] Record: %+v", r)
 
 	if err := r.RetrieveRecordByID(db); err != nil {
-		return user.User{}, err
+		return nil, err
 	}
 
 	// Start transaction to ensure both, record and user
@@ -99,7 +99,7 @@ func RecordRemove(rid int) (user.User, error) {
 	// must be rolled back to maintain data integrity.
 	tx, err := db.Begin()
 	if err != nil {
-		return user.User{}, apperrors.New(
+		return nil, apperrors.New(
 			http.StatusInternalServerError,
 			"Failed to begin transaction",
 			apperrors.ErrDBTransaction,
@@ -116,7 +116,7 @@ func RecordRemove(rid int) (user.User, error) {
 
 	// Query removal from the db
 	if err := r.RemoveRecord(tx); err != nil {
-		return user.User{}, err
+		return nil, err
 	}
 
 	// Removing record decreases user's work time,
@@ -125,7 +125,7 @@ func RecordRemove(rid int) (user.User, error) {
 	r.Minutes *= -1
 	u, err := userUpdateWorklogInfo(db, r, -1, tx)
 	if err != nil {
-		return user.User{}, err
+		return nil, err
 	}
 
 	err = tx.Commit()
