@@ -25,6 +25,8 @@ type Claims struct {
 // GenerateJWT sets expiration date to 24 hours, generates a new JWT,
 // signs and returns the token string.
 func GenerateJWT(userDTO *user.UserDTO) (string, error) {
+	log.Printf("[UTILS] Generating JWT for user: %s", userDTO.Email)
+
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		UserDTO: *userDTO,
@@ -44,12 +46,15 @@ func GenerateJWT(userDTO *user.UserDTO) (string, error) {
 		)
 	}
 
+	log.Printf("[UTILS] JWT generated successfully for user: %s", userDTO.Email)
 	return tokenString, nil
 }
 
 // ValidateJWT checks the given token string by
 // its expiration date, signature, and validity.
 func ValidateJWT(tokenString string) (*Claims, error) {
+	log.Println("[UTILS] Validating JWT")
+
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
@@ -81,6 +86,7 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 		)
 	}
 
+	log.Println("[UTILS] JWT is valid")
 	return claims, nil
 }
 
