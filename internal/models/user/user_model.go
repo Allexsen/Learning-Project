@@ -29,7 +29,7 @@ type User struct {
 }
 
 func (u User) AddUser(db *sql.DB) (int64, error) {
-	log.Printf("Adding user %s to the database", u.Username)
+	log.Printf("[USER] Adding user %s to the database", u.Username)
 
 	q := `INSERT INTO practice_db.users (firstname, lastname, email, username, password) VALUES(?, ?, ?, ?, ?)`
 	result, err := db.Exec(q, u.Firstname, u.Lastname, u.Email, u.Username, u.Password)
@@ -42,12 +42,12 @@ func (u User) AddUser(db *sql.DB) (int64, error) {
 		return -1, err
 	}
 
-	log.Printf("User %s has been successfully added to the database", u.Username)
+	log.Printf("[USER] User %s has been successfully added to the database", u.Username)
 	return id, nil
 }
 
 func (u *User) RetrieveUserbyID(db *sql.DB) error {
-	log.Printf("Retrieving user by id %d", u.ID)
+	log.Printf("[USER] Retrieving user by id %d", u.ID)
 
 	q := `SELECT firstname, lastname, email, username, log_count, total_hours, total_minutes
 		FROM practice_db.users
@@ -60,12 +60,12 @@ func (u *User) RetrieveUserbyID(db *sql.DB) error {
 		return err
 	}
 
-	log.Printf("User %s has been successfully retrieved", u.Username)
+	log.Printf("[USER] User %s has been successfully retrieved", u.Username)
 	return nil
 }
 
 func (u *User) RetrieveUserByEmail(db *sql.DB) error {
-	log.Printf("Retrieving user by email %s", u.Email)
+	log.Printf("[USER] Retrieving user by email %s", u.Email)
 
 	q := `SELECT id, firstname, lastname, username, log_count, total_hours, total_minutes
 		FROM practice_db.users
@@ -77,12 +77,12 @@ func (u *User) RetrieveUserByEmail(db *sql.DB) error {
 		return err
 	}
 
-	log.Printf("User %s has been successfully retrieved", u.Username)
+	log.Printf("[USER] User %s has been successfully retrieved", u.Username)
 	return nil
 }
 
 func (u *User) RetrieveUserByUsername(db *sql.DB) error {
-	log.Printf("Retrieving user by username %s", u.Username)
+	log.Printf("[USER] Retrieving user by username %s", u.Username)
 
 	q := `SELECT id, firstname, lastname, email, log_count, total_hours, total_minutes
 		FROM practice_db.users
@@ -94,12 +94,12 @@ func (u *User) RetrieveUserByUsername(db *sql.DB) error {
 		return err
 	}
 
-	log.Printf("User %s has been successfully retrieved", u.Username)
+	log.Printf("[USER] User %s has been successfully retrieved", u.Username)
 	return nil
 }
 
 func (u *User) RetrieveUserIDByEmail(db *sql.DB) error {
-	log.Printf("Retrieving user id by email %s", u.Email)
+	log.Printf("[USER] Retrieving user id by email %s", u.Email)
 
 	u.ID = -1
 	q := `SELECT id FROM practice_db.users WHERE email=?`
@@ -110,13 +110,13 @@ func (u *User) RetrieveUserIDByEmail(db *sql.DB) error {
 		return err
 	}
 
-	log.Printf("User id %d has been successfully retrieved", u.ID)
+	log.Printf("[USER] User id %d has been successfully retrieved", u.ID)
 	return nil
 }
 
 // New, not tested
 func (u *User) RetrieveUserIDByUsername(db *sql.DB) error {
-	log.Printf("Retrieving user id by username %s", u.Username)
+	log.Printf("[USER] Retrieving user id by username %s", u.Username)
 	q := `SELECT id FROM practice_db.users WHERE username=?`
 	err := db.QueryRow(q, u.Username).Scan(&u.ID)
 
@@ -125,14 +125,14 @@ func (u *User) RetrieveUserIDByUsername(db *sql.DB) error {
 		return err
 	}
 
-	log.Printf("User id %d has been successfully retrieved", u.ID)
+	log.Printf("[USER] User id %d has been successfully retrieved", u.ID)
 	return nil
 }
 
 // New, not tested
 // RetrieveUserDTOByCred retrieves userDTO by email or username.
 func (u *UserDTO) RetrieveUserDTOByCred(db *sql.DB) error {
-	log.Printf("Retrieving userDTO by email: %s, or by username: %s", u.Email, u.Username)
+	log.Printf("[USER] Retrieving userDTO by email: %s, or by username: %s", u.Email, u.Username)
 
 	q := `SELECT id, firstname, lastname, email, username FROM practice_db.users WHERE email=? OR username=?`
 	err := db.QueryRow(q, u.Email, u.Username).Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Username)
@@ -142,14 +142,14 @@ func (u *UserDTO) RetrieveUserDTOByCred(db *sql.DB) error {
 		return err
 	}
 
-	log.Printf("UserDTO %s has been successfully retrieved", u.Username)
+	log.Printf("[USER] UserDTO %s has been successfully retrieved", u.Username)
 	return nil
 }
 
 // UpdateUserWorklogInfoByID changes the information about the user's worklog by user id.
 // Precisely: log count, and hours & minutes worked.
 func (u User) UpdateUserWorklogInfoByID(tx *sql.Tx) error {
-	log.Printf("Updating user %s worklog info", u.Username)
+	log.Printf("[USER] Updating user %s worklog info", u.Username)
 
 	q := `UPDATE practice_db.users
 		SET log_count=?, total_hours=?, total_minutes=?
@@ -161,14 +161,14 @@ func (u User) UpdateUserWorklogInfoByID(tx *sql.Tx) error {
 		return err
 	}
 
-	log.Printf("User %s worklog info has been successfully updated", u.Username)
+	log.Printf("[USER] User %s worklog info has been successfully updated", u.Username)
 	return nil
 }
 
 // RetrieveAllRecordsByUserID scans records table,
 // looking for every record associated with the user.
 func (u *User) RetrieveAllRecordsByUserID(db *sql.DB) error {
-	log.Printf("Retrieving all records by user id %d", u.ID)
+	log.Printf("[USER] Retrieving all records by user id %d", u.ID)
 
 	q := `SELECT id, hours, minutes FROM practice_db.records WHERE user_id=?`
 	rows, err := db.Query(q, u.ID)
@@ -191,6 +191,6 @@ func (u *User) RetrieveAllRecordsByUserID(db *sql.DB) error {
 	}
 
 	u.Records = records
-	log.Printf("All records by user id %d have been successfully retrieved", u.ID)
+	log.Printf("[USER] All records by user id %d have been successfully retrieved", u.ID)
 	return nil
 }

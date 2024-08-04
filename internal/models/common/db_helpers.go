@@ -16,7 +16,7 @@ import (
 // Returns -1 and error in case of failure.
 func GetLastInsertId(result sql.Result, q string, data interface{}) (int64, error) {
 	dataType := reflect.TypeOf(data).Name()
-	log.Printf("Retrieving last insert ID for %s", dataType)
+	log.Printf("[COMMON] Retrieving last insert ID for %s", dataType)
 	lastInsertId, err := result.LastInsertId()
 	if err != nil {
 		return -1, apperrors.New(
@@ -27,14 +27,14 @@ func GetLastInsertId(result sql.Result, q string, data interface{}) (int64, erro
 		)
 	}
 
-	log.Printf("Last insert ID for %s is %d", dataType, lastInsertId)
+	log.Printf("[COMMON] Last insert ID for %s is %d", dataType, lastInsertId)
 	return lastInsertId, nil
 }
 
 // GetQueryError checks if there was an error in execution.
 // Returns AppError if found any, or nil otherwise.
 func GetQueryError(q, message string, data interface{}, err error) error {
-	log.Printf("Checking query error for %s", q)
+	log.Printf("[COMMON] Checking query error for %s", q)
 	if err == nil {
 		return nil
 	}
@@ -47,7 +47,7 @@ func GetQueryError(q, message string, data interface{}, err error) error {
 
 	dataType := reflect.TypeOf(data).Name()
 
-	log.Printf("Query error for %s: %s", q, err)
+	log.Printf("[COMMON] Query error: %s", err)
 	return apperrors.New(
 		code,
 		message,
@@ -59,7 +59,7 @@ func GetQueryError(q, message string, data interface{}, err error) error {
 // HandleUpdateQuery validates sql update query by checking
 // update error, affected rows error, or no rows affected error.
 func HandleUpdateQuery(result sql.Result, err error, q string, data interface{}) error {
-	log.Printf("Handling update query for %s", q)
+	log.Printf("[COMMON] Handling update query for %s", q)
 	dataType := reflect.TypeOf(data).Name()
 	if err != nil {
 		return apperrors.New(
@@ -70,7 +70,7 @@ func HandleUpdateQuery(result sql.Result, err error, q string, data interface{})
 		)
 	}
 
-	log.Printf("Checking rows affected for %s", dataType)
+	log.Printf("[COMMON] Checking rows affected for %s", dataType)
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return apperrors.New(
@@ -90,6 +90,6 @@ func HandleUpdateQuery(result sql.Result, err error, q string, data interface{})
 		)
 	}
 
-	log.Printf("Rows affected for %s: %d", dataType, rowsAffected)
+	log.Printf("[COMMON] Rows affected for %s: %d", dataType, rowsAffected)
 	return nil
 }
