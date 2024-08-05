@@ -39,6 +39,7 @@ func InitDB() {
 	log.Println("Connected to the database")
 }
 
+// CloseDB closes the database connection
 func CloseDB(db *sql.DB) {
 	log.Println("Closing the database connection...")
 

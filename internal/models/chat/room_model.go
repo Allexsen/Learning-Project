@@ -86,8 +86,17 @@ func (room *Room) AddUser(userID int64) error {
 
 // DeleteRoom deletes a room
 func (room *Room) DeleteRoom() error {
-	// TODO: Implement removing the room from the roomsManager
 	log.Printf("[CHAT] Removing room %d", room.ID)
+
+	_, exists := roomsManager.Rooms[room.ID]
+	if !exists {
+		return apperrors.New(
+			http.StatusNotFound,
+			fmt.Sprintf("Room with ID %d not found", room.ID),
+			apperrors.ErrNotFound,
+			nil,
+		)
+	}
 
 	room.Manager.Close()
 	err := removeRoomFromDB(room.ID)
@@ -95,7 +104,9 @@ func (room *Room) DeleteRoom() error {
 		return err
 	}
 
+	delete(roomsManager.Rooms, room.ID)
 	log.Printf("[CHAT] Room %d has been successfully removed", room.ID)
+
 	room = nil
 	return nil
 }

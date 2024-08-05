@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateRoom handles the request to create a new room
 func CreateRoom(c *gin.Context) {
 	log.Printf("[HANDLER] Handling room creation request for %s", c.ClientIP())
 
@@ -29,6 +30,7 @@ func CreateRoom(c *gin.Context) {
 	})
 }
 
+// GetRooms handles the request to retrieve all rooms
 func GetRooms(c *gin.Context) {
 	log.Printf("[HANDLER] Handling room retrieval request for %s", c.ClientIP())
 
@@ -45,7 +47,7 @@ func GetRooms(c *gin.Context) {
 	})
 }
 
-// TODO: Rewise error handling
+// JoinRoom handles the request to join a room
 func JoinRoom(c *gin.Context) {
 	log.Printf("[HANDLER] Handling room join request for %s", c.ClientIP())
 
@@ -66,6 +68,7 @@ func JoinRoom(c *gin.Context) {
 	})
 }
 
+// DeleteRoom handles the request to delete a room
 func DeleteRoom(c *gin.Context) {
 	log.Printf("[HANDLER] Handling room deletion request for %s", c.ClientIP())
 

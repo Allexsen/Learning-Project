@@ -28,6 +28,7 @@ type User struct {
 	Records      []record.Record `db:"-" json:"worklog"`                   // List of records
 }
 
+// AddUser adds a new user to the database.
 func (u User) AddUser(db *sql.DB) (int64, error) {
 	log.Printf("[USER] Adding user %s to the database", u.Username)
 
@@ -46,6 +47,7 @@ func (u User) AddUser(db *sql.DB) (int64, error) {
 	return id, nil
 }
 
+// RetrieveUserbyID retrieves user by user id.
 func (u *User) RetrieveUserbyID(db *sql.DB) error {
 	log.Printf("[USER] Retrieving user by id %d", u.ID)
 
@@ -64,6 +66,7 @@ func (u *User) RetrieveUserbyID(db *sql.DB) error {
 	return nil
 }
 
+// RetrieveUserByEmail retrieves user by email.
 func (u *User) RetrieveUserByEmail(db *sql.DB) error {
 	log.Printf("[USER] Retrieving user by email %s", u.Email)
 
@@ -81,6 +84,7 @@ func (u *User) RetrieveUserByEmail(db *sql.DB) error {
 	return nil
 }
 
+// RetrieveUserByUsername retrieves user by username.
 func (u *User) RetrieveUserByUsername(db *sql.DB) error {
 	log.Printf("[USER] Retrieving user by username %s", u.Username)
 
@@ -98,6 +102,7 @@ func (u *User) RetrieveUserByUsername(db *sql.DB) error {
 	return nil
 }
 
+// RetrieveUserIDByEmail retrieves user id by email.
 func (u *User) RetrieveUserIDByEmail(db *sql.DB) error {
 	log.Printf("[USER] Retrieving user id by email %s", u.Email)
 
@@ -114,8 +119,8 @@ func (u *User) RetrieveUserIDByEmail(db *sql.DB) error {
 	return nil
 }
 
-// New, not tested
-func (u *User) RetrieveUserIDByUsername(db *sql.DB) error {
+// RetrieveUserIDByUsername retrieves user id by username.
+func (u *User) RetrieveUserIDByUsername(db *sql.DB) error { // TODO: Implement Unit Tests
 	log.Printf("[USER] Retrieving user id by username %s", u.Username)
 	q := `SELECT id FROM practice_db.users WHERE username=?`
 	err := db.QueryRow(q, u.Username).Scan(&u.ID)
@@ -129,9 +134,8 @@ func (u *User) RetrieveUserIDByUsername(db *sql.DB) error {
 	return nil
 }
 
-// New, not tested
 // RetrieveUserDTOByCred retrieves userDTO by email or username.
-func (u *UserDTO) RetrieveUserDTOByCred(db *sql.DB) error {
+func (u *UserDTO) RetrieveUserDTOByCred(db *sql.DB) error { // TODO: Implement Unit Tests
 	log.Printf("[USER] Retrieving userDTO by email: %s, or by username: %s", u.Email, u.Username)
 
 	q := `SELECT id, firstname, lastname, email, username FROM practice_db.users WHERE email=? OR username=?`

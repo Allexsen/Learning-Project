@@ -17,6 +17,7 @@ import (
 // JWT key secret loaded from env variables.
 var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
+// Claims represents the JWT claims.
 type Claims struct {
 	UserDTO user.UserDTO
 	jwt.StandardClaims

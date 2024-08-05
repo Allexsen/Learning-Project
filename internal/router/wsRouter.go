@@ -8,12 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// initWsRouter sets up the WebSocket routes
 func initWsRouter(wsManager *ws.WsManager) {
 	log.Println("Setting up ws router...")
 	wsRouter := r.Group("/ws")
 	wsRouter.Use(middlewares.CheckJWT())
 	{
-		// TODO: Swap out the placeholder
 		wsRouter.GET("", func(c *gin.Context) {
 			ws.WsHandler(wsManager, c)
 		})
