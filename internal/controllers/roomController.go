@@ -7,16 +7,18 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/utils"
 )
 
+// RoomCreate creates a new room
 func RoomCreate(name string) *chat.Room {
-	// TODO: Check back on this later on, seems like some part of logic is missing
 	log.Printf("[CONTROLLER] Creating room %s", name)
 
+	// TODO: Validate room name
 	room := chat.NewRoom(name)
 
 	log.Printf("[CONTROLLER] Room %s has been successfully created", name)
 	return room
 }
 
+// RoomsGet retrieves all rooms
 func RoomsGet() ([]*chat.Room, error) {
 	log.Printf("[CONTROLLER] Getting all rooms")
 
@@ -26,6 +28,7 @@ func RoomsGet() ([]*chat.Room, error) {
 	return rooms, err
 }
 
+// RoomGet retrieves a room by ID
 func RoomGet(idStr string) (*chat.Room, error) {
 	log.Printf("[CONTROLLER] Getting room %s", idStr)
 
@@ -43,6 +46,7 @@ func RoomGet(idStr string) (*chat.Room, error) {
 	return room, nil
 }
 
+// RoomAddUser adds a user to a room
 func RoomAddUser(roomIDStr, userIDStr string) (*chat.Room, error) {
 	log.Printf("[CONTROLLER] Adding user %s to room %s", userIDStr, roomIDStr)
 	userID, err := utils.Atoi(userIDStr)
@@ -65,6 +69,8 @@ func RoomAddUser(roomIDStr, userIDStr string) (*chat.Room, error) {
 	return room, nil
 }
 
+// RoomRemove removes a room and all associated data by room  ID.
+// If the room doesn't exist, apperrors.ErrNotFound is returned
 func RoomRemove(idStr string) error {
 	log.Printf("[CONTROLLER] Removing room %s", idStr)
 

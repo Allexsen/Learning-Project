@@ -6,6 +6,7 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/handlers"
 )
 
+// initRoomRouter sets up routes associated with rooms
 func initRoomRouter() {
 	log.Println("Setting up room routes...")
 	roomRouter := r.Group("/rooms")

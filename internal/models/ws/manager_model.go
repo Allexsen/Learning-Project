@@ -134,9 +134,10 @@ func (manager *WsManager) Broadcast(msg msg.Message) {
 	}
 }
 
+// AddClient adds a client to the manager
 func (manager *WsManager) AddClient(userID int64) {
 	manager.register <- &Client{
-		userDTO: &user.UserDTO{ // TODO: Swap with UserDTO once the logic is implemented
+		userDTO: &user.UserDTO{ // TODO: Swap userID with UserDTO once the logic is implemented
 			ID:       userID,
 			Email:    "Place@holder.com", // Placeholder
 			Username: "Placeholder",      // Placeholder
@@ -145,10 +146,11 @@ func (manager *WsManager) AddClient(userID int64) {
 	}
 }
 
+// Close closes the manager and all clients
 func (manager *WsManager) Close() {
-	close(manager.stop)
 	manager.Lock()
 	defer manager.Unlock()
+	close(manager.stop)
 	for client := range manager.clients {
 		close(client.send)
 		delete(manager.clients, client)

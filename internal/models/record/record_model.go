@@ -17,6 +17,7 @@ type Record struct {
 	Minutes int   `db:"minutes" json:"minutes"` // Minutes worked during a session
 }
 
+// AddRecord adds a new record to the database.
 func (r Record) AddRecord(tx *sql.Tx) (int64, error) {
 	log.Printf("[RECORD] Adding record: %+v", r)
 
@@ -35,6 +36,7 @@ func (r Record) AddRecord(tx *sql.Tx) (int64, error) {
 	return id, nil
 }
 
+// RetrieveAllRecordsByUserID retrieves all records associated with the user by user id.
 func (r *Record) RetrieveRecordByID(db *sql.DB) error {
 	log.Printf("[RECORD] Retrieving record by id %d", r.ID)
 
@@ -50,6 +52,7 @@ func (r *Record) RetrieveRecordByID(db *sql.DB) error {
 	return nil
 }
 
+// RetrieveAllRecordsByUserID retrieves all records associated with the user by user id.
 func (r *Record) RetrieveUserIDByRecordID(db *sql.DB) error {
 	log.Printf("[RECORD] Retrieving user id by record id %d", r.ID)
 
@@ -65,6 +68,7 @@ func (r *Record) RetrieveUserIDByRecordID(db *sql.DB) error {
 	return nil
 }
 
+// RetrieveAllRecordsByUserID retrieves all records associated with the user by user id.
 func (r Record) RemoveRecord(tx *sql.Tx) error {
 	log.Printf("[RECORD] Removing record %d", r.ID)
 

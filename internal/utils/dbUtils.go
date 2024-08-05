@@ -95,6 +95,7 @@ func IsExistingCreds(c *gin.Context, email, username string) (bool, error) {
 	return false, nil
 }
 
+// getQueryError returns an error if the query execution failed, nil otherwise
 func getQueryError(q string, context map[string]interface{}, err error) error {
 	log.Printf("[UTILS] Executing query: %s", q)
 
