@@ -63,9 +63,16 @@ func (client *Client) writeLoop() {
 	for msg := range client.send {
 		message, err := json.Marshal(msg)
 		if err != nil {
-			log.Printf("Error marshalling message: %v", err)
+			log.Printf("[WS] Error marshalling message: %v", err)
 			continue
 		}
-		client.conn.WriteMessage(websocket.TextMessage, message)
+
+		log.Printf("[WS] Sending message to client %+v: %s", client, message)
+		err = client.conn.WriteMessage(websocket.TextMessage, message)
+		if err != nil {
+			log.Printf("[WS] Error writing message: %v", err)
+			log.Printf("[WS] Breaking write loop for client %+v", client)
+			break
+		}
 	}
 }
