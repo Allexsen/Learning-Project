@@ -9,6 +9,9 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/models/ws"
 )
 
+// TODO: Design and add database table for rooms, or completely remove db logic
+// TODO: Change to UserDTO and implement proper retrievals
+
 // Room  represents a group chat
 type Room struct {
 	BaseChat
