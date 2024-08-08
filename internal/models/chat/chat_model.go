@@ -9,12 +9,12 @@ import (
 )
 
 type BaseChat struct {
-	ID        int64         `json:"id"`
-	CreatedAt int64         `json:"created_at"`
-	UpdatedAt int64         `json:"updated_at"`
-	Manager   *ws.WsManager `json:"manager"`
-	Members   []int64       `json:"members"`
-	Messages  []msg.Message `json:"messages"`
+	ID        int64         `json:"id,omitempty"`
+	CreatedAt int64         `json:"created_at,omitempty"`
+	UpdatedAt int64         `json:"updated_at,omitempty"`
+	Manager   *ws.WsManager `json:"manager,omitempty"`
+	Members   []int64       `json:"members,omitempty"`
+	Messages  []msg.Message `json:"messages,omitempty"`
 }
 
 type Chat interface {

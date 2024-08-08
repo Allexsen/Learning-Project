@@ -9,13 +9,12 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/models/ws"
 )
 
-// TODO: Design and add database table for rooms, or completely remove db logic
 // TODO: Change to UserDTO and implement proper retrievals
 
 // Room  represents a group chat
 type Room struct {
 	BaseChat
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 }
 
 type RoomsManager struct {
@@ -46,7 +45,6 @@ func NewRoom(name string) *Room {
 
 // GetRooms returns all rooms
 func GetRooms() ([]*Room, error) {
-	// TODO: Add Rooms table to the storage and/or database
 	log.Printf("[CHAT] Getting all rooms")
 
 	rooms := make([]*Room, 0, len(roomsManager.Rooms))
@@ -102,23 +100,9 @@ func (room *Room) DeleteRoom() error {
 	}
 
 	room.Manager.Close()
-	err := removeRoomFromDB(room.ID)
-	if err != nil {
-		return err
-	}
-
 	delete(roomsManager.Rooms, room.ID)
 	log.Printf("[CHAT] Room %d has been successfully removed", room.ID)
 
 	room = nil
-	return nil
-}
-
-// RemoveRoomFromDB removes a room from the database
-func removeRoomFromDB(_ int64) error {
-	// TODO: Add database logic
-	log.Printf("[CHAT] Removing room from the database")
-
-	log.Printf("[CHAT] Room has been successfully removed from the database")
 	return nil
 }

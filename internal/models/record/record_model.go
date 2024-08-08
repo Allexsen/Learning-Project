@@ -11,10 +11,10 @@ import (
 // Record represents an internal object.
 // It stores a single work session duration of a user.
 type Record struct {
-	ID      int64 `db:"id" json:"id"`           // Unique record id
-	UserID  int64 `db:"user_id" json:"user_id"` // Corresponding user
-	Hours   int   `db:"hours" json:"hours"`     // Hours worked during a session
-	Minutes int   `db:"minutes" json:"minutes"` // Minutes worked during a session
+	ID      int64 `db:"id" json:"id,omitempty"`           // Unique record id
+	UserID  int64 `db:"user_id" json:"user_id,omitempty"` // Corresponding user
+	Hours   int   `db:"hours" json:"hours,omitempty"`     // Hours worked during a session
+	Minutes int   `db:"minutes" json:"minutes,omitempty"` // Minutes worked during a session
 }
 
 // AddRecord adds a new record to the database.

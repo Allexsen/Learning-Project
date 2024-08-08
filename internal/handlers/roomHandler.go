@@ -21,7 +21,11 @@ func CreateRoom(c *gin.Context) {
 
 	log.Printf("[HANDLER] Request Data: %+v", reqData)
 
-	room := controllers.RoomCreate(reqData.Name)
+	room, err := controllers.RoomCreate(reqData.Name)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
 
 	log.Printf("[HANDLER] Room %s has been successfully created", room.Name)
 	c.JSON(http.StatusOK, gin.H{
