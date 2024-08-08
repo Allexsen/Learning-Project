@@ -39,7 +39,7 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	if err := utils.IsValidUsername(reqData.Username); err != nil {
+	if err := utils.IsValidName(reqData.Username); err != nil {
 		handleError(c, err)
 		return
 	}

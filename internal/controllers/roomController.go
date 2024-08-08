@@ -8,14 +8,17 @@ import (
 )
 
 // RoomCreate creates a new room
-func RoomCreate(name string) *chat.Room {
+func RoomCreate(name string) (*chat.Room, error) {
 	log.Printf("[CONTROLLER] Creating room %s", name)
 
-	// TODO: Validate room name
+	if err := utils.IsValidName(name); err != nil {
+		return nil, err
+	}
+
 	room := chat.NewRoom(name)
 
 	log.Printf("[CONTROLLER] Room %s has been successfully created", name)
-	return room
+	return room, nil
 }
 
 // RoomsGet retrieves all rooms
