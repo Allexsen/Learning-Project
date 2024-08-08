@@ -13,7 +13,6 @@ import (
 )
 
 // TODO: Change reqData to UserDTO(or User for registration/login) and remove the struct
-// TODO: Ensure every single route returns a JSON response with "success" key
 
 // UserRegister parses & validates input, and
 // sends it to controllers for registering a new user
