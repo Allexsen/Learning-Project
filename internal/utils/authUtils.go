@@ -110,22 +110,22 @@ func IsValidEmail(email string) error {
 	return nil
 }
 
-// IsValidUsername is a regex for username validation
-// It returns an error if the username is invalid, nil otherwise.
-func IsValidUsername(username string) error {
-	log.Printf("Validating username: %s", username)
+// IsValidName is a regex for name validation
+// It returns an error if the name is invalid, nil otherwise.
+func IsValidName(name string) error {
+	log.Printf("Validating name: %s", name)
 
 	usernameRegex := `^[a-zA-Z0-9-_]+$`
 	re := regexp.MustCompile(usernameRegex)
-	if len(username) <= 3 || !re.MatchString(username) {
+	if len(name) <= 3 || !re.MatchString(name) {
 		return apperrors.New(
 			http.StatusBadRequest,
 			"Invalid username",
 			apperrors.ErrInvalidInput,
-			map[string]interface{}{"details": fmt.Sprintf("invalid username: %s", username)},
+			map[string]interface{}{"details": fmt.Sprintf("invalid username: %s", name)},
 		)
 	}
 
-	log.Printf("Username %s is valid", username)
+	log.Printf("Username %s is valid", name)
 	return nil
 }

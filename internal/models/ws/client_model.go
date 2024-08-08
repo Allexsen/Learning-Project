@@ -12,10 +12,10 @@ import (
 
 // Client represents a websocket client
 type Client struct {
-	conn    *websocket.Conn  `json:"-"` // Websocket connection
-	send    chan msg.Message `json:"-"` // Channel on which messages are sent to the client
-	manager *WsManager       `json:"-"` // ClientManager associated with the client
-	userDTO *user.UserDTO    `json:"-"` // User associated with the client
+	conn    *websocket.Conn  // Websocket connection
+	send    chan msg.Message // Channel on which messages are sent to the client
+	manager *WsManager       // ClientManager associated with the client
+	userDTO *user.UserDTO    // User associated with the client
 }
 
 // readLoop spins off an infinite for loop reading incoming messages from a client.

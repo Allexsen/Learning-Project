@@ -15,7 +15,7 @@ import (
 // Room  represents a group chat
 type Room struct {
 	BaseChat
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 }
 
 type RoomsManager struct {

@@ -9,23 +9,25 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/models/record"
 )
 
+// UserDTO represents a user data transfer object.
+// It is used to transfer semi-public user data between the client and the server.
 type UserDTO struct {
-	ID        int64  `db:"id" json:"id"`               // Unique user id
-	Firstname string `db:"firstname" json:"firstName"` // Firstname
-	Lastname  string `db:"lastname" json:"lastName"`   // Lastname
-	Email     string `db:"email" json:"email"`         // Email
-	Username  string `db:"username" json:"username"`   // Unique username
+	ID        int64  `db:"id" json:"id,omitempty"`               // Unique user id
+	Firstname string `db:"firstname" json:"firstName,omitempty"` // Firstname
+	Lastname  string `db:"lastname" json:"lastName,omitempty"`   // Lastname
+	Email     string `db:"email" json:"email,omitempty"`         // Email
+	Username  string `db:"username" json:"username,omitempty"`   // Unique username
 }
 
-// User represents an internal object.
-// It stores user data (:D)
+// User represents a user model.
+// It is used to store user data in the database.
 type User struct {
 	UserDTO
-	Password     string          `db:"password" json:"-"`                  // Password hash
-	LogCount     int             `db:"log_count" json:"log_count"`         // Total number of logs
-	TotalHours   int             `db:"total_hours" json:"total_hours"`     // Total hours worked
-	TotalMinutes int             `db:"total_minutes" json:"total_minutes"` // Total minutes worked
-	Records      []record.Record `db:"-" json:"worklog"`                   // List of records
+	Password     string          `db:"password" json:"-"`                            // Password hash
+	LogCount     int             `db:"log_count" json:"log_count,omitempty"`         // Total number of logs
+	TotalHours   int             `db:"total_hours" json:"total_hours,omitempty"`     // Total hours worked
+	TotalMinutes int             `db:"total_minutes" json:"total_minutes,omitempty"` // Total minutes worked
+	Records      []record.Record `db:"-" json:"worklog,omitempty"`                   // List of records
 }
 
 // AddUser adds a new user to the database.
