@@ -64,7 +64,8 @@ function joinRoom(roomId) {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${userToken}`
-        }
+        },
+        body: JSON.stringify({ UserDTO: userData.user})
     })
     .then(response => {
         if (response.ok) {

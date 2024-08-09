@@ -134,14 +134,10 @@ func (manager *WsManager) Broadcast(msg msg.Message) {
 }
 
 // AddClient adds a client to the manager
-func (manager *WsManager) AddClient(userID int64) {
+func (manager *WsManager) AddClient(userDTO user.UserDTO) {
 	manager.register <- &Client{
-		userDTO: &user.UserDTO{ // TODO: Swap userID with UserDTO once the logic is implemented
-			ID:       userID,
-			Email:    "Place@holder.com", // Placeholder
-			Username: "Placeholder",      // Placeholder
-		},
-		send: make(chan msg.Message),
+		userDTO: &userDTO,
+		send:    make(chan msg.Message),
 	}
 }
 

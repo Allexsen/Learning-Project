@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/Allexsen/Learning-Project/internal/models/chat"
+	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 )
 
@@ -50,25 +51,19 @@ func RoomGet(idStr string) (*chat.Room, error) {
 }
 
 // RoomAddUser adds a user to a room
-func RoomAddUser(roomIDStr, userIDStr string) (*chat.Room, error) {
-	log.Printf("[CONTROLLER] Adding user %s to room %s", userIDStr, roomIDStr)
-	userID, err := utils.Atoi(userIDStr)
-	if err != nil {
-		return nil, err
-	}
-
+func RoomAddUser(roomIDStr string, userDTO user.UserDTO) (*chat.Room, error) {
+	log.Printf("[CONTROLLER] Adding user %+v to room %s", userDTO, roomIDStr)
 	room, err := RoomGet(roomIDStr)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: Implement retrieving UserDTO by UserID, and passing it to AddUser
-	err = room.AddUser(int64(userID))
+	err = room.AddUser(userDTO)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Printf("[CONTROLLER] User %s has been successfully added to room %s", userIDStr, roomIDStr)
+	log.Printf("[CONTROLLER] User %+v has been successfully added to room %s", userDTO, roomIDStr)
 	return room, nil
 }
 

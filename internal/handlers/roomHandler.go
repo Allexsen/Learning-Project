@@ -6,6 +6,7 @@ import (
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
 	"github.com/Allexsen/Learning-Project/internal/models/chat"
+	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -56,16 +57,19 @@ func JoinRoom(c *gin.Context) {
 	log.Printf("[HANDLER] Handling room join request for %s", c.ClientIP())
 
 	roomID := c.Param("id")
-	userID := "1" // TODO: Retrieve UserDTO from gin.Context
+	var userDTO user.UserDTO
+	if !utils.ShouldBindJSON(c, &userDTO) {
+		return
+	}
 
-	log.Printf("[HANDLER] Request Data: RoomID: %s, UserID: %s", roomID, userID) // TODO: Change to UserDTO
-	room, err := controllers.RoomAddUser(roomID, userID)
+	log.Printf("[HANDLER] Request Data: RoomID: %s, User: %+v", roomID, userDTO)
+	room, err := controllers.RoomAddUser(roomID, userDTO)
 	if err != nil {
 		handleError(c, err)
 		return
 	}
 
-	log.Printf("[HANDLER] User %s has successfully joined room %s", userID, roomID) // Change to UserDTO
+	log.Printf("[HANDLER] User %+v has successfully joined room %s", userDTO, roomID) // Change to UserDTO
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"room":    room,
