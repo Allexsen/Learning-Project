@@ -136,6 +136,22 @@ func (u *User) RetrieveUserIDByUsername(db *sql.DB) error { // TODO: Implement U
 	return nil
 }
 
+// RetrieveUserDTOByID retrieves userDTO by user id.
+func (u *UserDTO) RetrieveUserDTOByID(db *sql.DB) error { // TODO: Implement Unit Tests
+	log.Printf("[USER] Retrieving userDTO by id %d", u.ID)
+
+	q := `SELECT firstname, lastname, email, username FROM practice_db.users WHERE id=?`
+	err := db.QueryRow(q, u.ID).Scan(&u.Firstname, &u.Lastname, &u.Email, &u.Username)
+
+	err = common.GetQueryError(q, "Couldn't retrieve userDTO by id", u, err)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("[USER] UserDTO %s has been successfully retrieved", u.Username)
+	return nil
+}
+
 // RetrieveUserDTOByCred retrieves userDTO by email or username.
 func (u *UserDTO) RetrieveUserDTOByCred(db *sql.DB) error { // TODO: Implement Unit Tests
 	log.Printf("[USER] Retrieving userDTO by email: %s, or by username: %s", u.Email, u.Username)

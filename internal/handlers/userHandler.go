@@ -12,8 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: Change reqData to UserDTO(or User for registration/login) and remove the struct
-
 // UserRegister parses & validates input, and
 // sends it to controllers for registering a new user
 func UserRegister(c *gin.Context) {

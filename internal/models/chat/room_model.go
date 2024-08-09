@@ -6,10 +6,9 @@ import (
 	"net/http"
 
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
+	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/models/ws"
 )
-
-// TODO: Change to UserDTO and implement proper retrievals
 
 // Room  represents a group chat
 type Room struct {
@@ -74,14 +73,13 @@ func GetRoomByID(id int64) (*Room, error) {
 }
 
 // AddUser adds a user to the room
-func (room *Room) AddUser(userID int64) error {
-	// TODO: Add database logic
-	log.Printf("[CHAT] Adding user %d to room %d", userID, room.ID)
+func (room *Room) AddUser(userDTO user.UserDTO) error {
+	log.Printf("[CHAT] Adding user %+v to room %d", userDTO, room.ID)
 
-	room.Members = append(room.Members, userID)
-	room.Manager.AddClient(userID)
+	room.Members = append(room.Members, userDTO)
+	room.Manager.AddClient(userDTO)
 
-	log.Printf("[CHAT] User %d has been successfully added to room %d", userID, room.ID)
+	log.Printf("[CHAT] User %+v has been successfully added to room %d", userDTO, room.ID)
 	return nil
 }
 
