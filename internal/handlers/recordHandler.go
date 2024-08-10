@@ -48,7 +48,7 @@ func RecordAdd(c *gin.Context) {
 	log.Printf("[HANDLER] Record has been successfully added for %s", u.Email)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"user":    u,
+		"user":    &u,
 	})
 }
 
@@ -76,6 +76,6 @@ func RecordDelete(c *gin.Context) {
 	log.Printf("[HANDLER] Record has been successfully deleted for %s", u.Email)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"user":    u,
+		"user":    &u,
 	})
 }

@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/Allexsen/Learning-Project/internal/models/msg"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
+	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -47,29 +47,23 @@ var upgrader = websocket.Upgrader{
 
 // WsHandler handles WebSocket requests from the peer
 func WsHandler(manager *WsManager, c *gin.Context) {
-	log.Printf("[WS] Upgrading connection: %v", c.Request.RemoteAddr) // Temporary log
+	log.Printf("[WS] Upgrading connection: %v", c.Request.RemoteAddr)
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		http.NotFound(c.Writer, c.Request)
 		return
 	}
 
-	log.Printf("[WS] Connection established: %v", c.Request.RemoteAddr) // Temporary log
-	userDTO, exists := c.Get("userDTO")
-	if !exists {
-		apperrors.HandleError(c, apperrors.New(
-			http.StatusInternalServerError,
-			"UserDTO not set",
-			apperrors.ErrMissingRequiredField,
-			map[string]interface{}{"details": "userDTO not set in the context"},
-		))
+	log.Printf("[WS] Connection established: %v", c.Request.RemoteAddr)
+	var userDTO *user.UserDTO
+	if !utils.ShouldBindJSON(c, userDTO) {
 		return
 	}
 
 	client := &Client{
 		conn:    conn,
 		send:    make(chan msg.Message, 256),
-		userDTO: userDTO.(*user.UserDTO),
+		userDTO: userDTO,
 	}
 
 	manager.register <- client
@@ -135,10 +129,14 @@ func (manager *WsManager) Broadcast(msg msg.Message) {
 
 // AddClient adds a client to the manager
 func (manager *WsManager) AddClient(userDTO user.UserDTO) {
-	manager.register <- &Client{
+	cl := &Client{
 		userDTO: &userDTO,
 		send:    make(chan msg.Message),
 	}
+
+	manager.register <- cl
+	// TODO: go cl.writeLoop()
+	// TODO: go cl.readLoop(manager)
 }
 
 // Close closes the manager and all clients

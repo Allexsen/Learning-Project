@@ -20,12 +20,25 @@ function fetchRooms() {
         }
     })
     .then(response => response.json())
-    .then(data => updateRoomsList(data))
+    .then(data => {
+        if (data.success) {
+            console.log('Fetched rooms:', data.rooms); // Log the fetched data
+            updateRoomsList(data.rooms);
+        } else {
+            console.error('Error fetching rooms:', data.message);
+        }
+    })
     .catch(error => console.error('Error fetching rooms:', error));
 }
 
 function updateRoomsList(rooms) {
-    // Update the rooms list in the DOM
+    roomsList.innerHTML = ''; // Clear the existing list
+    rooms.forEach(room => {
+        const roomElement = document.createElement('div');
+        roomElement.textContent = room.name;
+        roomElement.addEventListener('click', () => joinRoom(room.id));
+        roomsList.appendChild(roomElement);
+    });
 }
 
 function removeRoomFromList(roomId) {
