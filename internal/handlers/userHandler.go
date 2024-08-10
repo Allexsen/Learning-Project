@@ -56,7 +56,7 @@ func UserRegister(c *gin.Context) {
 	log.Printf("[HANDLER] User %s has been successfully registered", u.Username)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"user":    u,
+		"user":    &u,
 	})
 }
 
@@ -129,7 +129,7 @@ func UserGet(c *gin.Context) {
 	log.Printf("[HANDLER] User %s has been successfully retrieved", u.Username)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"user":    u,
+		"user":    &u,
 	})
 }
 

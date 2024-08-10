@@ -48,7 +48,14 @@ func GetRooms() ([]*Room, error) {
 
 	rooms := make([]*Room, 0, len(roomsManager.Rooms))
 	for _, room := range roomsManager.Rooms {
-		rooms = append(rooms, room)
+		newRoom := Room{
+			BaseChat: BaseChat{
+				ID: room.ID,
+			},
+			Name: room.Name,
+		}
+
+		rooms = append(rooms, &newRoom)
 	}
 
 	log.Printf("[CHAT] %d rooms have been successfully retrieved", len(rooms))

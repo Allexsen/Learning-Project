@@ -31,7 +31,7 @@ func CreateRoom(c *gin.Context) {
 	log.Printf("[HANDLER] Room %s has been successfully created", room.Name)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"room":    room,
+		"room":    &room,
 	})
 }
 
@@ -48,7 +48,7 @@ func GetRooms(c *gin.Context) {
 	log.Printf("[HANDLER] Rooms have been successfully retrieved")
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"rooms":   rooms,
+		"rooms":   &rooms,
 	})
 }
 
@@ -72,7 +72,7 @@ func JoinRoom(c *gin.Context) {
 	log.Printf("[HANDLER] User %+v has successfully joined room %s", userDTO, roomID) // Change to UserDTO
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"room":    room,
+		"room":    &room,
 	})
 }
 
