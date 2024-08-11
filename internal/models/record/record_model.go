@@ -19,7 +19,7 @@ type Record struct {
 
 // AddRecord adds a new record to the database.
 func (r Record) AddRecord(tx *sql.Tx) (int64, error) {
-	log.Printf("[RECORD] Adding record: %+v", r)
+	log.Printf("[RECORD] Adding record to the database: %+v", r)
 
 	q := `INSERT INTO practice_db.records (user_id, hours, minutes) VALUES (?, ?, ?)`
 	result, err := tx.Exec(q, r.UserID, r.Hours, r.Minutes)
@@ -32,13 +32,12 @@ func (r Record) AddRecord(tx *sql.Tx) (int64, error) {
 		return -1, err
 	}
 
-	log.Printf("[RECORD] Record has been successfully added with id %d", id)
 	return id, nil
 }
 
 // RetrieveAllRecordsByUserID retrieves all records associated with the user by user id.
 func (r *Record) RetrieveRecordByID(db *sql.DB) error {
-	log.Printf("[RECORD] Retrieving record by id %d", r.ID)
+	log.Printf("[RECORD] Retrieving record by id %d from the database", r.ID)
 
 	q := `SELECT user_id, hours, minutes FROM practice_db.records WHERE id=?`
 	err := db.QueryRow(q, r.ID).Scan(&r.UserID, &r.Hours, &r.Minutes)
@@ -48,13 +47,12 @@ func (r *Record) RetrieveRecordByID(db *sql.DB) error {
 		return err
 	}
 
-	log.Printf("[RECORD] Record has been successfully retrieved: %+v", r)
 	return nil
 }
 
 // RetrieveAllRecordsByUserID retrieves all records associated with the user by user id.
 func (r *Record) RetrieveUserIDByRecordID(db *sql.DB) error {
-	log.Printf("[RECORD] Retrieving user id by record id %d", r.ID)
+	log.Printf("[RECORD] Retrieving user id by record id %d from the database", r.ID)
 
 	q := `SELECT user_id FROM practice_db.records WHERE id=?`
 	err := db.QueryRow(q, r.ID).Scan(&r.UserID)
@@ -64,13 +62,12 @@ func (r *Record) RetrieveUserIDByRecordID(db *sql.DB) error {
 		return err
 	}
 
-	log.Printf("[RECORD] User id %d has been successfully retrieved by record id %d", r.UserID, r.ID)
 	return nil
 }
 
 // RetrieveAllRecordsByUserID retrieves all records associated with the user by user id.
 func (r Record) RemoveRecord(tx *sql.Tx) error {
-	log.Printf("[RECORD] Removing record %d", r.ID)
+	log.Printf("[RECORD] Removing record %d from the database", r.ID)
 
 	q := `DELETE FROM practice_db.records WHERE id=?`
 	result, err := tx.Exec(q, r.ID)
@@ -80,6 +77,5 @@ func (r Record) RemoveRecord(tx *sql.Tx) error {
 		return err
 	}
 
-	log.Printf("[RECORD] Record %d has been successfully removed", r.ID)
 	return nil
 }

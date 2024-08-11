@@ -20,6 +20,7 @@ import (
 func UserRegister(firstname, lastname, username, email, pswd string) (*user.User, error) {
 	log.Printf("[CONTROLLER] Registering user %s", username)
 
+	log.Printf("[CONTROLLER] Generating bcrypt hash for user %s", username)
 	pswdHash, err := bcrypt.GenerateFromPassword([]byte(pswd), 10)
 	if err != nil {
 		return nil, err
@@ -41,15 +42,13 @@ func UserRegister(firstname, lastname, username, email, pswd string) (*user.User
 		return nil, err
 	}
 
-	log.Printf("[CONTROLLER] User %s has been successfully registered", u.Username)
 	return &u, nil
 }
 
 // UserLogin retrieves bcrypt password hash, authenticates
 // user credentials and, if successful, logs in the user
 func UserLogin(credential, password string) (*user.UserDTO, error) {
-	log.Printf("[CONTROLLER] Logging in user %s", credential)
-
+	log.Printf("[CONTROLLER] Authenticating user %s", credential)
 	var pswdHash string
 	var err error
 	db := database.DB
@@ -68,6 +67,7 @@ func UserLogin(credential, password string) (*user.UserDTO, error) {
 		return nil, err
 	}
 
+	log.Printf("[CONTROLLER] Comparing password hash for user %s", credential)
 	err = bcrypt.CompareHashAndPassword([]byte(pswdHash), []byte(password))
 	if err != nil {
 		return nil, apperrors.New(
@@ -84,14 +84,12 @@ func UserLogin(credential, password string) (*user.UserDTO, error) {
 		return nil, err
 	}
 
-	log.Printf("[CONTROLLER] User %s has been successfully logged in", userDTO.Username)
 	return userDTO, nil
 }
 
 // UserGetByEmail retrieves user from the database by user email
 func UserGetByEmail(email string) (*user.User, error) {
 	log.Printf("[CONTROLLER] Retrieving user by email %s", email)
-
 	db := database.DB
 	u := user.User{
 		UserDTO: user.UserDTO{
@@ -108,17 +106,16 @@ func UserGetByEmail(email string) (*user.User, error) {
 		return nil, err
 	}
 
-	log.Printf("[CONTROLLER] User %s has been successfully retrieved", u.Username)
 	return &u, nil
 }
 
 // UserGetByUsername retrieves user from the database by username
 func UserGetByUsername(username string) (*user.User, error) {
 	log.Printf("[CONTROLLER] Retrieving user by username %s", username)
-
 	db := database.DB
 	u := user.User{
 		UserDTO: user.UserDTO{
+			ID:       -1,
 			Username: username,
 		},
 	}
@@ -132,7 +129,6 @@ func UserGetByUsername(username string) (*user.User, error) {
 		return nil, err
 	}
 
-	log.Printf("[CONTROLLER] User %s has been successfully retrieved", u.Username)
 	return &u, nil
 }
 
@@ -140,25 +136,20 @@ func UserGetByUsername(username string) (*user.User, error) {
 // return -1 and error in case of failure
 func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {
 	log.Printf("[CONTROLLER] Retrieving user ID by email %s", email)
-
 	u := user.User{
 		UserDTO: user.UserDTO{
+			ID:    -1,
 			Email: email,
 		},
 	}
 
-	if err := u.RetrieveUserIDByEmail(db); err != nil {
-		return -1, err
-	}
-
-	log.Printf("[CONTROLLER] User ID %d has been successfully retrieved", u.ID)
-	return u.ID, nil
+	err := u.RetrieveUserIDByEmail(db)
+	return u.ID, err
 }
 
 // UserUpdateWorklogInfo updates the user worklog data by the provided record
 func userUpdateWorklogInfo(db *sql.DB, r record.Record, countChange int, tx *sql.Tx) (*user.User, error) {
-	log.Printf("[CONTROLLER] Updating user worklog info by record %+v", r)
-
+	log.Printf("[CONTROLLER] Updating user worklog info for user %d", r.UserID)
 	u := user.User{
 		UserDTO: user.UserDTO{
 			ID: r.UserID,
@@ -170,7 +161,7 @@ func userUpdateWorklogInfo(db *sql.DB, r record.Record, countChange int, tx *sql
 	}
 
 	u.TotalMinutes += r.Minutes
-	// Adjust minutes if below zero, decrease hours by one
+	// Adjust minutes. If below zero, decrease hours by one
 	if u.TotalMinutes < 0 {
 		u.TotalHours--
 		u.TotalMinutes += 60
@@ -189,14 +180,8 @@ func userUpdateWorklogInfo(db *sql.DB, r record.Record, countChange int, tx *sql
 	if err != nil {
 		log.Printf("[CONTROLLER] Couldn't commit the transaction: %s", err)
 		log.Printf("[CONTROLLER] Rolling back the transaction")
-		tx.Rollback()
+		err = tx.Rollback()
 	}
 
-	err = u.RetrieveAllRecordsByUserID(db)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Printf("[CONTROLLER] User %s worklog info has been successfully updated", u.Username)
-	return &u, nil
+	return &u, err
 }

@@ -29,8 +29,6 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] Request Data: %+v", reqData)
-
 	if err := utils.IsValidEmail(reqData.Email); err != nil {
 		handleError(c, err)
 		return
@@ -41,7 +39,6 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	// Check if the given email and/or username already exist.
 	if exists, err := utils.IsExistingCreds(c, reqData.Email, reqData.Username); err != nil || exists {
 		handleError(c, err)
 		return
@@ -53,7 +50,7 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] User %s has been successfully registered", u.Username)
+	log.Printf("[HANDLER] User %+v has been successfully registered", u)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"user":    &u,
@@ -74,8 +71,6 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] Request Data: %+v", reqData)
-
 	userDTO, err := controllers.UserLogin(reqData.Cred, reqData.Password)
 	if err != nil {
 		handleError(c, err)
@@ -88,7 +83,7 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] User %s has been successfully logged in", userDTO.Username)
+	log.Printf("[HANDLER] User %s has been successfully logged in", reqData.Cred)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"token":   tokenString,
@@ -108,8 +103,6 @@ func UserGet(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] Request Data: %+v", reqData)
-
 	var u *user.User
 	var err error
 	if strings.Contains(reqData.Cred, "@") {
@@ -126,7 +119,7 @@ func UserGet(c *gin.Context) {
 		}
 	}
 
-	log.Printf("[HANDLER] User %s has been successfully retrieved", u.Username)
+	log.Printf("[HANDLER] User %+v has been successfully retrieved", u)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"user":    &u,
@@ -141,8 +134,6 @@ func IsAvailableEmail(c *gin.Context) {
 	var reqData struct {
 		Email string `json:"email"`
 	}
-
-	log.Printf("[HANDLER] Request Data: %+v", reqData)
 
 	if !utils.ShouldBindJSON(c, &reqData) {
 		return
@@ -166,8 +157,6 @@ func IsAvailableUsername(c *gin.Context) {
 	var reqData struct {
 		Username string `json:"username"`
 	}
-
-	log.Printf("[HANDLER] Request Data: %+v", reqData)
 
 	if !utils.ShouldBindJSON(c, &reqData) {
 		return
