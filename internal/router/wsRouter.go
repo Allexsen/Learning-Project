@@ -19,6 +19,6 @@ func initWsRouter(wsManager *ws.WsManager) {
 			ws.WsHandler(wsManager, c)
 		})
 
-		wsRouter.GET("/room/:id", handlers.JoinRoom)
+		wsRouter.GET("/room/:id", handlers.GetRoom)
 	}
 }

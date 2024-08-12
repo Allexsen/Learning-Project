@@ -1,28 +1,60 @@
 const createRoomBtn = document.getElementById("createRoomBtn");
 const roomNameInput = document.getElementById("roomNameInput");
 const roomsList = document.getElementById("roomsList");
+const messageInput = document.getElementById("messageInput");
+const messagesList = document.getElementById('messagesList');
+const leaveRoomBtn = document.getElementById("leaveRoomBtn");
 const userData = JSON.parse(localStorage.getItem('userData'));
 const userToken = localStorage.getItem('userToken');
 
 let socket;
-function connectWebSocket() {
-    // WebSocket connection logic
+let currentRoomId = null;
+
+function connectWebSocket(roomId) {
+    const userToken = localStorage.getItem('userToken');
+    socket = new WebSocket(`ws://localhost:8080/rooms/${roomId}/ws?token=${userToken}`);
+
+    socket.onopen = function() {
+        console.log('Connected to WebSocket');
+    };
+
+    socket.onmessage = function(event) {
+        const message = JSON.parse(event.data);
+        handleWebSocketMessage(message);
+    };
+
+    socket.onclose = function() {
+        console.log('WebSocket connection closed');
+    };
 }
 
 function handleWebSocketMessage(message) {
-    // Handle incoming WebSocket messages
+    switch (message.type) {
+        case 'chatMessage':
+            displayMessage(message);
+            break;
+        case 'participantsList':
+            updateParticipantsList(message.participants);
+            break;
+        case 'roomDeleted':
+            alert('Room has been deleted');
+            window.location.href = '/statics/html/rooms.html';
+            break;
+        // Handle other message types as needed
+    }
 }
 
 function fetchRooms() {
     fetch('/rooms/', {
+        method: 'GET',
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${userToken}`
         }
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log('Fetched rooms:', data.rooms); // Log the fetched data
             updateRoomsList(data.rooms);
         } else {
             console.error('Error fetching rooms:', data.message);
@@ -41,20 +73,14 @@ function updateRoomsList(rooms) {
     });
 }
 
-function removeRoomFromList(roomId) {
-    const roomElement = document.querySelector(`.room-card[data-room-id="${roomId}"]`);
-    if (roomElement) {
-        roomElement.remove();
-    }
-}
-
 function createRoom() {
     const roomName = roomNameInput.value;
     if (roomName) {
         fetch('/rooms/new', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken}`
             },
             body: JSON.stringify({ name: roomName })
         })
@@ -71,14 +97,14 @@ function createRoom() {
     }
 }
 
-
 function joinRoom(roomId) {
     fetch(`/rooms/join/${roomId}`, {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${userToken}`
         },
-        body: JSON.stringify({ UserDTO: userData.user})
+        body: JSON.stringify({ UserDTO: userData.user })
     })
     .then(response => {
         if (response.ok) {
@@ -89,7 +115,8 @@ function joinRoom(roomId) {
     })
     .then(data => {
         if (data.success) {
-            window.location.href = `/statics/html/chat.html?roomId=${roomId}`;
+            currentRoomId = roomId;
+            window.location.href = `/statics/html/room.html?roomId=${roomId}`;
         } else {
             console.error('Error joining room:', data.message);
         }
@@ -97,7 +124,35 @@ function joinRoom(roomId) {
     .catch(error => console.error('Error joining room:', error));
 }
 
-createRoomBtn.addEventListener("click", createRoom);
+function sendMessage() {
+    const message = messageInput.value;
+    if (message && socket) {
+        socket.send(JSON.stringify({ type: 'chatMessage', content: message }));
+        messageInput.value = '';
+    }
+}
 
-connectWebSocket();
+function displayMessage(message) {
+    const messageElement = document.createElement('div');
+    messageElement.textContent = message.content;
+    messageElement.title = `User: ${message.user.name}, ID: ${message.user.id}`;
+    messagesList.appendChild(messageElement);
+}
+
+function leaveRoom() {
+    if (socket) {
+        socket.close();
+        currentRoomId = null;
+        window.location.href = '/statics/html/rooms.html';
+    }
+}
+
+createRoomBtn.addEventListener("click", createRoom);
+messageInput.addEventListener("keypress", (e) => {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+leaveRoomBtn.addEventListener("click", leaveRoom);
+
 fetchRooms();

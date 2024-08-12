@@ -47,8 +47,7 @@ func HandleCriticalError(err *AppError) {
 func logError(err *AppError) {
 	logr.WithFields(logrus.Fields{
 		"code":    err.Code,
-		"message": err.Message,
 		"error":   err.Err,
 		"context": err.Context,
-	}).Error("An error occurred")
+	}).Error(err.Message)
 }
