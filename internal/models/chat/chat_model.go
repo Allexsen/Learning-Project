@@ -4,18 +4,17 @@ import (
 	"time"
 
 	"github.com/Allexsen/Learning-Project/internal/models/msg"
-	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/models/ws"
 	"github.com/google/uuid"
 )
 
 type BaseChat struct {
-	ID        int64          `json:"id,omitempty"`
-	CreatedAt int64          `json:"created_at,omitempty"`
-	UpdatedAt int64          `json:"updated_at,omitempty"`
-	Manager   *ws.WsManager  `json:"manager,omitempty"`
-	Members   []user.UserDTO `json:"members,omitempty"`
-	Messages  []msg.Message  `json:"messages,omitempty"`
+	ID        int64         `json:"id,omitempty"`
+	CreatedAt int64         `json:"created_at,omitempty"`
+	UpdatedAt int64         `json:"updated_at,omitempty"`
+	Manager   *ws.WsManager `json:"manager,omitempty"`
+	Members   []*ws.Client  `json:"members,omitempty"`
+	Messages  []msg.Message `json:"messages,omitempty"`
 }
 
 type Chat interface {
@@ -23,7 +22,7 @@ type Chat interface {
 }
 
 // NewBaseChat creates a new chat
-func NewBaseChat(manager *ws.WsManager, members ...user.UserDTO) *BaseChat {
+func NewBaseChat(manager *ws.WsManager, members ...*ws.Client) *BaseChat {
 	return &BaseChat{
 		ID:        int64(uuid.New().ID()),
 		CreatedAt: time.Now().Unix(),

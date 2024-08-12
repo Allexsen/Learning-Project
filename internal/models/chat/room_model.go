@@ -7,6 +7,7 @@ import (
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/models/ws"
+	"github.com/gin-gonic/gin"
 )
 
 // Room  represents a group chat
@@ -69,10 +70,24 @@ func GetRoomByID(id int64) (*Room, error) {
 	return room, nil
 }
 
-// AddUser adds a user to the room
-func (room *Room) AddUser(userDTO user.UserDTO) error {
-	room.Members = append(room.Members, userDTO)
-	room.Manager.AddClient(userDTO)
+// AddClient adds a user to the room
+func (room *Room) AddClient(c *gin.Context, userDTO user.UserDTO) error {
+	_, exists := roomsManager.Rooms[room.ID]
+	if !exists {
+		return apperrors.New(
+			http.StatusNotFound,
+			fmt.Sprintf("Room with ID %d not found", room.ID),
+			apperrors.ErrNotFound,
+			nil,
+		)
+	}
+
+	cl, err := ws.NewClient(c, &userDTO, room.Manager)
+	if err != nil {
+		return err
+	}
+
+	room.Members = append(room.Members, cl)
 	return nil
 }
 

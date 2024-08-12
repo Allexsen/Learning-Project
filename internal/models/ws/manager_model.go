@@ -25,6 +25,16 @@ type WsManager struct {
 	sync.RWMutex
 }
 
+// upgrader sets up the Upgrader.Upgrade() method to
+// be used for http to websocket connection upgrade
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true // Allow all connections by default
+	},
+}
+
 // NewManager creates a new ClientManager
 func NewManager() *WsManager {
 	return &WsManager{
@@ -34,16 +44,6 @@ func NewManager() *WsManager {
 		unregister: make(chan *Client),
 		stop:       make(chan struct{}),
 	}
-}
-
-// upgrader sets up the Upgrader.Upgrade() method to
-// be used for http to websocket connection upgrade
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true // Allow all connections by default
-	},
 }
 
 // WsHandler handles WebSocket requests from the peer
@@ -75,7 +75,7 @@ func WsHandler(manager *WsManager, c *gin.Context) {
 
 // Run starts the WsManager to handle connections and messages
 func (manager *WsManager) Run() {
-	log.Printf("[WS] Starting manager %+v", manager)
+	log.Println("[WS] Starting a WebSocket Manager")
 	for {
 		select {
 		case client := <-manager.register:
@@ -126,18 +126,6 @@ func (manager *WsManager) Broadcast(msg msg.Message) {
 			close(client.send)
 		}
 	}
-}
-
-// AddClient adds a client to the manager
-func (manager *WsManager) AddClient(userDTO user.UserDTO) {
-	cl := &Client{
-		userDTO: &userDTO,
-		send:    make(chan msg.Message),
-	}
-
-	manager.register <- cl
-	go cl.writeLoop()
-	go cl.readLoop(manager)
 }
 
 // Close closes the manager and all clients

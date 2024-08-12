@@ -3,10 +3,12 @@ package ws
 import (
 	"encoding/json"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/Allexsen/Learning-Project/internal/models/msg"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
 
@@ -16,6 +18,31 @@ type Client struct {
 	send    chan msg.Message // Channel on which messages are sent to the client
 	manager *WsManager       // ClientManager associated with the client
 	userDTO *user.UserDTO    // User associated with the client
+}
+
+// NewClient creates a new Client
+func NewClient(c *gin.Context, userDTO *user.UserDTO, manager *WsManager) (*Client, error) {
+	log.Printf("[WS] Upgrading connection: %v", c.Request.RemoteAddr)
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		http.NotFound(c.Writer, c.Request)
+		return nil, err
+	}
+	log.Printf("[WS] Connection established: %v", c.Request.RemoteAddr)
+
+	client := &Client{
+		conn:    conn,
+		send:    make(chan msg.Message, 256),
+		userDTO: userDTO,
+		manager: manager,
+	}
+
+	manager.register <- client
+
+	go client.writeLoop()
+	go client.readLoop(manager)
+
+	return client, nil
 }
 
 // readLoop spins off an infinite for loop reading incoming messages from a client.

@@ -6,6 +6,7 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/models/chat"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
+	"github.com/gin-gonic/gin"
 )
 
 // RoomCreate creates a new room
@@ -50,19 +51,35 @@ func RoomGet(idStr string) (*chat.Room, error) {
 }
 
 // RoomAddUser adds a user to a room
-func RoomAddUser(roomIDStr string, userDTO user.UserDTO) (*chat.Room, error) {
+func RoomAddUser(c *gin.Context, roomIDStr string, userDTO user.UserDTO) (*chat.Room, error) {
 	log.Printf("[CONTROLLER] Adding user %+v to room %s", userDTO, roomIDStr)
 	room, err := RoomGet(roomIDStr)
 	if err != nil {
 		return nil, err
 	}
 
-	err = room.AddUser(userDTO)
+	err = room.AddClient(c, userDTO)
 	if err != nil {
 		return nil, err
 	}
 
 	return room, nil
+}
+
+func RoomJoin(c *gin.Context, roomIDStr string, userDTO *user.UserDTO) error {
+	log.Printf("[CONTROLLER] Joining user %+v to room %s", userDTO, roomIDStr)
+
+	room, err := RoomGet(roomIDStr)
+	if err != nil {
+		return err
+	}
+
+	err = room.AddClient(c, *userDTO)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // RoomRemove removes a room and all associated data by room  ID.
