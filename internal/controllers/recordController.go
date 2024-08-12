@@ -38,7 +38,7 @@ func RecordAdd(email, hrStr, minStr string) (*user.User, error) {
 		return nil, err
 	}
 
-	// Start transaction to ensure both, record and user
+	// Start transaction to ensure record and user
 	// are both updated. If any of them fails, transaction
 	// must be rolled back to maintain data integrity.
 	tx, err := db.Begin()
@@ -58,7 +58,6 @@ func RecordAdd(email, hrStr, minStr string) (*user.User, error) {
 		}
 	}()
 
-	// Query adding to the db
 	r.ID, err = r.AddRecord(tx)
 	if err != nil {
 		return nil, err
@@ -73,11 +72,10 @@ func RecordAdd(email, hrStr, minStr string) (*user.User, error) {
 	if err != nil {
 		log.Printf("[CONTROLLER] Couldn't commit the transaction: %s", err)
 		log.Printf("[CONTROLLER] Rolling back the transaction")
-		tx.Rollback()
+		err = tx.Rollback()
 	}
 
-	log.Printf("[CONTROLLER] Record has been successfully added for %s", email)
-	return u, nil
+	return u, err
 }
 
 // RecordRemove deletes a record by record id,
@@ -88,13 +86,11 @@ func RecordRemove(rid int) (*user.User, error) {
 	db := database.DB
 	r := record.Record{ID: int64(rid)}
 
-	log.Printf("[CONTROLLER] Record: %+v", r)
-
 	if err := r.RetrieveRecordByID(db); err != nil {
 		return nil, err
 	}
 
-	// Start transaction to ensure both, record and user
+	// Start transaction to ensure record and user
 	// are both updated. If any of them fails, transaction
 	// must be rolled back to maintain data integrity.
 	tx, err := db.Begin()
@@ -114,7 +110,6 @@ func RecordRemove(rid int) (*user.User, error) {
 		}
 	}()
 
-	// Query removal from the db
 	if err := r.RemoveRecord(tx); err != nil {
 		return nil, err
 	}
@@ -132,9 +127,8 @@ func RecordRemove(rid int) (*user.User, error) {
 	if err != nil {
 		log.Printf("[CONTROLLER] Couldn't commit the transaction: %s", err)
 		log.Printf("[CONTROLLER] Rolling back the transaction")
-		tx.Rollback()
+		err = tx.Rollback()
 	}
 
-	log.Printf("[CONTROLLER] Record %d has been successfully removed", rid)
-	return u, nil
+	return u, err
 }

@@ -20,15 +20,13 @@ func CreateRoom(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] Request Data: %+v", reqData)
-
 	room, err := controllers.RoomCreate(reqData.Name)
 	if err != nil {
 		handleError(c, err)
 		return
 	}
 
-	log.Printf("[HANDLER] Room %s has been successfully created", room.Name)
+	log.Printf("[HANDLER] Room %v has been successfully created", room)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"room":    &room,
@@ -45,7 +43,7 @@ func GetRooms(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] Rooms have been successfully retrieved")
+	log.Printf("[HANDLER] %d rooms have been successfully retrieved", len(rooms))
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"rooms":   &rooms,
@@ -62,14 +60,13 @@ func JoinRoom(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] Request Data: RoomID: %s, User: %+v", roomID, userDTO)
 	room, err := controllers.RoomAddUser(roomID, userDTO)
 	if err != nil {
 		handleError(c, err)
 		return
 	}
 
-	log.Printf("[HANDLER] User %+v has successfully joined room %s", userDTO, roomID) // Change to UserDTO
+	log.Printf("[HANDLER] User %+v has successfully joined room %s", userDTO, roomID)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"room":    &room,
@@ -81,8 +78,6 @@ func DeleteRoom(c *gin.Context) {
 	log.Printf("[HANDLER] Handling room deletion request for %s", c.ClientIP())
 
 	roomID := c.Param("id")
-
-	log.Printf("[HANDLER] Request Data: RoomID: %s", roomID)
 
 	err := controllers.RoomRemove(roomID)
 	if err != nil {

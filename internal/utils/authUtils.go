@@ -28,7 +28,7 @@ type Claims struct {
 func GenerateJWT(userDTO *user.UserDTO) (string, error) {
 	log.Printf("[UTILS] Generating JWT for user: %s", userDTO.Email)
 
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(24 * 30 * time.Hour)
 	claims := &Claims{
 		UserDTO: *userDTO,
 		StandardClaims: jwt.StandardClaims{

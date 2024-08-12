@@ -27,7 +27,6 @@ func GetLastInsertId(result sql.Result, q string, data interface{}) (int64, erro
 		)
 	}
 
-	log.Printf("[COMMON] Last insert ID for %s is %d", dataType, lastInsertId)
 	return lastInsertId, nil
 }
 
@@ -47,7 +46,6 @@ func GetQueryError(q, message string, data interface{}, err error) error {
 
 	dataType := reflect.TypeOf(data).Name()
 
-	log.Printf("[COMMON] Query error: %s", err)
 	return apperrors.New(
 		code,
 		message,

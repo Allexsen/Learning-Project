@@ -11,6 +11,7 @@ import (
 	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -74,17 +75,17 @@ func WsHandler(manager *WsManager, c *gin.Context) {
 
 // Run starts the WsManager to handle connections and messages
 func (manager *WsManager) Run() {
-	log.Println("Starting WsManager")
+	log.Printf("[WS] Starting manager %+v", manager)
 	for {
 		select {
 		case client := <-manager.register:
-			manager.Lock()                                      // Must be unlocked
-			log.Printf("Client registered: %v", client.userDTO) // Temporary log
+			manager.Lock() // Must be unlocked
+			log.Printf("[WS] Client registered: %v", client.userDTO)
 			manager.clients[client] = true
 			client.manager = manager
-			manager.Broadcast(msg.BaseMessage{ // Placeholder message
-				ID:        0, // Placeholder
-				SenderID:  0, // Placeholder
+			manager.Broadcast(msg.BaseMessage{
+				ID:        int64(uuid.New().ID()),
+				SenderID:  0, // System message
 				Timestamp: time.Now().Unix(),
 				Content:   fmt.Sprintf("%s has joined the chat", client.userDTO.Username),
 				Status:    "received",
@@ -93,12 +94,12 @@ func (manager *WsManager) Run() {
 		case client := <-manager.unregister:
 			manager.Lock() // Must be unlocked
 			if _, ok := manager.clients[client]; ok {
-				log.Printf("Client unregistered: %v", client.userDTO) // Temporary log
+				log.Printf("[WS] Client unregistered: %v", client.userDTO)
 				delete(manager.clients, client)
 				close(client.send)
-				manager.Broadcast(msg.BaseMessage{ // Placeholder message
-					ID:        0, // Placeholder
-					SenderID:  0, // Placeholder
+				manager.Broadcast(msg.BaseMessage{
+					ID:        int64(uuid.New().ID()),
+					SenderID:  0, // System message
 					Timestamp: time.Now().Unix(),
 					Content:   fmt.Sprintf("%s has left the chat", client.userDTO.Username),
 					Status:    "received",
@@ -135,8 +136,8 @@ func (manager *WsManager) AddClient(userDTO user.UserDTO) {
 	}
 
 	manager.register <- cl
-	// TODO: go cl.writeLoop()
-	// TODO: go cl.readLoop(manager)
+	go cl.writeLoop()
+	go cl.readLoop(manager)
 }
 
 // Close closes the manager and all clients

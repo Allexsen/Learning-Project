@@ -12,7 +12,7 @@ import (
 // ShouldBindJSON acts just as c.ShouldBindJSON,
 // except it also provides a centralized error handling.
 func ShouldBindJSON(c *gin.Context, obj interface{}) bool {
-	log.Printf("[UTILS] Binding JSON for request from %s", c.ClientIP())
+	log.Printf("[UTILS] Binding JSON for request for %s", c.ClientIP())
 
 	if err := c.ShouldBindJSON(&obj); err != nil {
 		apperrors.HandleError(c, apperrors.New(

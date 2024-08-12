@@ -17,8 +17,6 @@ func RoomCreate(name string) (*chat.Room, error) {
 	}
 
 	room := chat.NewRoom(name)
-
-	log.Printf("[CONTROLLER] Room %s has been successfully created", name)
 	return room, nil
 }
 
@@ -27,9 +25,11 @@ func RoomsGet() ([]*chat.Room, error) {
 	log.Printf("[CONTROLLER] Getting all rooms")
 
 	rooms, err := chat.GetRooms()
+	if err != nil {
+		return nil, err
+	}
 
-	log.Printf("[CONTROLLER] %d rooms have been successfully retrieved", len(rooms))
-	return rooms, err
+	return rooms, nil
 }
 
 // RoomGet retrieves a room by ID
@@ -46,7 +46,6 @@ func RoomGet(idStr string) (*chat.Room, error) {
 		return nil, err
 	}
 
-	log.Printf("[CONTROLLER] Room %s has been successfully retrieved", idStr)
 	return room, nil
 }
 
@@ -63,7 +62,6 @@ func RoomAddUser(roomIDStr string, userDTO user.UserDTO) (*chat.Room, error) {
 		return nil, err
 	}
 
-	log.Printf("[CONTROLLER] User %+v has been successfully added to room %s", userDTO, roomIDStr)
 	return room, nil
 }
 
@@ -82,6 +80,5 @@ func RoomRemove(idStr string) error {
 		return err
 	}
 
-	log.Printf("[CONTROLLER] Room %s has been successfully removed", idStr)
 	return nil
 }

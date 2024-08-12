@@ -26,9 +26,7 @@ func RecordAdd(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] Request Data: %+v", reqData)
-
-	// hours=minutes=0 is basically an empty record, making it invalid
+	// hours == minutes == 0 is basically an empty record, making it invalid
 	if reqData.Hours == "0" && reqData.Minutes == "0" {
 		apperrors.HandleError(c, apperrors.New(
 			http.StatusBadRequest,
@@ -60,8 +58,6 @@ func RecordDelete(c *gin.Context) {
 	var reqData struct {
 		ID int `json:"id"`
 	}
-
-	log.Printf("[HANDLER] Request Data: %+v", reqData)
 
 	if !utils.ShouldBindJSON(c, &reqData) {
 		return
