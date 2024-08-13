@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #494949;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#container {
+    background: #494949;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#messagesList {
+    display: flex;
+    flex-direction: column;
+    max-height: 400px; /* Adjust as needed */
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+#messageInput {
+    background-color: #c7c7c7;
+    width: 80%;
+    padding: 10px;
+    margin-right: 5px;
+    border-radius: 5px;
+    border: 1px solid #cccccc;
+}
+
+button {
+    margin: 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: #f3f3f3;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+button:disabled {
+    background-color: #929292;
+    cursor: not-allowed;
+}
+
+.system-message {
+    background-color: #FFD700;
+    color: #333;
+    text-align: center;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+.my-message {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    text-align: right;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    align-self: flex-end;
+}
+
+.other-message {
+    background-color: #f8d7da;
+    color: #842029;
+    text-align: left;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    align-self: flex-start;
+}

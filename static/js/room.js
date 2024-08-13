@@ -4,6 +4,7 @@ const sendBtn = document.getElementById("sendBtn");
 const leaveRoomBtn = document.getElementById("leaveRoomBtn");
 const userToken = localStorage.getItem('userToken');
 const roomId = new URLSearchParams(window.location.search).get('roomId');
+const userData = JSON.parse(localStorage.getItem('userData'));
 
 let socket;
 
@@ -53,11 +54,12 @@ function sendMessage() {
 function displayMessage(message) {
     const messageElement = document.createElement('div');
     messageElement.textContent = message.content;
-    messageElement.title = `User: ${message.user.name}, ID: ${message.user.id}`;
+    messageElement.title = `User ID: ${message.sender_id}`;
+    console.log(message);
 
-    if (message.id === 0) {
+    if (message.sender_id === 0) {
         messageElement.classList.add('system-message');
-    } else if (message.user.id === userToken) {
+    } else if (message.sender_id === userData.user.id) {
         messageElement.classList.add('my-message');
     } else {
         messageElement.classList.add('other-message');

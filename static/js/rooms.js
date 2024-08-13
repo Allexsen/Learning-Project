@@ -1,48 +1,8 @@
 const createRoomBtn = document.getElementById("createRoomBtn");
 const roomNameInput = document.getElementById("roomNameInput");
 const roomsList = document.getElementById("roomsList");
-const messageInput = document.getElementById("messageInput");
-const messagesList = document.getElementById('messagesList');
-const leaveRoomBtn = document.getElementById("leaveRoomBtn");
 const userData = JSON.parse(localStorage.getItem('userData'));
 const userToken = localStorage.getItem('userToken');
-
-let socket;
-let currentRoomId = null;
-
-function connectWebSocket(roomId) {
-    const userToken = localStorage.getItem('userToken');
-    socket = new WebSocket(`ws://localhost:8080/rooms/${roomId}/ws?token=${userToken}`);
-
-    socket.onopen = function() {
-        console.log('Connected to WebSocket');
-    };
-
-    socket.onmessage = function(event) {
-        const message = JSON.parse(event.data);
-        handleWebSocketMessage(message);
-    };
-
-    socket.onclose = function() {
-        console.log('WebSocket connection closed');
-    };
-}
-
-function handleWebSocketMessage(message) {
-    switch (message.type) {
-        case 'chatMessage':
-            displayMessage(message);
-            break;
-        case 'participantsList':
-            updateParticipantsList(message.participants);
-            break;
-        case 'roomDeleted':
-            alert('Room has been deleted');
-            window.location.href = '/statics/html/rooms.html';
-            break;
-        // Handle other message types as needed
-    }
-}
 
 function fetchRooms() {
     fetch('/rooms/', {
@@ -124,35 +84,6 @@ function joinRoom(roomId) {
     .catch(error => console.error('Error joining room:', error));
 }
 
-function sendMessage() {
-    const message = messageInput.value;
-    if (message && socket) {
-        socket.send(JSON.stringify({ type: 'chatMessage', content: message }));
-        messageInput.value = '';
-    }
-}
-
-function displayMessage(message) {
-    const messageElement = document.createElement('div');
-    messageElement.textContent = message.content;
-    messageElement.title = `User: ${message.user.name}, ID: ${message.user.id}`;
-    messagesList.appendChild(messageElement);
-}
-
-function leaveRoom() {
-    if (socket) {
-        socket.close();
-        currentRoomId = null;
-        window.location.href = '/statics/html/rooms.html';
-    }
-}
-
 createRoomBtn.addEventListener("click", createRoom);
-messageInput.addEventListener("keypress", (e) => {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-});
-leaveRoomBtn.addEventListener("click", leaveRoom);
 
 fetchRooms();
