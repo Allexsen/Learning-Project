@@ -4,7 +4,8 @@ package msg
 // that all message types will inherit from
 type BaseMessage struct {
 	ID        int64  `json:"id,omitempty"`
-	SenderID  int64  `json:"sender_id,omitempty"`
+	Type      string `json:"type,omitempty"`
+	SenderID  int64  `json:"sender_id"`
 	Content   string `json:"content,omitempty"`
 	Timestamp int64  `json:"timestamp,omitempty"`
 	Status    string `json:"status,omitempty"`

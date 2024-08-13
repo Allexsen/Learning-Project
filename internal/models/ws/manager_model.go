@@ -85,6 +85,7 @@ func (manager *WsManager) Run() {
 			client.manager = manager
 			manager.Broadcast(msg.BaseMessage{
 				ID:        int64(uuid.New().ID()),
+				Type:      "chatMessage",
 				SenderID:  0, // System message
 				Timestamp: time.Now().Unix(),
 				Content:   fmt.Sprintf("%s has joined the chat", client.userDTO.Username),
@@ -99,6 +100,7 @@ func (manager *WsManager) Run() {
 				close(client.send)
 				manager.Broadcast(msg.BaseMessage{
 					ID:        int64(uuid.New().ID()),
+					Type:      "chatMessage",
 					SenderID:  0, // System message
 					Timestamp: time.Now().Unix(),
 					Content:   fmt.Sprintf("%s has left the chat", client.userDTO.Username),
