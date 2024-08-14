@@ -15,6 +15,14 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+/* TODO:
+ *	Alter WebSocket handling. There is a need to create a separate model for Room and Chat.
+ *	They should contain associative rooms and chats, respectively.
+ *	Have one unifying manager for all, and then superset of managers for rooms and chats built on it.
+ *	Create shared interfaces for rooms and chats, and common functions that can be used by both.
+ *	The whole WebSocket handling should be restructured to be more modular and scalable.
+ */
+
 // WsManager manages Clients and WebSocket connections
 type WsManager struct {
 	clients    map[*Client]bool
@@ -80,33 +88,11 @@ func (manager *WsManager) Run() {
 		select {
 		case client := <-manager.register:
 			manager.Lock() // Must be unlocked
-			log.Printf("[WS] Client registered: %v", client.userDTO)
-			manager.clients[client] = true
-			client.manager = manager
-			manager.Broadcast(msg.BaseMessage{
-				ID:        int64(uuid.New().ID()),
-				Type:      "chatMessage",
-				SenderID:  0, // System message
-				Timestamp: time.Now().Unix(),
-				Content:   fmt.Sprintf("%s has joined the chat", client.userDTO.Username),
-				Status:    "received",
-			})
+			manager.Register(client)
 			manager.Unlock()
 		case client := <-manager.unregister:
 			manager.Lock() // Must be unlocked
-			if _, ok := manager.clients[client]; ok {
-				log.Printf("[WS] Client unregistered: %v", client.userDTO)
-				delete(manager.clients, client)
-				close(client.send)
-				manager.Broadcast(msg.BaseMessage{
-					ID:        int64(uuid.New().ID()),
-					Type:      "chatMessage",
-					SenderID:  0, // System message
-					Timestamp: time.Now().Unix(),
-					Content:   fmt.Sprintf("%s has left the chat", client.userDTO.Username),
-					Status:    "received",
-				})
-			}
+			manager.Unregister(client)
 			manager.Unlock()
 		case msg := <-manager.broadcast:
 			manager.Lock() // Must be unlocked
@@ -128,6 +114,38 @@ func (manager *WsManager) Broadcast(msg msg.Message) {
 			close(client.send)
 		}
 	}
+}
+
+// Unregister removes a client from the manager
+func (manager *WsManager) Unregister(client *Client) {
+	if _, ok := manager.clients[client]; ok {
+		delete(manager.clients, client)
+		close(client.send)
+		manager.Broadcast(msg.BaseMessage{
+			ID:        int64(uuid.New().ID()),
+			Type:      "chatMessage",
+			SenderID:  0, // System message
+			Timestamp: time.Now().Unix(),
+			Content:   fmt.Sprintf("%s has left the chat", client.userDTO.Username),
+			Status:    "received",
+		})
+		log.Printf("[WS] Client unregistered: %v", client.userDTO)
+	}
+}
+
+// Register adds a client to the manager
+func (manager *WsManager) Register(client *Client) {
+	manager.clients[client] = true
+	client.manager = manager
+	manager.Broadcast(msg.BaseMessage{
+		ID:        int64(uuid.New().ID()),
+		Type:      "chatMessage",
+		SenderID:  0, // System message
+		Timestamp: time.Now().Unix(),
+		Content:   fmt.Sprintf("%s has joined the chat", client.userDTO.Username),
+		Status:    "received",
+	})
+	log.Printf("[WS] Client registered: %v", client.userDTO)
 }
 
 // Close closes the manager and all clients
