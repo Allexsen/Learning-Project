@@ -56,14 +56,14 @@ func NewManager() *WsManager {
 
 // WsHandler handles WebSocket requests from the peer
 func WsHandler(manager *WsManager, c *gin.Context) {
-	log.Printf("[WS] Upgrading connection: %v", c.Request.RemoteAddr)
+	log.Printf("[WS-manager] Upgrading connection: %v", c.Request.RemoteAddr)
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		http.NotFound(c.Writer, c.Request)
 		return
 	}
 
-	log.Printf("[WS] Connection established: %v", c.Request.RemoteAddr)
+	log.Printf("[WS-manager] Connection established: %v", c.Request.RemoteAddr)
 	var userDTO *user.UserDTO
 	if !utils.ShouldBindJSON(c, userDTO) {
 		return
@@ -83,7 +83,7 @@ func WsHandler(manager *WsManager, c *gin.Context) {
 
 // Run starts the WsManager to handle connections and messages
 func (manager *WsManager) Run() {
-	log.Println("[WS] Starting a WebSocket Manager")
+	log.Println("[WS-manager] Starting a WebSocket Manager")
 	for {
 		select {
 		case client := <-manager.register:
@@ -129,7 +129,7 @@ func (manager *WsManager) Unregister(client *Client) {
 			Content:   fmt.Sprintf("%s has left the chat", client.userDTO.Username),
 			Status:    "received",
 		})
-		log.Printf("[WS] Client unregistered: %v", client.userDTO)
+		log.Printf("[WS-manager] Client unregistered: %v", client.userDTO)
 	}
 }
 
@@ -145,7 +145,7 @@ func (manager *WsManager) Register(client *Client) {
 		Content:   fmt.Sprintf("%s has joined the chat", client.userDTO.Username),
 		Status:    "received",
 	})
-	log.Printf("[WS] Client registered: %v", client.userDTO)
+	log.Printf("[WS-manager] Client registered: %v", client.userDTO)
 }
 
 // Close closes the manager and all clients

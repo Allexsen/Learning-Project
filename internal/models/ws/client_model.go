@@ -22,13 +22,13 @@ type Client struct {
 
 // NewClient creates a new Client
 func NewClient(c *gin.Context, userDTO *user.UserDTO, manager *WsManager) (*Client, error) {
-	log.Printf("[WS] Upgrading connection: %v", c.Request.RemoteAddr)
+	log.Printf("[WS-client] Upgrading connection: %v", c.Request.RemoteAddr)
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		http.NotFound(c.Writer, c.Request)
 		return nil, err
 	}
-	log.Printf("[WS] Connection established: %v", c.Request.RemoteAddr)
+	log.Printf("[WS-client] Connection established: %v", c.Request.RemoteAddr)
 
 	client := &Client{
 		conn:    conn,
@@ -51,10 +51,10 @@ func (client *Client) readLoop(manager *WsManager) {
 	defer func() {
 		manager.unregister <- client
 		client.conn.Close()
-		log.Printf("[WS] Client %+v has been unregistered", client)
+		log.Printf("[WS-client] Client %+v has been unregistered", client)
 	}()
 
-	log.Printf("[WS] Spinning off read loop for client %+v", client)
+	log.Printf("[WS-client] Spinning off read loop for client %+v", client)
 	for {
 		_, message, err := client.conn.ReadMessage()
 		if err != nil {
@@ -64,7 +64,7 @@ func (client *Client) readLoop(manager *WsManager) {
 		var msg msg.BaseMessage
 		err = json.Unmarshal(message, &msg)
 		if err != nil {
-			log.Printf("Error unmarshalling message: %v", err)
+			log.Printf("[WS-client] Error unmarshalling message: %v", err)
 			continue
 		}
 
@@ -83,22 +83,22 @@ func (client *Client) writeLoop() {
 	defer func() {
 		client.conn.Close()
 		client.manager = nil
-		log.Printf("[WS] Client %+v has been disconnected", client)
+		log.Printf("[WS-client] Client %+v has been disconnected", client)
 	}()
 
-	log.Printf("[WS] Spinning off write loop for client %+v", client)
+	log.Printf("[WS-client] Spinning off write loop for client %+v", client)
 	for msg := range client.send {
 		message, err := json.Marshal(msg)
 		if err != nil {
-			log.Printf("[WS] Error marshalling message: %v", err)
+			log.Printf("[WS-client] Error marshalling message: %v", err)
 			continue
 		}
 
-		log.Printf("[WS] Sending message to client %+v: %s", client, message)
+		log.Printf("[WS-client] Sending message to client %+v: %s", client, message)
 		err = client.conn.WriteMessage(websocket.TextMessage, message)
 		if err != nil {
-			log.Printf("[WS] Error writing message: %v", err)
-			log.Printf("[WS] Breaking write loop for client %+v", client)
+			log.Printf("[WS-client] Error writing message: %v", err)
+			log.Printf("[WS-client] Breaking write loop for client %+v", client)
 			break
 		}
 	}
