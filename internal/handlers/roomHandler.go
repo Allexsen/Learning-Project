@@ -6,7 +6,7 @@ import (
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
-	"github.com/Allexsen/Learning-Project/internal/models/chat"
+	"github.com/Allexsen/Learning-Project/internal/models/chat/room"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -16,7 +16,7 @@ import (
 func CreateRoom(c *gin.Context) {
 	log.Printf("[HANDLER] Handling room creation request for %s", c.ClientIP())
 
-	var reqData chat.Room
+	var reqData room.Room
 	if !utils.ShouldBindJSON(c, &reqData) {
 		return
 	}

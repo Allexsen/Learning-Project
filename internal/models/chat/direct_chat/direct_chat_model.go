@@ -1,8 +1,10 @@
-package chat
+package direct_chat
+
+import "github.com/Allexsen/Learning-Project/internal/models/chat"
 
 // DirectChat represents a 1-1 chat
 type DirectChat struct {
-	BaseChat
+	chat.BaseChat
 	User1ID int64 `json:"user1_id,omitempty"`
 	User2ID int64 `json:"user2_id,omitempty"`
 }
