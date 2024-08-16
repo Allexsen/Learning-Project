@@ -10,34 +10,62 @@ body {
 }
 
 #container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     background: #494949;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    width: 80%;
+    max-width: 1200px;
+    height: 80%;
+    position: relative;
+}
+
+#chatContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 100%;
+}
+
+#messagesArea {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    padding-right: 10px;
+    max-height: 100%;
 }
 
 #messagesList {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    max-height: 400px; /* Adjust as needed */
+    max-height: 100%;
     overflow-y: auto;
     padding: 10px;
     border: 1px solid #ccc;
     background-color: #fff;
+    margin-right: 10px;
+}
+
+#inputArea {
+    display: flex;
+    align-items: center;
 }
 
 #messageInput {
-    background-color: #c7c7c7;
-    width: 80%;
+    flex: 1;
     padding: 10px;
-    margin-right: 5px;
+    margin-right: 10px;
     border-radius: 5px;
-    border: 1px solid #cccccc;
+    border: 1px solid #ccc;
+    background-color: #c7c7c7;
 }
 
 button {
-    margin: 5px;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -52,30 +80,67 @@ button:disabled {
     cursor: not-allowed;
 }
 
+#leaveRoomBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff4d4d;
+}
+
+#participantsList {
+    width: 250px;
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+}
+
+/* Base styles for all messages */
+.my-message, .other-message, .system-message {
+    word-wrap: break-word;  /* Ensure long words wrap properly */
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    display: block;         /* Ensure each message starts on a new line */
+    clear: both;            /* Prevent floating elements from affecting layout */
+}
+
+/* Style for your messages (right-aligned, between 30% and 100% width) */
+.my-message {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    text-align: left;
+    max-width: 100%;          /* Allow full width but... */
+    min-width: 30%;           /* Ensure at least 30% width */
+    width: auto;              /* Automatically size to fit content */
+    display: inline-block;    /* Ensure the background matches content size */
+    padding: 10px;            /* Add padding around the content */
+    margin-left: auto;        /* Push the message to the right within the range */
+    border-radius: 10px 0 10px 10px;  /* Rounded corners */
+    clear: both;              /* Clear floating elements */
+}
+
+/* Style for others' messages (left-aligned, max 70% width) */
+.other-message {
+    background-color: #e0f7ff; /* Super dim blue */
+    color: #0b3d91;
+    text-align: left;
+    max-width: 70%;
+    float: left;            /* Align to the left */
+    border-radius: 0 10px 10px 10px;  /* Custom border-radius for better aesthetics */
+}
+
+/* Style for system messages (full-width, centered) */
 .system-message {
     background-color: #FFD700;
     color: #333;
     text-align: center;
-    padding: 5px;
-    margin: 5px 0;
-}
-
-.my-message {
-    background-color: #d1e7dd;
-    color: #0f5132;
-    text-align: right;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 10px;
-    align-self: flex-end;
-}
-
-.other-message {
-    background-color: #f8d7da;
-    color: #842029;
-    text-align: left;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 10px;
-    align-self: flex-start;
+    max-width: 100%;          /* Make system messages full width */
+    margin-left: auto;
+    margin-right: auto;
+    clear: both;              /* Ensure no floating elements affect it */
+    display: block;           /* Ensure system messages take up a full row */
 }

@@ -50,6 +50,20 @@ func RoomGet(idStr string) (*room.Room, error) {
 	return room, nil
 }
 
+// RoomGetParticipants retrieves all participants in a room by room ID
+func RoomGetParticipants(idStr string) ([]*user.UserDTO, error) {
+	log.Printf("[CONTROLLER] Getting participants for room %s", idStr)
+
+	room, err := RoomGet(idStr)
+	if err != nil {
+		return nil, err
+	}
+
+	participants := room.GetParticipants()
+	return participants, nil
+}
+
+// RoomJoin adds a user to a room by room ID
 func RoomJoin(c *gin.Context, roomIDStr string, userDTO *user.UserDTO) error {
 	log.Printf("[CONTROLLER] Joining user %+v to room %s", userDTO, roomIDStr)
 

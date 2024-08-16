@@ -69,6 +69,24 @@ func GetRoom(c *gin.Context) {
 	})
 }
 
+// GetRoomParticipants handles the request to retrieve all participants in a room
+func GetRoomParticipants(c *gin.Context) {
+	log.Printf("[HANDLER] Handling room participants get request for %s", c.ClientIP())
+
+	roomID := c.Param("id")
+	participants, err := controllers.RoomGetParticipants(roomID)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	log.Printf("[HANDLER] Participants for room %s have been successfully retrieved", roomID)
+	c.JSON(http.StatusOK, gin.H{
+		"success":      true,
+		"participants": &participants,
+	})
+}
+
 // JoinRoom handles the WebSocket connection request
 func JoinRoom(c *gin.Context) {
 	log.Printf("[HANDLER] Handling room join request for %s", c.ClientIP())

@@ -1,3 +1,4 @@
+const participantsList = document.getElementById('participantsList');
 const messageInput = document.getElementById("messageInput");
 const messagesList = document.getElementById("messagesList");
 const sendBtn = document.getElementById("sendBtn");
@@ -7,6 +8,27 @@ const roomId = new URLSearchParams(window.location.search).get('roomId');
 const userData = JSON.parse(localStorage.getItem('userData'));
 
 let socket;
+
+document.addEventListener("DOMContentLoaded", () => {
+    fetch(`/rooms/${roomId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${userToken}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.title = `${data.room.name} - Rooms`;
+            document.getElementById('roomTitle').innerText = data.room.name;
+            fetchParticipants(roomId, userToken);
+        } else {
+            console.error('Error fetching room details:', data.message);
+        }
+    })
+    .catch(error => console.error('Error fetching room details:', error));
+});
 
 function connectWebSocket(roomId) {
     socket = new WebSocket(`ws://localhost:8080/rooms/${roomId}/ws?token=${userToken}`);
@@ -32,8 +54,11 @@ function handleWebSocketMessage(message) {
         case 'chatMessage':
             displayMessage(message);
             break;
-        case 'participantsList':
-            updateParticipantsList(message.participants);
+        case 'participantJoined':
+            addParticipant(message);
+            break;
+        case 'participantLeft':
+            removeParticipant(message);
             break;
         case 'roomDeleted':
             alert('Room has been deleted');
@@ -54,8 +79,8 @@ function sendMessage() {
 function displayMessage(message) {
     const messageElement = document.createElement('div');
     messageElement.textContent = message.content;
-    messageElement.title = `User ID: ${message.sender_id}`;
-    console.log(message);
+    const timestamp = new Date(message.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    messageElement.title = `${timestamp}`;
 
     if (message.sender_id === 0) {
         messageElement.classList.add('system-message');
@@ -66,6 +91,56 @@ function displayMessage(message) {
     }
 
     messagesList.appendChild(messageElement);
+}
+
+function addParticipant(message) {
+    const participantElement = document.createElement('div');
+    participantElement.textContent = message.content;
+    participantElement.id = `participant-${message.sender_id}`;
+    participantsList.appendChild(participantElement);
+
+    // Transform into a system message
+    message.type = 'chatMessage';
+    message.content = `${message.content} has joined the room`,
+    message.sender_id = 0
+    displayMessage(message);
+}
+
+function removeParticipant(message) {
+    const participantElement = document.getElementById(`participant-${message.sender_id}`);
+    if (participantElement) {
+        participantsList.removeChild(participantElement);
+    }
+
+    // Transform into a system message
+    message.type = 'chatMessage';
+    message.content = `${message.content} has left the room`,
+    message.sender_id = 0
+    displayMessage(message);
+}
+
+function fetchParticipants(roomId, userToken) {
+    fetch(`/rooms/${roomId}/participants`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${userToken}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            participantsList.innerHTML = '';
+            data.participants.forEach(participant => {
+                const participantElement = document.createElement('div');
+                participantElement.innerText = participant.username;
+                participantsList.appendChild(participantElement);
+            });
+        } else {
+            console.error('Error fetching participants:', data.message);
+        }
+    })
+    .catch(error => console.error('Error fetching participants:', error));
 }
 
 function leaveRoom() {
