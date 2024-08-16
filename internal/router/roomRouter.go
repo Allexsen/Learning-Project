@@ -14,6 +14,7 @@ func initRoomRouter() {
 	roomRouter.Use(middlewares.CheckJWT())
 	{
 		roomRouter.GET("", handlers.GetRooms)
+		roomRouter.GET("/room/:id", handlers.GetRoom)
 		roomRouter.POST("/new", handlers.CreateRoom)
 		roomRouter.GET("/:id/ws", handlers.JoinRoom)
 		roomRouter.POST("/join/:id", handlers.GetRoom)

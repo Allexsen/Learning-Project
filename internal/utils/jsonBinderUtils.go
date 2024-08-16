@@ -24,6 +24,5 @@ func ShouldBindJSON(c *gin.Context, obj interface{}) bool {
 		return false
 	}
 
-	log.Printf("[UTILS] JSON bound successfully: %+v", obj)
 	return true
 }

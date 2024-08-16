@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"log"
 
-	"github.com/Allexsen/Learning-Project/internal/models/ws"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,10 +39,6 @@ func InitRouter() {
 	initUserRouter()
 	initRecordsRouter()
 	initRoomRouter()
-
-	wsManager := ws.NewManager()
-	go wsManager.Run()
-	initWsRouter(wsManager)
 
 	r.Run(":8080")
 	log.Println("Router initialized")

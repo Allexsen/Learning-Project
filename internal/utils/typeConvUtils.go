@@ -23,6 +23,5 @@ func Atoi(s string) (int, error) {
 		)
 	}
 
-	log.Printf("[UTILS] Converted ASCII to int: %d", res)
 	return res, nil
 }
