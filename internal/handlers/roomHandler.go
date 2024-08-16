@@ -6,7 +6,7 @@ import (
 
 	"github.com/Allexsen/Learning-Project/internal/controllers"
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
-	"github.com/Allexsen/Learning-Project/internal/models/chat/room"
+	"github.com/Allexsen/Learning-Project/internal/models/chats/room"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -27,7 +27,7 @@ func CreateRoom(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[HANDLER] Room %v has been successfully created", room)
+	log.Printf("[HANDLER] Room %+v has been successfully created", room)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"room":    &room,

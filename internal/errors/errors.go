@@ -16,7 +16,7 @@ type AppError struct {
 
 // AppError.Error() implements the built-in error interface.
 func (e *AppError) Error() string {
-	return fmt.Sprintf("code: %d, message: %s, err: %v, context: %v", e.Code, e.Message, e.Err, e.Context)
+	return fmt.Sprintf("code: %d, message: %s, err: %v, context: %+v", e.Code, e.Message, e.Err, e.Context)
 }
 
 // New() creates a new AppError and returns a reference to it.

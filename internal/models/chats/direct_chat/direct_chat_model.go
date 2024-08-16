@@ -1,6 +1,6 @@
 package direct_chat
 
-import "github.com/Allexsen/Learning-Project/internal/models/chat"
+import chat "github.com/Allexsen/Learning-Project/internal/models/chats"
 
 // DirectChat represents a 1-1 chat
 type DirectChat struct {

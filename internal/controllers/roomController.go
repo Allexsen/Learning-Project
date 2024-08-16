@@ -3,7 +3,7 @@ package controllers
 import (
 	"log"
 
-	"github.com/Allexsen/Learning-Project/internal/models/chat/room"
+	"github.com/Allexsen/Learning-Project/internal/models/chats/room"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -50,22 +50,6 @@ func RoomGet(idStr string) (*room.Room, error) {
 	return room, nil
 }
 
-// RoomAddUser adds a user to a room
-func RoomAddUser(c *gin.Context, roomIDStr string, userDTO user.UserDTO) (*room.Room, error) {
-	log.Printf("[CONTROLLER] Adding user %+v to room %s", userDTO, roomIDStr)
-	room, err := RoomGet(roomIDStr)
-	if err != nil {
-		return nil, err
-	}
-
-	err = room.AddClient(c, userDTO)
-	if err != nil {
-		return nil, err
-	}
-
-	return room, nil
-}
-
 func RoomJoin(c *gin.Context, roomIDStr string, userDTO *user.UserDTO) error {
 	log.Printf("[CONTROLLER] Joining user %+v to room %s", userDTO, roomIDStr)
 
@@ -74,7 +58,7 @@ func RoomJoin(c *gin.Context, roomIDStr string, userDTO *user.UserDTO) error {
 		return err
 	}
 
-	err = room.AddClient(c, *userDTO)
+	err = room.AddClient(c, userDTO)
 	if err != nil {
 		return err
 	}
