@@ -111,6 +111,5 @@ func getQueryError(q string, context map[string]interface{}, err error) error {
 		)
 	}
 
-	log.Printf("[UTILS] Query executed successfully")
 	return nil
 }

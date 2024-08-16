@@ -47,7 +47,6 @@ func GenerateJWT(userDTO *user.UserDTO) (string, error) {
 		)
 	}
 
-	log.Printf("[UTILS] JWT generated successfully for user: %s", userDTO.Email)
 	return tokenString, nil
 }
 
@@ -87,7 +86,6 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 		)
 	}
 
-	log.Println("[UTILS] JWT is valid")
 	return claims, nil
 }
 
