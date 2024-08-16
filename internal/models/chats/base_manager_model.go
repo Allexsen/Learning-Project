@@ -1,7 +1,6 @@
 package chat
 
 import (
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -68,10 +67,10 @@ func (manager *BaseWsManager) RegisterClient(client *Client) {
 	manager.Unlock()
 	manager.BroadcastMessage(msg.BaseMessage{
 		ID:        int64(uuid.New().ID()),
-		Type:      "chatMessage",
-		SenderID:  0, // System message
+		Type:      "participantJoined",
+		SenderID:  client.UserDTO.ID, // Will be used to acces user id in the frontend
 		Timestamp: time.Now().Unix(),
-		Content:   fmt.Sprintf("%s has joined the chat", client.UserDTO.Username),
+		Content:   client.UserDTO.Username, // Will be used to access username in the frontend
 		Status:    "received",
 	})
 	log.Printf("[CHAT-manager] Client registered: %+v", client.UserDTO)
@@ -89,10 +88,10 @@ func (manager *BaseWsManager) UnregisterClient(client *Client) {
 		manager.Unlock()
 		manager.BroadcastMessage(msg.BaseMessage{
 			ID:        int64(uuid.New().ID()),
-			Type:      "chatMessage",
-			SenderID:  0, // System message
+			Type:      "participantLeft",
+			SenderID:  client.UserDTO.ID, // Will be used to acces user id in the frontend
 			Timestamp: time.Now().Unix(),
-			Content:   fmt.Sprintf("%s has left the chat", client.UserDTO.Username),
+			Content:   client.UserDTO.Username, // Will be used to access username in the frontend
 			Status:    "received",
 		})
 		manager.Lock()

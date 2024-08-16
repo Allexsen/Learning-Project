@@ -16,10 +16,17 @@
         </div>
     </div>
     <div id="container">
-        <h1>Room</h1>
-        <div id="messagesList"></div>
-        <input type="text" id="messageInput" placeholder="Enter your message...">
-        <button id="sendBtn">Send</button>
+        <h1 id="roomTitle">Room</h1>
+        <div id="chatContainer">
+            <div id="messagesArea">
+                <div id="messagesList"></div>
+                <div id="inputArea">
+                    <input type="text" id="messageInput" placeholder="Enter your message...">
+                    <button id="sendBtn">Send</button>
+                </div>
+            </div>
+            <div id="participantsList"></div>
+        </div>
         <button id="leaveRoomBtn">Leave Room</button>
     </div>
     <script src="/statics/js/room.js"></script>

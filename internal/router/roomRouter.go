@@ -14,11 +14,11 @@ func initRoomRouter() {
 	roomRouter.Use(middlewares.CheckJWT())
 	{
 		roomRouter.GET("", handlers.GetRooms)
-		roomRouter.GET("/room/:id", handlers.GetRoom)
+		roomRouter.GET("/:id", handlers.GetRoom)
+		roomRouter.GET("/:id/participants", handlers.GetRoomParticipants)
 		roomRouter.POST("/new", handlers.CreateRoom)
 		roomRouter.GET("/:id/ws", handlers.JoinRoom)
 		roomRouter.POST("/join/:id", handlers.GetRoom)
-		// TODO: Implement: roomRouter.POST("/leave/:id", handlers.LeaveRoom)
 		roomRouter.DELETE("/remove/:id", handlers.DeleteRoom)
 	}
 }

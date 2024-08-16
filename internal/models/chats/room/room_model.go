@@ -74,6 +74,16 @@ func GetRoomByID(id int64) (*Room, error) {
 	return room, nil
 }
 
+// GetParticipants returns all participants in the room
+func (room *Room) GetParticipants() []*user.UserDTO {
+	members := make([]*user.UserDTO, 0, len(room.Manager.Clients))
+	for client := range room.Manager.Clients {
+		members = append(members, client.UserDTO)
+	}
+
+	return members
+}
+
 // DeleteRoom deletes a room
 func (room *Room) DeleteRoom() error {
 	_, exists := roomsList[room.ID]
