@@ -49,6 +49,7 @@ body {
     border: 1px solid #ccc;
     background-color: #fff;
     margin-right: 10px;
+    gap: 5px; /* Space between messages */
 }
 
 #inputArea {
@@ -101,36 +102,32 @@ button:disabled {
 /* Base styles for all messages */
 .my-message, .other-message, .system-message {
     word-wrap: break-word;  /* Ensure long words wrap properly */
+    overflow-wrap: break-word;  /* Break long words to prevent overflow */
     padding: 10px;
     margin: 5px 0;
     border-radius: 10px;
-    display: block;         /* Ensure each message starts on a new line */
-    clear: both;            /* Prevent floating elements from affecting layout */
+    max-width: 70%;         /* Restrict to 70% width */
+    box-sizing: border-box; /* Ensure padding is included in width calculation */
 }
 
-/* Style for your messages (right-aligned, between 30% and 100% width) */
+/* Style for your messages (right-aligned, max 70% width) */
 .my-message {
     background-color: #d1e7dd;
     color: #0f5132;
     text-align: left;
-    max-width: 100%;          /* Allow full width but... */
-    min-width: 30%;           /* Ensure at least 30% width */
-    width: auto;              /* Automatically size to fit content */
-    display: inline-block;    /* Ensure the background matches content size */
-    padding: 10px;            /* Add padding around the content */
-    margin-left: auto;        /* Push the message to the right within the range */
-    border-radius: 10px 0 10px 10px;  /* Rounded corners */
-    clear: both;              /* Clear floating elements */
+    margin-left: auto;      /* Push the message to the right */
+    border-radius: 10px 0 10px 10px;  /* Custom rounded corners */
+    align-self: flex-end;   /* Aligns the message to the right */
 }
 
 /* Style for others' messages (left-aligned, max 70% width) */
 .other-message {
-    background-color: #e0f7ff; /* Super dim blue */
+    background-color: #e0f7ff; /* Dim blue */
     color: #0b3d91;
     text-align: left;
-    max-width: 70%;
-    float: left;            /* Align to the left */
+    margin-right: auto;    /* Push the message to the left */
     border-radius: 0 10px 10px 10px;  /* Custom border-radius for better aesthetics */
+    align-self: flex-start; /* Aligns the message to the left */
 }
 
 /* Style for system messages (full-width, centered) */
