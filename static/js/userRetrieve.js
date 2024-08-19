@@ -1,12 +1,22 @@
 document.getElementById('retrieveForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const cred = document.getElementById('cred').value;
-    fetch('/user/retrieve', {
-        method: 'POST',
+    retrieveUserProfile(cred);
+});
+
+function retrieveUserProfile(cred) {
+    const userToken = localStorage.getItem('userToken');
+    if (!userToken) {
+        window.location.href = '/statics/html/login.html';
+        return;
+    }
+
+    fetch(`/user/profile?cred=${encodeURIComponent(cred)}`, {
+        method: 'GET',
         headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ cred })
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${userToken}`
+        }
     })
     .then(response => response.json())
     .then(data => {
@@ -14,10 +24,10 @@ document.getElementById('retrieveForm').addEventListener('submit', function(even
             localStorage.setItem('userData', JSON.stringify({ user: data.user }));
             window.location.href = '/statics/html/userProfile.html';
         } else {
-            alert('Failed to retrieve user data.');
+            alert('Failed to retrieve user profile.');
         }
     })
     .catch(error => {
-        alert('An error occurred while retrieving user data.');
+        alert('An error occurred while retrieving the user profile.');
     });
-});
+}

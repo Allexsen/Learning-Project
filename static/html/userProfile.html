@@ -13,61 +13,14 @@
         <a href="/statics/html/index.html">Home</a>
         <div class="navbar-right"></div>
     </div>
-
     <div class="content">
-        <div class="container">
-            <div class="search">
-                <h1>User Profile</h1>
-                <form id="searchForm">
-                    <label for="cred">Email:</label>
-                    <input type="text" name="cred" id="cred" required>
-                    <input type="submit" value="Search" class="button">
-                </form>
-            </div>
-            <div class="user-info">
-                <h2>User Info</h2>
-                <p id="userName">Full Name: </p>
-                <p id="userEmail">Email: </p>
-                <p id="userUsername">Username: </p>
-                <p id="totalTimeWorked">Total Time Worked: </p>
-                <p id="logCount">Log Count: </p>
-                <button id="addRecordButton" class="button">Add Record</button>
-            </div>
-            <div class="work-log">
-                <h2>Work Log</h2>
-                <table id="workLogTable">
-                    <thead>
-                        <tr>
-                            <th>Date & Time</th>
-                            <th>Hours Worked</th>
-                            <th>Minutes Worked</th>
-                            <th>Total Time</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Will be populated dynamically through js script -->
-                    </tbody>
-                </table>
-            </div>
-            <div id="feedback" class="feedback"></div>
-        </div>
-
-        <div id="addRecordModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Add Record</h2>
-                <form id="addRecordForm">
-                    <label for="hours">Hours worked:</label>
-                    <input type="number" name="hours" id="hours" min="0" step="1" required>
-                    <label for="minutes">Minutes worked:</label>
-                    <input type="number" name="minutes" id="minutes" min="0" max="59" step="1" required>
-                    <input type="submit" value="Log Record" class="button">
-                </form>
-            </div>
+        <div class="user-profile">
+            <h1>User Profile</h1>
+            <p id="userName"></p>
+            <p id="userEmail"></p>
+            <p id="userUsername"></p>
         </div>
     </div>
-
     <script src="/statics/js/userProfile.js"></script>
     <script src="/statics/js/navbar.js"></script>
 </body>
