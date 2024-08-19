@@ -37,7 +37,6 @@ func InitRouter() {
 
 	log.Println("Initializing other routers...")
 	initUserRouter()
-	initRecordsRouter()
 	initRoomRouter()
 
 	r.Run(":8080")

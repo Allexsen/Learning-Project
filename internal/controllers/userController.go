@@ -9,7 +9,6 @@ import (
 
 	database "github.com/Allexsen/Learning-Project/internal/db"
 	apperrors "github.com/Allexsen/Learning-Project/internal/errors"
-	"github.com/Allexsen/Learning-Project/internal/models/record"
 	"github.com/Allexsen/Learning-Project/internal/models/user"
 	"github.com/Allexsen/Learning-Project/internal/utils"
 	"golang.org/x/crypto/bcrypt"
@@ -101,11 +100,6 @@ func UserGetByEmail(email string) (*user.User, error) {
 		return nil, err
 	}
 
-	// retrieves records associated with the user by user id
-	if err := u.RetrieveAllRecordsByUserID(db); err != nil {
-		return nil, err
-	}
-
 	return &u, nil
 }
 
@@ -121,11 +115,6 @@ func UserGetByUsername(username string) (*user.User, error) {
 	}
 
 	if err := u.RetrieveUserByUsername(db); err != nil {
-		return nil, err
-	}
-
-	// retrieves records associated with the user by user id
-	if err := u.RetrieveAllRecordsByUserID(db); err != nil {
 		return nil, err
 	}
 
@@ -145,43 +134,4 @@ func UserGetIDByEmail(db *sql.DB, email string) (int64, error) {
 
 	err := u.RetrieveUserIDByEmail(db)
 	return u.ID, err
-}
-
-// UserUpdateWorklogInfo updates the user worklog data by the provided record
-func userUpdateWorklogInfo(db *sql.DB, r record.Record, countChange int, tx *sql.Tx) (*user.User, error) {
-	log.Printf("[CONTROLLER] Updating user worklog info for user %d", r.UserID)
-	u := user.User{
-		UserDTO: user.UserDTO{
-			ID: r.UserID,
-		},
-	}
-
-	if err := u.RetrieveUserbyID(db); err != nil {
-		return nil, err
-	}
-
-	u.TotalMinutes += r.Minutes
-	// Adjust minutes. If below zero, decrease hours by one
-	if u.TotalMinutes < 0 {
-		u.TotalHours--
-		u.TotalMinutes += 60
-	}
-
-	u.TotalHours += r.Hours + u.TotalMinutes/60
-	u.TotalMinutes %= 60
-	u.LogCount += countChange
-
-	// Query update to the db
-	if err := u.UpdateUserWorklogInfoByID(tx); err != nil {
-		return nil, err
-	}
-
-	err := tx.Commit()
-	if err != nil {
-		log.Printf("[CONTROLLER] Couldn't commit the transaction: %s", err)
-		log.Printf("[CONTROLLER] Rolling back the transaction")
-		err = tx.Rollback()
-	}
-
-	return &u, err
 }
