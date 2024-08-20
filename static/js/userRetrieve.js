@@ -16,7 +16,8 @@ function retrieveUserProfile(cred) {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${userToken}`
-        }
+        },
+        body: JSON.stringify({ cred: cred })
     })
     .then(response => response.json())
     .then(data => {

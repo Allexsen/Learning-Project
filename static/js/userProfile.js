@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 const user = data.user;
-                localStorage.setItem('userData', JSON.stringify({ user: data.user }));
+                localStorage.setItem('userData', JSON.stringify({ user: user }));
                 loadUserProfile();
                 showFeedback('User profile retrieved successfully!', 'success');
             } else {
