@@ -1,3 +1,5 @@
+// Package chat provides base chat & ws model, managing clients and broadcasting messages.
+// It also provides database interaction methods for chat messages.
 package chat
 
 import (

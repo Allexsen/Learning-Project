@@ -1,3 +1,4 @@
+// Package router sets up API endpoints to serve requests
 package router
 
 import (

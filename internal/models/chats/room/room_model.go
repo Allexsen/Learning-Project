@@ -1,3 +1,4 @@
+// Package room provides room model, room ws, and its methods for database interaction.
 package room
 
 import (

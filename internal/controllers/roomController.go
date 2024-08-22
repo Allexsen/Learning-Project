@@ -1,3 +1,4 @@
+// Package controllers is responsible for handler-model interaction, and business logic
 package controllers
 
 import (

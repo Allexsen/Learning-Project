@@ -1,3 +1,4 @@
+// Package handlers defines API endpoints handlers, parsing and validating the request
 package handlers
 
 import (
