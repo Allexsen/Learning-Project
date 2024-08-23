@@ -52,7 +52,7 @@ func (u User) AddUser(db *sql.DB) (int64, error) {
 func (u *User) RetrieveUserbyID(db *sql.DB) error {
 	log.Printf("[USER] Retrieving user by id %d from the database", u.ID)
 
-	q := `SELECT firstname, lastname, email, username,
+	q := `SELECT firstname, lastname, email, username
 		FROM practice_db.users
 		WHERE id=?`
 	err := db.QueryRow(q, u.ID).Scan(
@@ -70,7 +70,7 @@ func (u *User) RetrieveUserbyID(db *sql.DB) error {
 func (u *User) RetrieveUserByEmail(db *sql.DB) error {
 	log.Printf("[USER] Retrieving user by email %s from the database", u.Email)
 
-	q := `SELECT id, firstname, lastname, username,
+	q := `SELECT id, firstname, lastname, username
 		FROM practice_db.users
 		WHERE email=?`
 	err := db.QueryRow(q, u.Email).Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Username)
