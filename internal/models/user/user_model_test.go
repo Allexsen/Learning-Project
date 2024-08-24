@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TODO: Renew Unit Tests - UserDTO has been changed significantly.
+
 func TestAddUser(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	assert.NoError(t, err)
