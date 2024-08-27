@@ -11,16 +11,16 @@ import (
 // UserDTO represents a user data transfer object.
 // It is used to transfer semi-public user data between the client and the server.
 type UserDTO struct {
-	ID            int64  `db:"id" json:"id,omitempty"`                         // Unique user id
-	Firstname     string `db:"firstname" json:"firstName,omitempty"`           // Firstname
-	Lastname      string `db:"lastname" json:"lastName,omitempty"`             // Lastname
-	Email         string `db:"email" json:"email,omitempty"`                   // Email
-	Username      string `db:"username" json:"username,omitempty"`             // Unique username
-	FriendsCount  int    `db:"friends_count" json:"friendsCount,omitempty"`    // Number of friends
-	ProfilePicURL string `db:"profile_pic_url" json:"profilePicURL,omitempty"` // Profile picture
-	PostsCount    int    `db:"posts_count" json:"postsCount,omitempty"`        // Number of posts
-	CommentsCount int    `db:"comments_count" json:"commentsCount,omitempty"`  // Number of comments
-	LikesCount    int    `db:"likes_count" json:"likesCount,omitempty"`        // Number of likes
+	ID            int64  `db:"id" json:"id,omitempty"`                           // Unique user id
+	Firstname     string `db:"firstname" json:"first_name,omitempty"`            // Firstname
+	Lastname      string `db:"lastname" json:"last_name,omitempty"`              // Lastname
+	Email         string `db:"email" json:"email,omitempty"`                     // Email
+	Username      string `db:"username" json:"username,omitempty"`               // Unique username
+	FriendsCount  int    `db:"friends_count" json:"friends_count,omitempty"`     // Number of friends
+	ProfilePicURL string `db:"profile_pic_url" json:"profile_pic_url,omitempty"` // Profile picture
+	PostsCount    int    `db:"posts_count" json:"posts_count,omitempty"`         // Number of posts
+	CommentsCount int    `db:"comments_count" json:"comments_count,omitempty"`   // Number of comments
+	LikesCount    int    `db:"likes_count" json:"likes_count,omitempty"`         // Number of likes
 }
 
 // User represents a user model.
