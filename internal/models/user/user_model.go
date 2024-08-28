@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/Allexsen/Learning-Project/internal/models/common"
+	"github.com/Allexsen/Learning-Project/internal/models/post"
 )
 
 // UserDTO represents a user data transfer object.
@@ -16,18 +17,20 @@ type UserDTO struct {
 	Lastname      string `db:"lastname" json:"last_name,omitempty"`              // Lastname
 	Email         string `db:"email" json:"email,omitempty"`                     // Email
 	Username      string `db:"username" json:"username,omitempty"`               // Unique username
-	FriendsCount  int    `db:"friends_count" json:"friends_count,omitempty"`     // Number of friends
 	ProfilePicURL string `db:"profile_pic_url" json:"profile_pic_url,omitempty"` // Profile picture
-	PostsCount    int    `db:"posts_count" json:"posts_count,omitempty"`         // Number of posts
-	CommentsCount int    `db:"comments_count" json:"comments_count,omitempty"`   // Number of comments
-	LikesCount    int    `db:"likes_count" json:"likes_count,omitempty"`         // Number of likes
+
 }
 
 // User represents a user model.
 // It is used to store user data in the database.
 type User struct {
 	UserDTO
-	Password string `db:"password" json:"-"` // Password hash
+	Password      string      `db:"password" json:"-"`                              // Password hash
+	PostsCount    int         `db:"posts_count" json:"posts_count,omitempty"`       // Number of posts
+	CommentsCount int         `db:"comments_count" json:"comments_count,omitempty"` // Number of comments
+	LikesCount    int         `db:"likes_count" json:"likes_count,omitempty"`       // Number of likes
+	FriendsCount  int         `db:"friends_count" json:"friends_count,omitempty"`   // Number of friends
+	Posts         []post.Post `json:"posts,omitempty"`                              // User posts
 }
 
 // AddUser adds a new user to the database.
@@ -141,11 +144,10 @@ func (u *User) RetrieveUserIDByUsername(db *sql.DB) error { // TODO: Implement U
 func (u *UserDTO) RetrieveUserDTOByID(db *sql.DB) error { // TODO: Implement Unit Tests
 	log.Printf("[USER] Retrieving userDTO by id %d from the database", u.ID)
 
-	q := `SELECT firstname, lastname, email, username, friends_count, profile_pic_url, posts_count, comments_count, likes_count
+	q := `SELECT firstname, lastname, email, username, profile_pic_url
 		FROM practice_db.users
 		WHERE id=?`
-	err := db.QueryRow(q, u.ID).Scan(&u.Firstname, &u.Lastname, &u.Email, &u.Username, &u.FriendsCount,
-		&u.ProfilePicURL, &u.PostsCount, &u.CommentsCount, &u.LikesCount)
+	err := db.QueryRow(q, u.ID).Scan(&u.Firstname, &u.Lastname, &u.Email, &u.Username, &u.ProfilePicURL)
 
 	err = common.GetQueryError(q, "Couldn't retrieve userDTO by id", u, err)
 	if err != nil {
@@ -164,11 +166,10 @@ func (u *UserDTO) RetrieveUserDTOByCred(db *sql.DB) error { // TODO: Implement U
 
 	log.Printf("[USER] Retrieving userDTO by credential %s from the database", cred)
 
-	q := `SELECT id, firstname, lastname, email, username, friends_count, profile_pic_url, posts_count, comments_count, likes_count
+	q := `SELECT id, firstname, lastname, email, username, profile_pic_url
 		FROM practice_db.users
 		WHERE email=? OR username=?`
-	err := db.QueryRow(q, u.Email, u.Username).Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Username,
-		&u.FriendsCount, &u.ProfilePicURL, &u.PostsCount, &u.CommentsCount, &u.LikesCount)
+	err := db.QueryRow(q, u.Email, u.Username).Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Username, &u.ProfilePicURL)
 
 	err = common.GetQueryError(q, "Couldn't retrieve userDTO by email or username", u, err)
 	if err != nil {
