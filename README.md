@@ -1,3 +1,5 @@
+### ON PAUSE DUE TO WORK/STUDY
+
 ### If you want to practice your frontend skills, lmk and we can work on this together.
 ## Join me
 Turns out AI is generating a faulty frontend code. I can tell it's faulty, but fixing it myself takes quite a bit of time, and I don't want to overspend time on it ;D
